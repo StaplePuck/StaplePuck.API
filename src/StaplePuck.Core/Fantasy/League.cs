@@ -13,7 +13,7 @@ namespace StaplePuck.Core.Fantasy
         public int SeasonId { get; set; }
         public Season Season { get; set; }
 
-        public User GM { get; set; }
+        public User Commissioner { get; set; }
 
         public List<FantasyTeam> FantasyTeams { get; set; }
         public List<ScoringRulePoints> ScoringRules { get; set; }
@@ -23,10 +23,13 @@ namespace StaplePuck.Core.Fantasy
         public string Description { get; set; }
         public bool IsLocked { get; set; }
         public string PaymentInfo { get; set; }
-        public bool AllowMultiple { get; set; }
+        public bool AllowMultipleTeams { get; set; }
 
-        public int NumberOfForwards { get; set; }
-        public int NumberOfDefensemen { get; set; }
-        public int NumberOfGoalies { get; set; }
+        public List<NumberPerPosition> NumberPerPositions { get; set; }
+
+        public int PlayersPerTeam { get; set; }
+
+        public int SportId { get; set; }
+        public Sport Sport { get; set; }
     }
 }

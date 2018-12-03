@@ -9,7 +9,6 @@ namespace StaplePuck.Core.Fantasy
         public int UserId { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
-        public bool IsAdmin { get; set; }
         public List<FantasyTeam> FantasyTeams { get; set; }
     }
 }
