@@ -9,7 +9,7 @@ namespace StaplePuck.Core.Fantasy
         public int FantasyTeamId { get; set; }
 
         public int UserId { get; set; }
-        public User User { get; set; }
+        public User GM { get; set; }
         public string Name { get; set; }
 
         public int LeagueId { get; set; }

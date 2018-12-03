@@ -16,6 +16,8 @@ namespace StaplePuck.Core.Stats
         public List<PlayerSeason> HockeyPlayerSeasons { get; set; }
         public string ExternalId { get; set; }
         public int StartRound { get; set; }
+        public int SportId { get; set; }
+        public Sport Sport { get; set; }
 
         public List<GameDateSeason> GameDates { get; set; }
     }
