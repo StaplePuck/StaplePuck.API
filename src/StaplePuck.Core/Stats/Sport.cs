@@ -8,5 +8,6 @@ namespace StaplePuck.Core.Stats
     {
         public int SportId { get; set; }
         public string Name { get; set; }
+        public List<ScoringType> ScoringTypes { get; set; }
     }
 }
