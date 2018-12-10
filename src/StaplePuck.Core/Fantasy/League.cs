@@ -7,7 +7,7 @@ namespace StaplePuck.Core.Fantasy
 {
     public class League
     {
-        public int LeagueId { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
 
         public int SeasonId { get; set; }

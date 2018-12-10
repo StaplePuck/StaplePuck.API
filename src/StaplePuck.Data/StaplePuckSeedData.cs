@@ -24,7 +24,7 @@ namespace StaplePuck.Data
 
             if (!db.ScoringTypes.Any())
             { 
-                var sportId = db.Sports.FirstOrDefault(x => x.Name == "Hockey").SportId;
+                var sportId = db.Sports.FirstOrDefault(x => x.Name == "Hockey").Id;
                 var types = new List<ScoringType>
                 {
                     new ScoringType{ Name = "Goal", ShortName = "G", SportId = sportId, DeclaredPositions = (int)PositionType.Defense | (int)PositionType.Forward | (int)PositionType.Goalie },

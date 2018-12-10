@@ -10,7 +10,7 @@ using StaplePuck.Data;
 namespace StaplePuck.Data.Migrations
 {
     [DbContext(typeof(StaplePuckContext))]
-    [Migration("20181209004342_InitialDatabase")]
+    [Migration("20181210024858_InitialDatabase")]
     partial class InitialDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,7 +23,7 @@ namespace StaplePuck.Data.Migrations
 
             modelBuilder.Entity("StaplePuck.Core.Fantasy.FantasyTeam", b =>
                 {
-                    b.Property<int>("FantasyTeamId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<bool>("IsPaid");
@@ -38,7 +38,7 @@ namespace StaplePuck.Data.Migrations
 
                     b.Property<int>("UserId");
 
-                    b.HasKey("FantasyTeamId");
+                    b.HasKey("Id");
 
                     b.HasIndex("LeagueId");
 
@@ -62,14 +62,14 @@ namespace StaplePuck.Data.Migrations
 
             modelBuilder.Entity("StaplePuck.Core.Fantasy.League", b =>
                 {
-                    b.Property<int>("LeagueId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<bool>("AllowMultipleTeams");
 
                     b.Property<string>("Announcement");
 
-                    b.Property<int?>("CommissionerUserId");
+                    b.Property<int?>("CommissionerId");
 
                     b.Property<string>("Description");
 
@@ -87,9 +87,9 @@ namespace StaplePuck.Data.Migrations
 
                     b.Property<int>("SportId");
 
-                    b.HasKey("LeagueId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("CommissionerUserId");
+                    b.HasIndex("CommissionerId");
 
                     b.HasIndex("SeasonId");
 
@@ -100,7 +100,7 @@ namespace StaplePuck.Data.Migrations
 
             modelBuilder.Entity("StaplePuck.Core.Fantasy.LeagueMail", b =>
                 {
-                    b.Property<int>("LeagueMailId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("GameDateId");
@@ -109,7 +109,7 @@ namespace StaplePuck.Data.Migrations
 
                     b.Property<string>("Message");
 
-                    b.HasKey("LeagueMailId");
+                    b.HasKey("Id");
 
                     b.HasIndex("GameDateId");
 
@@ -120,7 +120,7 @@ namespace StaplePuck.Data.Migrations
 
             modelBuilder.Entity("StaplePuck.Core.Fantasy.NumberPerPosition", b =>
                 {
-                    b.Property<int>("NumberPerPositionId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("Count");
@@ -129,7 +129,7 @@ namespace StaplePuck.Data.Migrations
 
                     b.Property<int>("Position");
 
-                    b.HasKey("NumberPerPositionId");
+                    b.HasKey("Id");
 
                     b.HasIndex("LeagueId");
 
@@ -138,7 +138,7 @@ namespace StaplePuck.Data.Migrations
 
             modelBuilder.Entity("StaplePuck.Core.Fantasy.ScoringRulePoints", b =>
                 {
-                    b.Property<int>("ScoringRulePointsId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("LeagueId");
@@ -149,7 +149,7 @@ namespace StaplePuck.Data.Migrations
 
                     b.Property<int>("ScoringTypeId");
 
-                    b.HasKey("ScoringRulePointsId");
+                    b.HasKey("Id");
 
                     b.HasIndex("LeagueId");
 
@@ -160,24 +160,24 @@ namespace StaplePuck.Data.Migrations
 
             modelBuilder.Entity("StaplePuck.Core.Fantasy.User", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Email");
 
                     b.Property<string>("Name");
 
-                    b.HasKey("UserId");
+                    b.HasKey("Id");
 
                     b.ToTable("Users");
                 });
 
             modelBuilder.Entity("StaplePuck.Core.Stats.GameDate", b =>
                 {
-                    b.Property<string>("GameDateId")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.HasKey("GameDateId");
+                    b.HasKey("Id");
 
                     b.ToTable("GameDates");
                 });
@@ -197,7 +197,7 @@ namespace StaplePuck.Data.Migrations
 
             modelBuilder.Entity("StaplePuck.Core.Stats.Player", b =>
                 {
-                    b.Property<int>("PlayerId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("ExternalId");
@@ -214,7 +214,7 @@ namespace StaplePuck.Data.Migrations
 
                     b.Property<string>("ShortName");
 
-                    b.HasKey("PlayerId");
+                    b.HasKey("Id");
 
                     b.ToTable("Players");
                 });
@@ -278,7 +278,7 @@ namespace StaplePuck.Data.Migrations
 
             modelBuilder.Entity("StaplePuck.Core.Stats.ScoringType", b =>
                 {
-                    b.Property<int>("ScoringTypeId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("DeclaredPositions");
@@ -289,7 +289,7 @@ namespace StaplePuck.Data.Migrations
 
                     b.Property<int>("SportId");
 
-                    b.HasKey("ScoringTypeId");
+                    b.HasKey("Id");
 
                     b.HasIndex("SportId");
 
@@ -298,7 +298,7 @@ namespace StaplePuck.Data.Migrations
 
             modelBuilder.Entity("StaplePuck.Core.Stats.Season", b =>
                 {
-                    b.Property<int>("SeasonId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("ExternalId");
@@ -313,7 +313,7 @@ namespace StaplePuck.Data.Migrations
 
                     b.Property<int>("StartRound");
 
-                    b.HasKey("SeasonId");
+                    b.HasKey("Id");
 
                     b.HasIndex("SportId");
 
@@ -322,19 +322,19 @@ namespace StaplePuck.Data.Migrations
 
             modelBuilder.Entity("StaplePuck.Core.Stats.Sport", b =>
                 {
-                    b.Property<int>("SportId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Name");
 
-                    b.HasKey("SportId");
+                    b.HasKey("Id");
 
                     b.ToTable("Sports");
                 });
 
             modelBuilder.Entity("StaplePuck.Core.Stats.Team", b =>
                 {
-                    b.Property<int>("TeamId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("ExternalId");
@@ -343,7 +343,7 @@ namespace StaplePuck.Data.Migrations
 
                     b.Property<string>("ShortName");
 
-                    b.HasKey("TeamId");
+                    b.HasKey("Id");
 
                     b.ToTable("Teams");
                 });
@@ -398,7 +398,7 @@ namespace StaplePuck.Data.Migrations
                 {
                     b.HasOne("StaplePuck.Core.Fantasy.User", "Commissioner")
                         .WithMany()
-                        .HasForeignKey("CommissionerUserId");
+                        .HasForeignKey("CommissionerId");
 
                     b.HasOne("StaplePuck.Core.Stats.Season", "Season")
                         .WithMany("Leagues")

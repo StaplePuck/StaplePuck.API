@@ -6,7 +6,7 @@ namespace StaplePuck.Core.Stats
 {
     public class Team
     {
-        public int TeamId { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public string ShortName { get; set; }
         public int ExternalId { get; set; }

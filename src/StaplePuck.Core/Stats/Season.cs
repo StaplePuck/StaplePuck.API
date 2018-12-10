@@ -7,7 +7,7 @@ namespace StaplePuck.Core.Stats
 {
     public class Season
     {
-        public int SeasonId { get; set; }
+        public int Id { get; set; }
 
         public string FullName { get; set; }
         public bool IsPlayoffs { get; set; }

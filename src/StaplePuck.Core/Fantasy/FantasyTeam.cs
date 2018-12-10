@@ -6,7 +6,7 @@ namespace StaplePuck.Core.Fantasy
 {
     public class FantasyTeam
     {
-        public int FantasyTeamId { get; set; }
+        public int Id { get; set; }
 
         public int UserId { get; set; }
         public User GM { get; set; }

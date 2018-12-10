@@ -11,18 +11,18 @@ namespace StaplePuck.Data.Migrations
                 name: "GameDates",
                 columns: table => new
                 {
-                    GameDateId = table.Column<string>(nullable: false)
+                    Id = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GameDates", x => x.GameDateId);
+                    table.PrimaryKey("PK_GameDates", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Players",
                 columns: table => new
                 {
-                    PlayerId = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     FullName = table.Column<string>(nullable: true),
                     ExternalId = table.Column<int>(nullable: false),
@@ -34,27 +34,27 @@ namespace StaplePuck.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Players", x => x.PlayerId);
+                    table.PrimaryKey("PK_Players", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Sports",
                 columns: table => new
                 {
-                    SportId = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Sports", x => x.SportId);
+                    table.PrimaryKey("PK_Sports", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Teams",
                 columns: table => new
                 {
-                    TeamId = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     Name = table.Column<string>(nullable: true),
                     ShortName = table.Column<string>(nullable: true),
@@ -62,21 +62,21 @@ namespace StaplePuck.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Teams", x => x.TeamId);
+                    table.PrimaryKey("PK_Teams", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     Name = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.UserId);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -95,13 +95,13 @@ namespace StaplePuck.Data.Migrations
                         name: "FK_PlayerStatsOnDates_GameDates_GameDateId",
                         column: x => x.GameDateId,
                         principalTable: "GameDates",
-                        principalColumn: "GameDateId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_PlayerStatsOnDates_Players_PlayerId",
                         column: x => x.PlayerId,
                         principalTable: "Players",
-                        principalColumn: "PlayerId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -109,7 +109,7 @@ namespace StaplePuck.Data.Migrations
                 name: "ScoringTypes",
                 columns: table => new
                 {
-                    ScoringTypeId = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     Name = table.Column<string>(nullable: true),
                     ShortName = table.Column<string>(nullable: true),
@@ -118,12 +118,12 @@ namespace StaplePuck.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ScoringTypes", x => x.ScoringTypeId);
+                    table.PrimaryKey("PK_ScoringTypes", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ScoringTypes_Sports_SportId",
                         column: x => x.SportId,
                         principalTable: "Sports",
-                        principalColumn: "SportId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -131,7 +131,7 @@ namespace StaplePuck.Data.Migrations
                 name: "Seasons",
                 columns: table => new
                 {
-                    SeasonId = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     FullName = table.Column<string>(nullable: true),
                     IsPlayoffs = table.Column<bool>(nullable: false),
@@ -142,12 +142,12 @@ namespace StaplePuck.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Seasons", x => x.SeasonId);
+                    table.PrimaryKey("PK_Seasons", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Seasons_Sports_SportId",
                         column: x => x.SportId,
                         principalTable: "Sports",
-                        principalColumn: "SportId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -168,13 +168,13 @@ namespace StaplePuck.Data.Migrations
                         name: "FK_TeamStateOnDate_GameDates_GameDateId",
                         column: x => x.GameDateId,
                         principalTable: "GameDates",
-                        principalColumn: "GameDateId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_TeamStateOnDate_Teams_TeamId",
                         column: x => x.TeamId,
                         principalTable: "Teams",
-                        principalColumn: "TeamId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -202,7 +202,7 @@ namespace StaplePuck.Data.Migrations
                         name: "FK_PlayerScores_ScoringTypes_ScoringTypeId",
                         column: x => x.ScoringTypeId,
                         principalTable: "ScoringTypes",
-                        principalColumn: "ScoringTypeId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -220,13 +220,13 @@ namespace StaplePuck.Data.Migrations
                         name: "FK_GameDateSeason_GameDates_GameDateId",
                         column: x => x.GameDateId,
                         principalTable: "GameDates",
-                        principalColumn: "GameDateId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_GameDateSeason_Seasons_SeasonId",
                         column: x => x.SeasonId,
                         principalTable: "Seasons",
-                        principalColumn: "SeasonId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -234,11 +234,11 @@ namespace StaplePuck.Data.Migrations
                 name: "Leagues",
                 columns: table => new
                 {
-                    LeagueId = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     Name = table.Column<string>(nullable: true),
                     SeasonId = table.Column<int>(nullable: false),
-                    CommissionerUserId = table.Column<int>(nullable: true),
+                    CommissionerId = table.Column<int>(nullable: true),
                     Password = table.Column<string>(nullable: true),
                     Announcement = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
@@ -250,24 +250,24 @@ namespace StaplePuck.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Leagues", x => x.LeagueId);
+                    table.PrimaryKey("PK_Leagues", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Leagues_Users_CommissionerUserId",
-                        column: x => x.CommissionerUserId,
+                        name: "FK_Leagues_Users_CommissionerId",
+                        column: x => x.CommissionerId,
                         principalTable: "Users",
-                        principalColumn: "UserId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Leagues_Seasons_SeasonId",
                         column: x => x.SeasonId,
                         principalTable: "Seasons",
-                        principalColumn: "SeasonId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Leagues_Sports_SportId",
                         column: x => x.SportId,
                         principalTable: "Sports",
-                        principalColumn: "SportId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -286,19 +286,19 @@ namespace StaplePuck.Data.Migrations
                         name: "FK_PlayerSeasons_Players_PlayerId",
                         column: x => x.PlayerId,
                         principalTable: "Players",
-                        principalColumn: "PlayerId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_PlayerSeasons_Seasons_SeasonId",
                         column: x => x.SeasonId,
                         principalTable: "Seasons",
-                        principalColumn: "SeasonId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_PlayerSeasons_Teams_TeamId",
                         column: x => x.TeamId,
                         principalTable: "Teams",
-                        principalColumn: "TeamId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -306,7 +306,7 @@ namespace StaplePuck.Data.Migrations
                 name: "FantasyTeams",
                 columns: table => new
                 {
-                    FantasyTeamId = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     UserId = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: true),
@@ -317,18 +317,18 @@ namespace StaplePuck.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FantasyTeams", x => x.FantasyTeamId);
+                    table.PrimaryKey("PK_FantasyTeams", x => x.Id);
                     table.ForeignKey(
                         name: "FK_FantasyTeams_Leagues_LeagueId",
                         column: x => x.LeagueId,
                         principalTable: "Leagues",
-                        principalColumn: "LeagueId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_FantasyTeams_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "UserId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -336,7 +336,7 @@ namespace StaplePuck.Data.Migrations
                 name: "LeagueMails",
                 columns: table => new
                 {
-                    LeagueMailId = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     LeagueId = table.Column<int>(nullable: false),
                     GameDateId = table.Column<string>(nullable: true),
@@ -344,18 +344,18 @@ namespace StaplePuck.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LeagueMails", x => x.LeagueMailId);
+                    table.PrimaryKey("PK_LeagueMails", x => x.Id);
                     table.ForeignKey(
                         name: "FK_LeagueMails_GameDates_GameDateId",
                         column: x => x.GameDateId,
                         principalTable: "GameDates",
-                        principalColumn: "GameDateId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_LeagueMails_Leagues_LeagueId",
                         column: x => x.LeagueId,
                         principalTable: "Leagues",
-                        principalColumn: "LeagueId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -363,7 +363,7 @@ namespace StaplePuck.Data.Migrations
                 name: "NumberPerPositions",
                 columns: table => new
                 {
-                    NumberPerPositionId = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     Position = table.Column<int>(nullable: false),
                     Count = table.Column<int>(nullable: false),
@@ -371,12 +371,12 @@ namespace StaplePuck.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NumberPerPositions", x => x.NumberPerPositionId);
+                    table.PrimaryKey("PK_NumberPerPositions", x => x.Id);
                     table.ForeignKey(
                         name: "FK_NumberPerPositions_Leagues_LeagueId",
                         column: x => x.LeagueId,
                         principalTable: "Leagues",
-                        principalColumn: "LeagueId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -384,7 +384,7 @@ namespace StaplePuck.Data.Migrations
                 name: "ScoringRulePoints",
                 columns: table => new
                 {
-                    ScoringRulePointsId = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     Position = table.Column<int>(nullable: false),
                     PointsPerScore = table.Column<int>(nullable: false),
@@ -393,18 +393,18 @@ namespace StaplePuck.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ScoringRulePoints", x => x.ScoringRulePointsId);
+                    table.PrimaryKey("PK_ScoringRulePoints", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ScoringRulePoints_Leagues_LeagueId",
                         column: x => x.LeagueId,
                         principalTable: "Leagues",
-                        principalColumn: "LeagueId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ScoringRulePoints_ScoringTypes_ScoringTypeId",
                         column: x => x.ScoringTypeId,
                         principalTable: "ScoringTypes",
-                        principalColumn: "ScoringTypeId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -422,13 +422,13 @@ namespace StaplePuck.Data.Migrations
                         name: "FK_FantasyTeamPlayers_FantasyTeams_FantasyTeamId",
                         column: x => x.FantasyTeamId,
                         principalTable: "FantasyTeams",
-                        principalColumn: "FantasyTeamId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_FantasyTeamPlayers_Players_PlayerId",
                         column: x => x.PlayerId,
                         principalTable: "Players",
-                        principalColumn: "PlayerId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -463,9 +463,9 @@ namespace StaplePuck.Data.Migrations
                 column: "LeagueId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Leagues_CommissionerUserId",
+                name: "IX_Leagues_CommissionerId",
                 table: "Leagues",
-                column: "CommissionerUserId");
+                column: "CommissionerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Leagues_SeasonId",

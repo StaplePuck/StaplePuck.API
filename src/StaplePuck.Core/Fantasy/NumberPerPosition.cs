@@ -7,7 +7,7 @@ namespace StaplePuck.Core.Fantasy
 {
     public class NumberPerPosition
     {
-        public int NumberPerPositionId { get; set; }
+        public int Id { get; set; }
         public PositionType Position { get; set; }
         public int Count { get; set; }
 
