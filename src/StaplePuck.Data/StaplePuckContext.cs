@@ -27,6 +27,8 @@ namespace StaplePuck.Data
         public DbSet<PlayerScore> PlayerScores { get; set; }
         public DbSet<PlayerSeason> PlayerSeasons { get; set; }
         public DbSet<PlayerStatsOnDate> PlayerStatsOnDates { get; set; }
+        public DbSet<PositionType> Positions { get; set; }
+        public DbSet<ScoringPositions> ScoringPositions { get; set; }
         public DbSet<ScoringType> ScoringTypes { get; set; }
         public DbSet<Season> Seasons { get; set; }
         public DbSet<Sport> Sports { get; set; }
@@ -84,6 +86,20 @@ namespace StaplePuck.Data
                 .HasOne(st => st.Sport)
                 .WithMany(s => s.ScoringTypes)
                 .HasForeignKey(st => st.SportId);
+
+            // ScoringPositions
+            modelBuilder.Entity<ScoringPositions>()
+                .HasKey(x => new { x.PositionTypeId, x.ScoringTypeId });
+
+            modelBuilder.Entity<ScoringPositions>()
+                .HasOne(x => x.ScoringType)
+                .WithMany(x => x.ScoringPositions)
+                .HasForeignKey(x => x.ScoringTypeId);
+
+            modelBuilder.Entity<ScoringPositions>()
+                .HasOne(x => x.PositionType)
+                .WithMany(x => x.ScoringPositions)
+                .HasForeignKey(x => x.PositionTypeId);
         }
     }
 }

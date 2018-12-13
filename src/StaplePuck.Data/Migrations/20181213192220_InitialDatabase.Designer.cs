@@ -10,7 +10,7 @@ using StaplePuck.Data;
 namespace StaplePuck.Data.Migrations
 {
     [DbContext(typeof(StaplePuckContext))]
-    [Migration("20181210024858_InitialDatabase")]
+    [Migration("20181213192220_InitialDatabase")]
     partial class InitialDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -127,11 +127,13 @@ namespace StaplePuck.Data.Migrations
 
                     b.Property<int>("LeagueId");
 
-                    b.Property<int>("Position");
+                    b.Property<int?>("PositionId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LeagueId");
+
+                    b.HasIndex("PositionId");
 
                     b.ToTable("NumberPerPositions");
                 });
@@ -145,13 +147,15 @@ namespace StaplePuck.Data.Migrations
 
                     b.Property<int>("PointsPerScore");
 
-                    b.Property<int>("Position");
+                    b.Property<int?>("PositionId");
 
                     b.Property<int>("ScoringTypeId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LeagueId");
+
+                    b.HasIndex("PositionId");
 
                     b.HasIndex("ScoringTypeId");
 
@@ -210,11 +214,13 @@ namespace StaplePuck.Data.Migrations
 
                     b.Property<int>("Number");
 
-                    b.Property<int>("Position");
+                    b.Property<int?>("PositionId");
 
                     b.Property<string>("ShortName");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PositionId");
 
                     b.ToTable("Players");
                 });
@@ -276,12 +282,41 @@ namespace StaplePuck.Data.Migrations
                     b.ToTable("PlayerStatsOnDates");
                 });
 
-            modelBuilder.Entity("StaplePuck.Core.Stats.ScoringType", b =>
+            modelBuilder.Entity("StaplePuck.Core.Stats.PositionType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("DeclaredPositions");
+                    b.Property<string>("Name");
+
+                    b.Property<string>("ShortName");
+
+                    b.Property<int>("SportId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SportId");
+
+                    b.ToTable("Positions");
+                });
+
+            modelBuilder.Entity("StaplePuck.Core.Stats.ScoringPositions", b =>
+                {
+                    b.Property<int>("PositionTypeId");
+
+                    b.Property<int>("ScoringTypeId");
+
+                    b.HasKey("PositionTypeId", "ScoringTypeId");
+
+                    b.HasIndex("ScoringTypeId");
+
+                    b.ToTable("ScoringPositions");
+                });
+
+            modelBuilder.Entity("StaplePuck.Core.Stats.ScoringType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Name");
 
@@ -429,6 +464,10 @@ namespace StaplePuck.Data.Migrations
                         .WithMany("NumberPerPositions")
                         .HasForeignKey("LeagueId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("StaplePuck.Core.Stats.PositionType", "Position")
+                        .WithMany()
+                        .HasForeignKey("PositionId");
                 });
 
             modelBuilder.Entity("StaplePuck.Core.Fantasy.ScoringRulePoints", b =>
@@ -437,6 +476,10 @@ namespace StaplePuck.Data.Migrations
                         .WithMany("ScoringRules")
                         .HasForeignKey("LeagueId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("StaplePuck.Core.Stats.PositionType", "Position")
+                        .WithMany()
+                        .HasForeignKey("PositionId");
 
                     b.HasOne("StaplePuck.Core.Stats.ScoringType", "ScoringType")
                         .WithMany()
@@ -455,6 +498,13 @@ namespace StaplePuck.Data.Migrations
                         .WithMany("GameDates")
                         .HasForeignKey("SeasonId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("StaplePuck.Core.Stats.Player", b =>
+                {
+                    b.HasOne("StaplePuck.Core.Stats.PositionType", "Position")
+                        .WithMany()
+                        .HasForeignKey("PositionId");
                 });
 
             modelBuilder.Entity("StaplePuck.Core.Stats.PlayerScore", b =>
@@ -497,6 +547,27 @@ namespace StaplePuck.Data.Migrations
                     b.HasOne("StaplePuck.Core.Stats.Player", "Player")
                         .WithMany("StatsOnDate")
                         .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("StaplePuck.Core.Stats.PositionType", b =>
+                {
+                    b.HasOne("StaplePuck.Core.Stats.Sport", "Sport")
+                        .WithMany()
+                        .HasForeignKey("SportId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("StaplePuck.Core.Stats.ScoringPositions", b =>
+                {
+                    b.HasOne("StaplePuck.Core.Stats.PositionType", "PositionType")
+                        .WithMany("ScoringPositions")
+                        .HasForeignKey("PositionTypeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("StaplePuck.Core.Stats.ScoringType", "ScoringType")
+                        .WithMany("ScoringPositions")
+                        .HasForeignKey("ScoringTypeId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
