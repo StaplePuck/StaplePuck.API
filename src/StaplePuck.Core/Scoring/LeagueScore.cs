@@ -10,6 +10,6 @@ namespace StaplePuck.Core.Scoring
         public League League { get; set; }
         public IEnumerable<TeamScore> Teams { get; set; }
         public DateTime Date { get; set; }
-        public Dictionary<int, PlayerScore> Players { get; private set; }
+        public Dictionary<int, PlayerCalculatedScore> Players { get; private set; }
     }
 }

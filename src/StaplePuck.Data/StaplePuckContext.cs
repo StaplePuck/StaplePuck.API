@@ -59,7 +59,7 @@ namespace StaplePuck.Data
 
             modelBuilder.Entity<PlayerSeason>()
                 .HasOne(hp => hp.Season)
-                .WithMany(x => x.HockeyPlayerSeasons)
+                .WithMany(x => x.PlayerSeasons)
                 .HasForeignKey(x => x.SeasonId);
 
             modelBuilder.Entity<PlayerSeason>()

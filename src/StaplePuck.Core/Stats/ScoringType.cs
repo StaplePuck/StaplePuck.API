@@ -9,7 +9,7 @@ namespace StaplePuck.Core.Stats
         public int Id { get; set; }
         public string Name { get; set; }
         public string ShortName { get; set; }
-        public int DeclaredPositions { get; set; }
+        public List<ScoringPositions> ScoringPositions { get; set; }
         public int SportId { get; set; }
         public Sport Sport { get; set; }
     }

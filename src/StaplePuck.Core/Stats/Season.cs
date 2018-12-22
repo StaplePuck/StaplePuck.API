@@ -11,9 +11,8 @@ namespace StaplePuck.Core.Stats
 
         public string FullName { get; set; }
         public bool IsPlayoffs { get; set; }
-        public string Provider { get; set; }
         public List<League> Leagues { get; set; }
-        public List<PlayerSeason> HockeyPlayerSeasons { get; set; }
+        public List<PlayerSeason> PlayerSeasons { get; set; }
         public string ExternalId { get; set; }
         public int StartRound { get; set; }
         public int SportId { get; set; }

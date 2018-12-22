@@ -23,7 +23,7 @@ namespace StaplePuck.Core.Stats
         {
             get
             {
-                return string.Format("{0} ({1})", FullName, this.Position.ToString());
+                return string.Format("{0} ({1})", FullName, this.Position.Name);
             }
         }
     }

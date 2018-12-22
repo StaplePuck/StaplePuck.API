@@ -5,7 +5,7 @@ using StaplePuck.Core.Stats;
 
 namespace StaplePuck.Core.Scoring
 {
-    public class ScoreItem
+    public class CalculatedScoreItem
     {
         public ScoringType ScoringType { get; set; }
 
