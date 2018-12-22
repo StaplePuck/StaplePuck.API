@@ -8,8 +8,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StaplePuck.Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using StaplePuck.Core.Data;
+using StaplePuck.Data.Repositories;
+using GraphiQl;
+using GraphQL.EntityFramework;
+using GraphQL;
+using GraphQL.Types;
 
 namespace StaplePuck.API
 {
@@ -26,7 +33,40 @@ namespace StaplePuck.API
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<StaplePuck.Data.StaplePuckContext>(options => options.UseNpgsql(Configuration["ConnectionStrings:Default"]));
+            var connectionString = Configuration["ConnectionStrings:Default"];
+            services.AddDbContext<StaplePuck.Data.StaplePuckContext>(options => options.UseNpgsql(connectionString));
+
+            var optionsBuilder = new DbContextOptionsBuilder<StaplePuckContext>();
+            optionsBuilder.UseNpgsql(connectionString);
+
+            EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
+            using (var myDataContext = new StaplePuckContext(optionsBuilder.Options))
+            {
+                EfGraphQLConventions.RegisterInContainer(services, myDataContext);
+            }
+            
+            
+            foreach (var type in GetGraphQlTypes())
+            {
+                services.AddSingleton(type);
+            }
+
+            services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
+            services.AddSingleton<IDependencyResolver>(
+                provider => new FuncDependencyResolver(provider.GetRequiredService));
+            services.AddSingleton<ISchema, Models.Schema>();
+
+            var mvc = services.AddMvc();
+            mvc.SetCompatibilityVersion(CompatibilityVersion.Latest);
+        }
+
+        static IEnumerable<Type> GetGraphQlTypes()
+        {
+            return typeof(Startup).Assembly
+                .GetTypes()
+                .Where(x => !x.IsAbstract &&
+                            (typeof(IObjectGraphType).IsAssignableFrom(x) ||
+                             typeof(IInputObjectGraphType).IsAssignableFrom(x)));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,10 +78,8 @@ namespace StaplePuck.API
             }
 
             db.EnsureSeedData();
-            app.Run(async (context) =>
-            {
-                await context.Response.WriteAsync("Hello World!");
-            });
+            app.UseGraphiQl("/graphiql", "/graphql");
+            app.UseMvc();
         }
     }
 }

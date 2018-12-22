@@ -9,7 +9,7 @@ namespace StaplePuck.Core.Scoring
     public class TeamScore
     {
         public FantasyTeam FantasyTeam { get; set; }
-        public IEnumerable<PlayerScore> Players { get; set; }
+        public IEnumerable<PlayerCalculatedScore> Players { get; set; }
 
         public DateTime Date { get; set; }
         public int Rank { get; set; }

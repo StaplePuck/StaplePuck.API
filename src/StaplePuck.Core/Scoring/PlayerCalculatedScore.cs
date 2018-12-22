@@ -6,11 +6,11 @@ using StaplePuck.Core.Stats;
 
 namespace StaplePuck.Core.Scoring
 {
-    public class PlayerScore
+    public class PlayerCalculatedScore
     {
         public Player Player { get; set; }
         public Team Team { get; set; }
-        public List<ScoreItem> Scoring { get; set; }
+        public List<CalculatedScoreItem> Scoring { get; set; }
         public int Count { get; set; }
         public GameState GameState { get; set; }
 
