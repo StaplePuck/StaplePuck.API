@@ -8,7 +8,6 @@ namespace StaplePuck.API.Graphs
         public PlayerSeasonGraph(IEfGraphQLService graphQLService) : base(graphQLService)
         {
             Field(x => x.PlayerId);
-            Field(x => x.Player);
             AddNavigationField<PlayerGraph, Player>(
                 name: "player",
                 resolve: context => context.Source.Player);

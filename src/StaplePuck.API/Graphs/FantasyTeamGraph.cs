@@ -16,7 +16,7 @@ namespace StaplePuck.API.Graphs
                 name: "fantasyTeamPlayers",
                 resolve: context => context.Source.FantasyTeamPlayers);
             AddNavigationField<LeagueGraph, League>(
-                name: "fantasyTeamPlayers",
+                name: "league",
                 resolve: context => context.Source.League);
             AddNavigationField<UserGraph, User>(
                 name: "gm",

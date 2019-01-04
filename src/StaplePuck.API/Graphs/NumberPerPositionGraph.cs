@@ -10,7 +10,6 @@ namespace StaplePuck.API.Graphs
         {
             Field(x => x.Id);
             Field(x => x.Count);
-            Field(x => x.League);
             AddNavigationField<LeagueGraph, League>(
                 name: "leauge",
                 resolve: context => context.Source.League);
