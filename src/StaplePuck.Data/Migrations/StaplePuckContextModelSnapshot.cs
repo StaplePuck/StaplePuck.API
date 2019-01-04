@@ -212,13 +212,13 @@ namespace StaplePuck.Data.Migrations
 
                     b.Property<int>("Number");
 
-                    b.Property<int?>("PositionId");
-
                     b.Property<string>("ShortName");
+
+                    b.Property<int>("SportId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PositionId");
+                    b.HasIndex("SportId");
 
                     b.ToTable("Players");
                 });
@@ -251,9 +251,13 @@ namespace StaplePuck.Data.Migrations
 
                     b.Property<int>("SeasonId");
 
+                    b.Property<int>("PositionTypeId");
+
                     b.Property<int>("TeamId");
 
                     b.HasKey("PlayerId", "SeasonId");
+
+                    b.HasIndex("PositionTypeId");
 
                     b.HasIndex("SeasonId");
 
@@ -339,8 +343,6 @@ namespace StaplePuck.Data.Migrations
                     b.Property<string>("FullName");
 
                     b.Property<bool>("IsPlayoffs");
-
-                    b.Property<string>("Provider");
 
                     b.Property<int>("SportId");
 
@@ -500,9 +502,10 @@ namespace StaplePuck.Data.Migrations
 
             modelBuilder.Entity("StaplePuck.Core.Stats.Player", b =>
                 {
-                    b.HasOne("StaplePuck.Core.Stats.PositionType", "Position")
+                    b.HasOne("StaplePuck.Core.Stats.Sport", "Sport")
                         .WithMany()
-                        .HasForeignKey("PositionId");
+                        .HasForeignKey("SportId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("StaplePuck.Core.Stats.PlayerScore", b =>
@@ -525,8 +528,13 @@ namespace StaplePuck.Data.Migrations
                         .HasForeignKey("PlayerId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("StaplePuck.Core.Stats.PositionType", "PositionType")
+                        .WithMany()
+                        .HasForeignKey("PositionTypeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("StaplePuck.Core.Stats.Season", "Season")
-                        .WithMany("HockeyPlayerSeasons")
+                        .WithMany("PlayerSeasons")
                         .HasForeignKey("SeasonId")
                         .OnDelete(DeleteBehavior.Cascade);
 
