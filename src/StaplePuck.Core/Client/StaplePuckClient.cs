@@ -8,7 +8,7 @@ using System.Dynamic;
 using System.Threading.Tasks;
 
 
-namespace StaplePuck.Core.Class
+namespace StaplePuck.Core.Client
 {
     /// <summary>
     /// Interacts with the StaplePuck API.

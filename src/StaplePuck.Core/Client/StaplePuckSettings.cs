@@ -1,4 +1,4 @@
-﻿namespace StaplePuck.Core.Class
+﻿namespace StaplePuck.Core.Client
 {
     /// <summary>
     /// Represents the settings for the StaplePuck API.

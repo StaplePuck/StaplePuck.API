@@ -1,7 +1,7 @@
 ﻿using StaplePuck.Core.Data;
 using System.Threading.Tasks;
 
-namespace StaplePuck.Core.Class
+namespace StaplePuck.Core.Client
 {
     /// <summary>
     /// Provides an interface for interacting with the StaplePuck API.
