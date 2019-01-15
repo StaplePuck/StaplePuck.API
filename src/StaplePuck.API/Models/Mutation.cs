@@ -16,7 +16,7 @@ namespace StaplePuck.API.Models
         {
             Name = "Mutation";
 
-            Field<SeasonGraph>(
+            Field<ResultGraph>(
                 "createSeason",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<SeasonInputType>> { Name = "season" }
