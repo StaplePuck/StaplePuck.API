@@ -48,7 +48,7 @@ namespace StaplePuck.Data
                 {
                     new PositionType { Name = "Undefined", ShortName = "U", SportId = sportId },
                     new PositionType { Name = "Forward", ShortName = "F", SportId = sportId },
-                    new PositionType { Name = "Defendse", ShortName = "D", SportId = sportId },
+                    new PositionType { Name = "Defenseman", ShortName = "D", SportId = sportId },
                     new PositionType { Name = "Goalie", ShortName = "G", SportId = sportId }
                 };
                 db.Positions.AddRange(positions);
