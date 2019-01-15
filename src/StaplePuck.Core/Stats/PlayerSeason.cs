@@ -14,5 +14,7 @@ namespace StaplePuck.Core.Stats
 
         public int TeamId { get; set; }
         public Team Team { get; set; }
+        public int PositionTypeId { get; set; }
+        public PositionType PositionType { get; set; }
     }
 }

@@ -15,15 +15,16 @@ namespace StaplePuck.API.Graphs
                 resolve: context => context.Source.FantasyTeamPlayers);
             Field(x => x.FirstName);
             Field(x => x.FullName);
-            Field(x => x.FullNameWithPosition);
+            //Field(x => x.FullNameWithPosition);
             Field(x => x.LastName);
             Field(x => x.Number);
             AddNavigationField<PlayerSeasonGraph, PlayerSeason>(
                 name: "playerSeasons",
                 resolve: context => context.Source.PlayerSeasons);
-            AddNavigationField<PositionTypeGraph, PositionType>(
-                name: "position",
-                resolve: context => context.Source.Position);
+            // todo....
+            //AddNavigationField<PositionTypeGraph, PositionType>(
+            //    name: "position",
+            //    resolve: context => context.Source.Position);
             Field(x => x.ShortName);
             //Field(x => x.StatsOnDate);
         }

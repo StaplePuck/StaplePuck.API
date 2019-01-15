@@ -10,9 +10,10 @@ namespace StaplePuck.API.Graphs
             Field(x => x.Id);
             // auth?
             Field(x => x.Email);
-            Field(x => x.FantasyTeams);
+            AddNavigationField<FantasyTeamGraph, FantasyTeam>(
+                name: "fantasyTeams",
+                resolve: context => context.Source.FantasyTeams);
             Field(x => x.Name);
-            Field(x => x.Email);
         }
     }
 }

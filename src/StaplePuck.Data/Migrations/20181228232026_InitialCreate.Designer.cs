@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using StaplePuck.Data;
@@ -9,9 +10,10 @@ using StaplePuck.Data;
 namespace StaplePuck.Data.Migrations
 {
     [DbContext(typeof(StaplePuckContext))]
-    partial class StaplePuckContextModelSnapshot : ModelSnapshot
+    [Migration("20181228232026_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -202,7 +204,7 @@ namespace StaplePuck.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("ExternalId");
+                    b.Property<int>("ExternalId");
 
                     b.Property<string>("FirstName");
 
@@ -373,10 +375,6 @@ namespace StaplePuck.Data.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("ExternalId");
-
-                    b.Property<string>("FullName");
-
-                    b.Property<string>("LocationName");
 
                     b.Property<string>("Name");
 
