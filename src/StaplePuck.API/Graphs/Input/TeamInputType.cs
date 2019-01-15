@@ -8,8 +8,13 @@ namespace StaplePuck.API.Graphs.Input
         {
             Name = "TeamInput";
             Field<NonNullGraphType<StringGraphType>>("name");
+            Field<NonNullGraphType<StringGraphType>>("fullName");
             Field<NonNullGraphType<StringGraphType>>("shortName");
             Field<NonNullGraphType<StringGraphType>>("externalId");
+            Field<NonNullGraphType<StringGraphType>>("locationName");
+
+            Field<IntGraphType>("id");
+            Field<StringGraphType>("teamStateOnDates");
         }
     }
 }

@@ -8,6 +8,12 @@ namespace StaplePuck.API.Graphs.Input
         {
             Name = "PostionTypeInput";
             Field<NonNullGraphType<StringGraphType>>("name");
+
+            Field<IntGraphType>("id");
+            Field<StringGraphType>("shortName");
+            Field<IntGraphType>("sportId");
+            Field<StringGraphType>("sport");
+            Field<IntGraphType>("scoringPositions");
         }
     }
 }

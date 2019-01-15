@@ -10,6 +10,12 @@ namespace StaplePuck.API.Graphs.Input
             Field<NonNullGraphType<PlayerInputType>>("player");
             Field<NonNullGraphType<TeamInputType>>("team");
             Field<NonNullGraphType<PositionTypeInputType>>("positionType");
+
+            Field<IntGraphType>("playerId");
+            Field<IntGraphType>("seasonId");
+            Field<StringGraphType>("season");
+            Field<IntGraphType>("teamId");
+            Field<IntGraphType>("positionTypeId");
         }
     }
 }

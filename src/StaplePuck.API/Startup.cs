@@ -34,7 +34,7 @@ namespace StaplePuck.API
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionString = Configuration["ConnectionStrings:Default"];
-            services.AddDbContext<StaplePuck.Data.StaplePuckContext>(options => options.UseNpgsql(connectionString));
+            services.AddDbContext<StaplePuckContext>(options => options.UseNpgsql(connectionString), ServiceLifetime.Singleton);
 
             var optionsBuilder = new DbContextOptionsBuilder<StaplePuckContext>();
             optionsBuilder.UseNpgsql(connectionString);
@@ -44,17 +44,19 @@ namespace StaplePuck.API
             {
                 EfGraphQLConventions.RegisterInContainer(services, myDataContext);
             }
-            
-            
+
+
             foreach (var type in GetGraphQlTypes())
             {
                 services.AddSingleton(type);
             }
 
+            services.AddSingleton<IStatsRepository, StatsRepository>();
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
+            services.AddSingleton<ISchema, Models.Schema>();
+            services.AddSingleton<Models.Mutation>();
             services.AddSingleton<IDependencyResolver>(
                 provider => new FuncDependencyResolver(provider.GetRequiredService));
-            services.AddSingleton<ISchema, Models.Schema>();
 
             var mvc = services.AddMvc();
             mvc.SetCompatibilityVersion(CompatibilityVersion.Latest);
