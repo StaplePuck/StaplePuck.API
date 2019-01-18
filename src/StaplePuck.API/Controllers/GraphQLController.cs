@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using GraphQL;
@@ -15,6 +16,7 @@ namespace StaplePuck.API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class GraphQLController : ControllerBase
     {
         private readonly IDocumentExecuter _documentExecuter;
@@ -43,6 +45,7 @@ namespace StaplePuck.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public Task<ExecutionResult> Get(
             [FromQuery] string query,
             [FromQuery] string variables,
