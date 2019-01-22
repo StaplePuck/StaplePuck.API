@@ -17,6 +17,9 @@ namespace StaplePuck.API.Graphs
             AddNavigationField<TeamGraph, Team>(
                 name: "team",
                 resolve: context => context.Source.Team);
+            AddNavigationField<PositionTypeGraph, PositionType>(
+                name: "positionType",
+                resolve: context => context.Source.PositionType);
         }
     }
 }

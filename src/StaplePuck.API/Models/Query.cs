@@ -23,12 +23,28 @@ namespace StaplePuck.API.Models
             //        return dataContext.FantasyTeams;
             //    });
 
+            AddQueryField<PlayerGraph, Player>(
+                name: "players",
+                resolve: context =>
+                {
+                    var dataContext = (StaplePuckContext)context.UserContext;
+                    return dataContext.Players;
+                });
+
             AddQueryField<ScoringTypeGraph, ScoringType>(
                 name: "scoringTypes",
                 resolve: context =>
                 {
                     var dataContext = (StaplePuckContext)context.UserContext;
                     return dataContext.ScoringTypes;
+                });
+
+            AddQueryField<TeamGraph, Team>(
+                name: "teams",
+                resolve: context =>
+                {
+                    var dataContext = (StaplePuckContext)context.UserContext;
+                    return dataContext.Teams;
                 });
             //Addquer
         }

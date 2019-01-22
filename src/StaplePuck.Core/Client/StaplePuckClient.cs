@@ -5,7 +5,10 @@ using StaplePuck.Core.Data;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using RestSharp;
+using Newtonsoft.Json;
 
 
 namespace StaplePuck.Core.Client
@@ -26,6 +29,20 @@ namespace StaplePuck.Core.Client
         {
             _settings = options.Value;
             _client = new GraphQLClient(_settings.Endpoint);
+            Authenticate();
+        }
+
+        private void Authenticate()
+        {
+            var client = new RestClient(_settings.TokenUrl);
+            var request = new RestRequest(Method.POST);
+            request.AddHeader("content-type", "application/json");
+            var json = JsonConvert.SerializeObject(new Auth0Request(_settings));
+            request.AddParameter("application/json", json, ParameterType.RequestBody);
+            IRestResponse response = client.Execute(request);
+
+            var authResponse = JsonConvert.DeserializeObject<Auth0Response>(response.Content);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResponse.access_token);
         }
 
         /// <summary>
@@ -53,7 +70,7 @@ namespace StaplePuck.Core.Client
                     "}"),
                 Variables = variables
             };
-
+            
             var response = await _client.PostAsync(request);
             var data = response.Data as Newtonsoft.Json.Linq.JObject;
             return data.First.First.ToObject<ResultModel>();
