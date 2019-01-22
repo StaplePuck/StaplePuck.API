@@ -24,7 +24,7 @@ namespace StaplePuck.API.Models
             //    });
 
             AddQueryField<FantasyTeamGraph, FantasyTeam>(
-                name: "fantasyTeam",
+                name: "fantasyTeams",
                 resolve: context =>
                 {
                     var dataContext = (StaplePuckContext)context.UserContext;
