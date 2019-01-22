@@ -23,12 +23,36 @@ namespace StaplePuck.API.Models
             //        return dataContext.FantasyTeams;
             //    });
 
+            AddQueryField<FantasyTeamGraph, FantasyTeam>(
+                name: "fantasyTeam",
+                resolve: context =>
+                {
+                    var dataContext = (StaplePuckContext)context.UserContext;
+                    return dataContext.FantasyTeams;
+                });
+
+            AddQueryField<LeagueGraph, League>(
+                name: "leagues",
+                resolve: context =>
+                {
+                    var dataContext = (StaplePuckContext)context.UserContext;
+                    return dataContext.Leagues;
+                });
+
             AddQueryField<PlayerGraph, Player>(
                 name: "players",
                 resolve: context =>
                 {
                     var dataContext = (StaplePuckContext)context.UserContext;
                     return dataContext.Players;
+                });
+
+            AddQueryField<PlayerSeasonGraph, PlayerSeason>(
+                name: "playerSeasons",
+                resolve: context =>
+                {
+                    var dataContext = (StaplePuckContext)context.UserContext;
+                    return dataContext.PlayerSeasons;
                 });
 
             AddQueryField<ScoringTypeGraph, ScoringType>(
@@ -39,6 +63,22 @@ namespace StaplePuck.API.Models
                     return dataContext.ScoringTypes;
                 });
 
+            AddQueryField<SeasonGraph, Season>(
+                name: "seasons",
+                resolve: context =>
+                {
+                    var dataContext = (StaplePuckContext)context.UserContext;
+                    return dataContext.Seasons;
+                });
+
+            AddQueryField<SportGraph, Sport>(
+                name: "sports",
+                resolve: context =>
+                {
+                    var dataContext = (StaplePuckContext)context.UserContext;
+                    return dataContext.Sports;
+                });
+
             AddQueryField<TeamGraph, Team>(
                 name: "teams",
                 resolve: context =>
@@ -46,7 +86,14 @@ namespace StaplePuck.API.Models
                     var dataContext = (StaplePuckContext)context.UserContext;
                     return dataContext.Teams;
                 });
-            //Addquer
+
+            AddQueryField<UserGraph, User>(
+                name: "users",
+                resolve: context =>
+                {
+                    var dataContext = (StaplePuckContext)context.UserContext;
+                    return dataContext.Users;
+                });
         }
     }
 }
