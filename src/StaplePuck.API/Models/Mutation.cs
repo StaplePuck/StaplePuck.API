@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL.Authorization;
 using GraphQL.Types;
 using StaplePuck.Core.Data;
 using StaplePuck.Core.Stats;
@@ -25,7 +26,7 @@ namespace StaplePuck.API.Models
                 {
                     var season = context.GetArgument<Season>("season");
                     return statsRepository.Add(season);
-                });
+                }).AuthorizeWith("write:stats");
         }
     }
 }

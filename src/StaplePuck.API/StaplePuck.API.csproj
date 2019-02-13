@@ -11,12 +11,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GraphiQL" Version="1.2.0" />
-    <PackageReference Include="GraphQL" Version="2.4.0" />
-    <PackageReference Include="GraphQL.EntityFramework" Version="1.1.0" />
+    <PackageReference Include="GraphQL.Authorization" Version="2.1.29" />
+    <PackageReference Include="GraphQL.EntityFramework" Version="1.9.1" />
+    <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="3.4.0" />
+    <PackageReference Include="GraphQL.Server.Ui.GraphiQL" Version="3.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.1" />
   </ItemGroup>
 
   <ItemGroup>

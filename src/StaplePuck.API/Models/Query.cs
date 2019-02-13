@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL.Authorization;
 using GraphQL.EntityFramework;
 using GraphQL.Types;
 using StaplePuck.API.Graphs;
@@ -13,8 +14,10 @@ namespace StaplePuck.API.Models
 {
     public class Query : EfObjectGraphType
     {
-        public Query(IEfGraphQLService efGraphQlService) : base(efGraphQlService)
+        private StaplePuckContext _staplePuckContext;
+        public Query(IEfGraphQLService efGraphQlService, StaplePuckContext staplePuckContext) : base(efGraphQlService)
         {
+            _staplePuckContext = staplePuckContext;
             //AddQueryField<FantasyTeamGraph, FantasyTeam>(
             //    name: "fantasyTeams",
             //    resolve: context =>
@@ -59,7 +62,7 @@ namespace StaplePuck.API.Models
                 name: "scoringTypes",
                 resolve: context =>
                 {
-                    var dataContext = (StaplePuckContext)context.UserContext;
+                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
                     return dataContext.ScoringTypes;
                 });
 
