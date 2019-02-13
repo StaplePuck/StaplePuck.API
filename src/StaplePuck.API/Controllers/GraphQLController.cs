@@ -16,7 +16,6 @@ namespace StaplePuck.API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    //[Authorize]
     public class GraphQLController : ControllerBase
     {
         private readonly IDocumentExecuter _documentExecuter;
@@ -64,6 +63,7 @@ namespace StaplePuck.API.Controllers
                 Query = query,
                 OperationName = operationName,
                 Inputs = variables?.ToInputs(),
+                Root = dataContext,
                 UserContext = dataContext,
                 CancellationToken = cancellation,
 #if (DEBUG)

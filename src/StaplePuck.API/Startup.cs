@@ -17,10 +17,18 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using StaplePuck.Core.Data;
 using StaplePuck.Data.Repositories;
-using GraphiQl;
 using GraphQL.EntityFramework;
 using GraphQL;
+using GraphQL.Http;
+using GraphQL.Server;
 using GraphQL.Types;
+
+using GraphQL.Authorization;
+using GraphQL.Server.Transports.AspNetCore;
+using GraphQL.Server.Ui.GraphiQL;
+using GraphQL.Validation;
+
+//using GraphiQl;
 
 namespace StaplePuck.API
 {
@@ -45,12 +53,10 @@ namespace StaplePuck.API
             var optionsBuilder = new DbContextOptionsBuilder<StaplePuckContext>();
             optionsBuilder.UseNpgsql(connectionString);
 
-            EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
             using (var myDataContext = new StaplePuckContext(optionsBuilder.Options))
             {
                 EfGraphQLConventions.RegisterInContainer(services, myDataContext);
             }
-
 
             foreach (var type in GetGraphQlTypes())
             {
@@ -64,8 +70,17 @@ namespace StaplePuck.API
             services.AddSingleton<IDependencyResolver>(
                 provider => new FuncDependencyResolver(provider.GetRequiredService));
 
-            var mvc = services.AddMvc();
-            mvc.SetCompatibilityVersion(CompatibilityVersion.Latest);
+            services.AddScoped<IAuthorizationHandler,
+                          Auth.TeamAuthorizationHandler>();
+
+            var mvc = services.AddMvcCore()
+                .SetCompatibilityVersion(CompatibilityVersion.Latest)
+                .AddAuthorization()
+                .AddJsonFormatters()
+                .Services
+                .AddCustomGraphQL(this.HostingEnvironment)
+                .AddCustomGraphQLAuthorization(Configuration)
+                .BuildServiceProvider();
 
             ConfigureAuth(services);
         }
@@ -101,12 +116,11 @@ namespace StaplePuck.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseStaticFiles();
-
             app.UseAuthentication();
 
             db.EnsureSeedData();
-            app.UseGraphiQl("/graphiql", "/graphql");
+            app.UseGraphQL<ISchema>("/graphql");
+            app.UseGraphiQLServer(new GraphiQLOptions());
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
