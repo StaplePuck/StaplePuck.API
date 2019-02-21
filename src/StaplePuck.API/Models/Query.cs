@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using GraphQL.Authorization;
 using GraphQL.EntityFramework;
 using GraphQL.Types;
+using StaplePuck.API.Auth;
 using StaplePuck.API.Graphs;
 using StaplePuck.Core.Fantasy;
 using StaplePuck.Core.Stats;
@@ -15,7 +17,7 @@ namespace StaplePuck.API.Models
     public class Query : EfObjectGraphType
     {
         private StaplePuckContext _staplePuckContext;
-        public Query(IEfGraphQLService efGraphQlService, StaplePuckContext staplePuckContext) : base(efGraphQlService)
+        public Query(IEfGraphQLService efGraphQlService, StaplePuckContext staplePuckContext, IOptions<Auth.Auth0Settings> options) : base(efGraphQlService)
         {
             _staplePuckContext = staplePuckContext;
             //AddQueryField<FantasyTeamGraph, FantasyTeam>(
@@ -25,12 +27,21 @@ namespace StaplePuck.API.Models
             //        var dataContext = (StaplePuckContext)context.UserContext;
             //        return dataContext.FantasyTeams;
             //    });
+            
+            AddSingleField<UserGraph, User>(
+                name: "currentUser",
+                resolve: context =>
+                {
+                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
+                    var subject = ((GraphQLUserContext)context.UserContext).User.GetUserId(options.Value);
+                    return dataContext.Users.Where(x => x.ExternalId == subject);
+                });
 
             AddQueryField<FantasyTeamGraph, FantasyTeam>(
                 name: "fantasyTeams",
                 resolve: context =>
                 {
-                    var dataContext = (StaplePuckContext)context.UserContext;
+                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
                     return dataContext.FantasyTeams;
                 });
 
@@ -38,7 +49,7 @@ namespace StaplePuck.API.Models
                 name: "leagues",
                 resolve: context =>
                 {
-                    var dataContext = (StaplePuckContext)context.UserContext;
+                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
                     return dataContext.Leagues;
                 });
 
@@ -46,7 +57,7 @@ namespace StaplePuck.API.Models
                 name: "players",
                 resolve: context =>
                 {
-                    var dataContext = (StaplePuckContext)context.UserContext;
+                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
                     return dataContext.Players;
                 });
 
@@ -54,7 +65,7 @@ namespace StaplePuck.API.Models
                 name: "playerSeasons",
                 resolve: context =>
                 {
-                    var dataContext = (StaplePuckContext)context.UserContext;
+                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
                     return dataContext.PlayerSeasons;
                 });
 
@@ -70,7 +81,7 @@ namespace StaplePuck.API.Models
                 name: "seasons",
                 resolve: context =>
                 {
-                    var dataContext = (StaplePuckContext)context.UserContext;
+                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
                     return dataContext.Seasons;
                 });
 
@@ -78,7 +89,7 @@ namespace StaplePuck.API.Models
                 name: "sports",
                 resolve: context =>
                 {
-                    var dataContext = (StaplePuckContext)context.UserContext;
+                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
                     return dataContext.Sports;
                 });
 
@@ -86,7 +97,7 @@ namespace StaplePuck.API.Models
                 name: "teams",
                 resolve: context =>
                 {
-                    var dataContext = (StaplePuckContext)context.UserContext;
+                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
                     return dataContext.Teams;
                 });
 
@@ -94,7 +105,7 @@ namespace StaplePuck.API.Models
                 name: "users",
                 resolve: context =>
                 {
-                    var dataContext = (StaplePuckContext)context.UserContext;
+                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
                     return dataContext.Users;
                 });
         }

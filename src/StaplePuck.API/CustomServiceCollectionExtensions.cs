@@ -58,9 +58,10 @@ namespace StaplePuck.API
                         var authorizationSettings = new AuthorizationSettings();
                         authorizationSettings.AddPolicy(
                             AuthorizationPolicyName.Admin,
-                            y => y.RequireClaim("role", "admin"));
+                            y => y.AddRequirement(new Auth.HasScopeRequirement("admin", $"https://{configuration["Auth0:Domain"]}/")));
                         authorizationSettings.AddPolicy(
-                            "write:stats", policy => policy.AddRequirement(new Auth.HasScopeRequirement("write:stats", $"https://{configuration["Auth0:Domain"]}/")));
+                            AuthorizationPolicyName.WriteStats, 
+                            y => y.AddRequirement(new Auth.HasScopeRequirement("write:stats", $"https://{configuration["Auth0:Domain"]}/")));
                         return authorizationSettings;
                     });
     }
