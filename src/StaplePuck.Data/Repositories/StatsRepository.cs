@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using StaplePuck.Core;
 using StaplePuck.Core.Data;
+using StaplePuck.Core.Fantasy;
 using StaplePuck.Core.Stats;
 using Microsoft.EntityFrameworkCore;
 

@@ -6,7 +6,7 @@ namespace StaplePuck.API.Graphs.Input
     {
         public PlayerInputType()
         {
-            Name = "PLayerInput";
+            Name = "PlayerInput";
             Field<NonNullGraphType<StringGraphType>>("fullName");
             Field<NonNullGraphType<StringGraphType>>("externalId");
             Field<NonNullGraphType<StringGraphType>>("shortName");

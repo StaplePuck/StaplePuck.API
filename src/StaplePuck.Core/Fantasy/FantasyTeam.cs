@@ -18,7 +18,6 @@ namespace StaplePuck.Core.Fantasy
         public bool IsPaid { get; set; }
         public bool IsValid { get; set; }
 
-        public bool ReceiveEmails { get; set; }
         public List<FantasyTeamPlayers> FantasyTeamPlayers { get; set; }
     }
 }

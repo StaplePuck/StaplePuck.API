@@ -63,13 +63,15 @@ namespace StaplePuck.API
                 services.AddSingleton(type);
             }
 
+            services.Configure<Auth.Auth0Settings>(Configuration.GetSection("Auth0"));
             services.AddSingleton<IStatsRepository, StatsRepository>();
+            services.AddSingleton<IFantasyRepository, FantasyRepository>();
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.AddSingleton<ISchema, Models.Schema>();
             services.AddSingleton<Models.Mutation>();
             services.AddSingleton<IDependencyResolver>(
                 provider => new FuncDependencyResolver(provider.GetRequiredService));
-
+            
             services.AddScoped<IAuthorizationHandler,
                           Auth.TeamAuthorizationHandler>();
 
@@ -81,7 +83,7 @@ namespace StaplePuck.API
                 .AddCustomGraphQL(this.HostingEnvironment)
                 .AddCustomGraphQLAuthorization(Configuration)
                 .BuildServiceProvider();
-
+            
             ConfigureAuth(services);
         }
 

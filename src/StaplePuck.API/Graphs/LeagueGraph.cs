@@ -33,9 +33,6 @@ namespace StaplePuck.API.Graphs
             AddNavigationField<SeasonGraph, Season>(
                 name: "season",
                 resolve: context => context.Source.Season);
-            AddNavigationField<SportGraph, Sport>(
-                name: "sport",
-                resolve: context => context.Source.Sport);
         }
     }
 }

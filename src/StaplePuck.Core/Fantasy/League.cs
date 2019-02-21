@@ -13,6 +13,7 @@ namespace StaplePuck.Core.Fantasy
         public int SeasonId { get; set; }
         public Season Season { get; set; }
 
+        public int CommissionerId { get; set; }
         public User Commissioner { get; set; }
 
         public List<FantasyTeam> FantasyTeams { get; set; }
@@ -28,8 +29,5 @@ namespace StaplePuck.Core.Fantasy
         public List<NumberPerPosition> NumberPerPositions { get; set; }
 
         public int PlayersPerTeam { get; set; }
-
-        public int SportId { get; set; }
-        public Sport Sport { get; set; }
     }
 }
