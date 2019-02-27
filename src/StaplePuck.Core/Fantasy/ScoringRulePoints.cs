@@ -7,8 +7,8 @@ namespace StaplePuck.Core.Fantasy
 {
     public class ScoringRulePoints
     {
-        public int Id { get; set; }
-        public PositionType Position { get; set; }
+        public int PositionTypeId { get; set; }
+        public PositionType PositionType { get; set; }
         public int PointsPerScore { get; set; }
 
         public int ScoringTypeId { get; set; }

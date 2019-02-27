@@ -58,6 +58,17 @@ namespace StaplePuck.API.Models
                 }).AuthorizeWith(AuthorizationPolicyName.Admin);
 
             Field<ResultGraph>(
+                "updateLeague",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<LeagueUpdateInputType>> { Name = "league" }
+                ),
+                resolve: context =>
+                {
+                    var league = context.GetArgument<League>("league");
+                    return fantasyRepository.Add(league);
+                }).AuthorizeWith(AuthorizationPolicyName.Admin);
+
+            Field<ResultGraph>(
                 "createFantasyTeam",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<FantasyTeamCreateInputType>> { Name = "fantasyTeam" }

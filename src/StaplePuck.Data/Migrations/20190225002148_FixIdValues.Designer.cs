@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using StaplePuck.Data;
@@ -9,9 +10,10 @@ using StaplePuck.Data;
 namespace StaplePuck.Data.Migrations
 {
     [DbContext(typeof(StaplePuckContext))]
-    partial class StaplePuckContextModelSnapshot : ModelSnapshot
+    [Migration("20190225002148_FixIdValues")]
+    partial class FixIdValues
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
