@@ -27,7 +27,7 @@ using GraphQL.Authorization;
 using GraphQL.Server.Transports.AspNetCore;
 using GraphQL.Server.Ui.GraphiQL;
 using GraphQL.Validation;
-
+using StaplePuck.API.Constants;
 //using GraphiQl;
 
 namespace StaplePuck.API
@@ -74,6 +74,7 @@ namespace StaplePuck.API
                           Auth.TeamAuthorizationHandler>();
 
             var mvc = services.AddMvcCore()
+                .AddCustomCors()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .AddAuthorization()
                 .AddJsonFormatters()
@@ -118,6 +119,7 @@ namespace StaplePuck.API
 
             app.UseAuthentication();
 
+            app.UseCors(CorsPolicyName.AllowAny);
             db.EnsureSeedData();
             app.UseGraphQL<ISchema>("/graphql");
             app.UseGraphiQLServer(new GraphiQLOptions());
