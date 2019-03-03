@@ -10,11 +10,11 @@ namespace StaplePuck.API.Graphs
         {
             Field(x => x.Id);
             Field(x => x.AllowMultipleTeams);
-            Field(x => x.Announcement);
+            Field(x => x.Announcement, nullable: true);
             AddNavigationField<UserGraph, User>(
                 name: "commissioner",
                 resolve: context => context.Source.Commissioner);
-            Field(x => x.Description);
+            Field(x => x.Description, nullable: true);
             AddNavigationField<FantasyTeamGraph, FantasyTeam>(
                 name: "fantasyTeams",
                 resolve: context => context.Source.FantasyTeams);
@@ -25,7 +25,7 @@ namespace StaplePuck.API.Graphs
                 name: "numberPerPositions",
                 resolve: context => context.Source.NumberPerPositions);
             //Field(x => x.Password);
-            Field(x => x.PaymentInfo);
+            Field(x => x.PaymentInfo).DefaultValue(string.Empty);
             Field(x => x.PlayersPerTeam);
             AddNavigationField<ScoringRulePointsGraph, ScoringRulePoints>(
                 name: "scoringRules",

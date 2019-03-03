@@ -58,11 +58,29 @@ namespace StaplePuck.API
                         var authorizationSettings = new AuthorizationSettings();
                         authorizationSettings.AddPolicy(
                             AuthorizationPolicyName.Admin,
-                            y => y.AddRequirement(new Auth.HasScopeRequirement("admin", $"https://{configuration["Auth0:Domain"]}/")));
+                            y => y.AddRequirement(new Auth.HasScopeRequirement("admin", $"https://{configuration["Auth0API:Domain"]}/")));
                         authorizationSettings.AddPolicy(
                             AuthorizationPolicyName.WriteStats, 
-                            y => y.AddRequirement(new Auth.HasScopeRequirement("write:stats", $"https://{configuration["Auth0:Domain"]}/")));
+                            y => y.AddRequirement(new Auth.HasScopeRequirement("write:stats", $"https://{configuration["Auth0API:Domain"]}/")));
                         return authorizationSettings;
                     });
+
+        /// <summary>
+        /// Add cross-origin resource sharing (CORS) services and configures named CORS policies. See
+        /// https://docs.asp.net/en/latest/security/cors.html
+        /// </summary>
+        public static IMvcCoreBuilder AddCustomCors(this IMvcCoreBuilder builder) =>
+            builder.AddCors(
+                options =>
+                {
+                    // Create named CORS policies here which you can consume using application.UseCors("PolicyName")
+                    // or a [EnableCors("PolicyName")] attribute on your controller or action.
+                    options.AddPolicy(
+                        CorsPolicyName.AllowAny,
+                        x => x
+                            .AllowAnyOrigin()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader());
+                });
     }
 }

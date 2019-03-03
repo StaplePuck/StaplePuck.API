@@ -15,6 +15,7 @@ using StaplePuck.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using StaplePuck.Core.Auth;
 using StaplePuck.Core.Data;
 using StaplePuck.Data.Repositories;
 using GraphQL.EntityFramework;
@@ -27,7 +28,7 @@ using GraphQL.Authorization;
 using GraphQL.Server.Transports.AspNetCore;
 using GraphQL.Server.Ui.GraphiQL;
 using GraphQL.Validation;
-
+using StaplePuck.API.Constants;
 //using GraphiQl;
 
 namespace StaplePuck.API
@@ -63,7 +64,9 @@ namespace StaplePuck.API
                 services.AddSingleton(type);
             }
 
-            services.Configure<Auth.Auth0Settings>(Configuration.GetSection("Auth0"));
+            services.Configure<Auth.Auth0Settings>(Configuration.GetSection("Auth0API"));
+            services.AddAuth0Client(Configuration)
+                .AddAuthorizationClient(Configuration);
             services.AddSingleton<IStatsRepository, StatsRepository>();
             services.AddSingleton<IFantasyRepository, FantasyRepository>();
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
@@ -76,6 +79,7 @@ namespace StaplePuck.API
                           Auth.TeamAuthorizationHandler>();
 
             var mvc = services.AddMvcCore()
+                .AddCustomCors()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .AddAuthorization()
                 .AddJsonFormatters()
@@ -96,8 +100,8 @@ namespace StaplePuck.API
 
             }).AddJwtBearer(options =>
             {
-                options.Authority = $"https://{Configuration["Auth0:Domain"]}/";
-                options.Audience = Configuration["Auth0:Audience"];
+                options.Authority = $"https://{Configuration["Auth0API:Domain"]}/";
+                options.Audience = Configuration["Auth0API:Audience"];
             });
         }
 
@@ -120,6 +124,7 @@ namespace StaplePuck.API
 
             app.UseAuthentication();
 
+            app.UseCors(CorsPolicyName.AllowAny);
             db.EnsureSeedData();
             app.UseGraphQL<ISchema>("/graphql");
             app.UseGraphiQLServer(new GraphiQLOptions());
