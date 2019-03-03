@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace StaplePuck.Core.Client
+namespace StaplePuck.Core.Auth
 {
     internal class Auth0Request
     {
@@ -11,7 +11,7 @@ namespace StaplePuck.Core.Client
         public string audience { get; set; }
         public string grant_type { get; set; }
 
-        public Auth0Request(StaplePuckSettings settings)
+        public Auth0Request(Auth0Settings settings)
         {
             client_id = settings.ClientId;
             client_secret = settings.ClientSecret;

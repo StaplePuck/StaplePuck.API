@@ -1,4 +1,6 @@
-﻿namespace StaplePuck.Core.Client
+﻿using StaplePuck.Core.Auth;
+
+namespace StaplePuck.Core.Client
 {
     /// <summary>
     /// Represents the settings for the StaplePuck API.
@@ -9,9 +11,5 @@
         /// Gets the HTTP endpoint for the StaplePuck API.
         /// </summary>
         public string Endpoint { get; set; }
-        public string TokenUrl { get; set; }
-        public string ClientId { get; set; }
-        public string Audience { get; set; }
-        public string ClientSecret { get; set; }
     }
 }

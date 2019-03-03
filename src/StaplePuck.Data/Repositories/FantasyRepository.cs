@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using StaplePuck.Core;
+using StaplePuck.Core.Auth;
 using StaplePuck.Core.Data;
 using StaplePuck.Core.Fantasy;
 using StaplePuck.Core.Stats;
@@ -14,16 +15,24 @@ namespace StaplePuck.Data.Repositories
     public class FantasyRepository : IFantasyRepository
     {
         private readonly StaplePuckContext _db;
+        private readonly IAuthorizationClient _authorizationClient;
 
-        public FantasyRepository(StaplePuckContext db)
+        public FantasyRepository(StaplePuckContext db, IAuthorizationClient authorizationClient)
         {
             _db = db;
+            _authorizationClient = authorizationClient;
         }
 
         public async Task<ResultModel> Add(League league)
         {
             await _db.Leagues.AddAsync(league);
             await _db.SaveChangesAsync();
+
+            var newLeague = await _db.Leagues.Include(l => l.Commissioner).FirstOrDefaultAsync(x => x.Id == league.Id);
+            var extId = newLeague.Commissioner.ExternalId;
+            var groupId = await _authorizationClient.CreateGroupAsync($"League:{league.Id}");
+            await _authorizationClient.AddUserToGroup(groupId, extId);
+
             return new ResultModel { Id = league.Id, Message = "Success", Success = true };
         }
 
@@ -37,6 +46,10 @@ namespace StaplePuck.Data.Repositories
             team.UserId = user.Id;
             await _db.FantasyTeams.AddAsync(team);
             await _db.SaveChangesAsync();
+
+            var groupId = await _authorizationClient.CreateGroupAsync($"Team:{team.Id}");
+            await _authorizationClient.AddUserToGroup(groupId, userExternalId);
+
             return new ResultModel { Id = team.Id, Message = "Success", Success = true };
         }
 
