@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace StaplePuck.Core.Client
+namespace StaplePuck.Core.Auth
 {
     internal class Auth0Response
     {
