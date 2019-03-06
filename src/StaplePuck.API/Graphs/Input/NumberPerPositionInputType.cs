@@ -11,15 +11,8 @@ namespace StaplePuck.API.Graphs.Input
         public NumberPerPositionInputType()
         {
             Name = "NumberPerPosition";
-            Field<NonNullGraphType<IntGraphType>>("id");
-
-            Field<StringGraphType>("name");
-            Field<StringGraphType>("announcement");
-            Field<StringGraphType>("description");
-            Field<BooleanGraphType>("isLocked");
-            Field<StringGraphType>("paymentInfo");
-            Field<BooleanGraphType>("allowMultipleTeams");
-            Field<IntGraphType>("playersPerTeam");
+            Field<NonNullGraphType<IntGraphType>>("positionTypeId");
+            Field<NonNullGraphType<IntGraphType>>("count");
         }
     }
 }

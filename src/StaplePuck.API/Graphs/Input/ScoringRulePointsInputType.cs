@@ -11,11 +11,11 @@ namespace StaplePuck.API.Graphs.Input
         public ScoringRulePointsInputType()
         {
             Name = "ScoringRulePointsInput";
-            Field<NonNullGraphType<IntGraphType>>("PositionTypeId");
-            Field<NonNullGraphType<IntGraphType>>("ScoringTypeId");
-            Field<NonNullGraphType<IntGraphType>>("LeagueId");
+            Field<NonNullGraphType<IntGraphType>>("positionTypeId");
+            Field<NonNullGraphType<IntGraphType>>("scoringTypeId");
+            //Field<NonNullGraphType<IntGraphType>>("LeagueId");
 
-            Field<NonNullGraphType<IntGraphType>>("PointsPerScore");
+            Field<NonNullGraphType<IntGraphType>>("pointsPerScore");
         }
     }
 }

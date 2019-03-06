@@ -10,6 +10,8 @@ namespace StaplePuck.Core.Data
     {
         Task<ResultModel> Update(User user);
         Task<ResultModel> Add(League league);
+        Task<ResultModel> Update(League league);
         Task<ResultModel> Add(FantasyTeam team, string userExternalId);
+        Task<ResultModel> Update(FantasyTeam team);
     }
 }

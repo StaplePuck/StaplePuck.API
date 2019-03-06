@@ -36,6 +36,58 @@ namespace StaplePuck.Data.Repositories
             return new ResultModel { Id = league.Id, Message = "Success", Success = true };
         }
 
+        public async Task<ResultModel> Update(League league)
+        {
+            var leagueInfo = await _db.Leagues
+                .Include(x => x.NumberPerPositions)
+                .Include(x => x.ScoringRules)
+                .FirstOrDefaultAsync(x => x.Id == league.Id);
+
+            leagueInfo.AllowMultipleTeams = league.AllowMultipleTeams;
+            leagueInfo.Announcement = league.Announcement;
+            leagueInfo.Description = league.Description;
+            leagueInfo.IsLocked = league.IsLocked;
+            leagueInfo.Name = league.Name;
+            leagueInfo.PaymentInfo = league.PaymentInfo;
+            leagueInfo.PlayersPerTeam = league.PlayersPerTeam;
+
+            if (league.NumberPerPositions != null && league.NumberPerPositions.Count > 0)
+            {
+                var list = new List<NumberPerPosition>();
+                foreach (var item in league.NumberPerPositions)
+                {
+                    var perPosition = new NumberPerPosition
+                    {
+                        Count = item.Count,
+                        LeagueId = league.Id,
+                        PositionTypeId = item.PositionTypeId
+                    };
+                    list.Add(item);
+                }
+                leagueInfo.NumberPerPositions = list;
+            }
+            if (league.ScoringRules != null && league.ScoringRules.Count > 0)
+            {
+                var list = new List<ScoringRulePoints>();
+                foreach (var item in league.ScoringRules)
+                {
+                    var rules = new ScoringRulePoints
+                    {
+                        PointsPerScore = item.PointsPerScore,
+                        LeagueId = league.Id,
+                        PositionTypeId = item.PositionTypeId,
+                        ScoringTypeId = item.ScoringTypeId
+                    };
+                    list.Add(item);
+                }
+                leagueInfo.ScoringRules = list;
+            }
+
+            _db.Leagues.Update(leagueInfo);
+            await _db.SaveChangesAsync();
+            return new ResultModel { Id = league.Id, Message = "Success", Success = true };
+        }
+
         public async Task<ResultModel> Add(FantasyTeam team, string userExternalId)
         {
             var user = _db.Users.FirstOrDefault(x => x.ExternalId == userExternalId);
@@ -50,6 +102,17 @@ namespace StaplePuck.Data.Repositories
             var groupId = await _authorizationClient.CreateGroupAsync($"Team:{team.Id}");
             await _authorizationClient.AddUserToGroup(groupId, userExternalId);
 
+            return new ResultModel { Id = team.Id, Message = "Success", Success = true };
+        }
+
+        public async Task<ResultModel> Update(FantasyTeam team)
+        {
+            var currentTeam = await _db.FantasyTeams.Include(x => x.League).ThenInclude(x => x.NumberPerPositions).FirstOrDefaultAsync(x => x.Id == team.Id);
+
+            
+            // validations....
+
+            await Task.CompletedTask;
             return new ResultModel { Id = team.Id, Message = "Success", Success = true };
         }
 

@@ -65,7 +65,7 @@ namespace StaplePuck.API.Models
                 resolve: context =>
                 {
                     var league = context.GetArgument<League>("league");
-                    return fantasyRepository.Add(league);
+                    return fantasyRepository.Update(league);
                 }).AuthorizeWith(AuthorizationPolicyName.Admin);
 
             Field<ResultGraph>(
