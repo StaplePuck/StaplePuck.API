@@ -13,11 +13,11 @@ namespace StaplePuck.API.Auth
             var claims = claimsPrincipal.Claims.ToList();
 
             // If user does not have the scope claim, get out of here
-            if (!claimsPrincipal.HasClaim(c => c.Type == "sub" && c.Issuer == settings.Authority))
+            if (!claimsPrincipal.HasClaim(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier" && c.Issuer == settings.Authority))
             {
                 return null;
             }
-            var sub = claimsPrincipal.FindFirst(c => c.Type == "sub" && c.Issuer == settings.Authority).Value;
+            var sub = claimsPrincipal.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier" && c.Issuer == settings.Authority).Value;
             return sub;
         }
     }
