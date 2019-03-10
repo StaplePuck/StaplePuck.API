@@ -53,6 +53,11 @@ namespace StaplePuck.Data.Repositories
             return new ResultModel { Id = team.Id, Message = "Success", Success = true };
         }
 
+        public async Task<bool> EmailAlreadyExists(string email, string userExternalId)
+        {
+            return await _db.Users.AnyAsync(x => email.Equals(x.Email, StringComparison.CurrentCultureIgnoreCase) && userExternalId == x.ExternalId);
+        }
+
         public async Task<ResultModel> Update(User user)
         {
             var u = await _db.Users.FirstOrDefaultAsync(x => x.ExternalId == user.ExternalId);
@@ -70,6 +75,11 @@ namespace StaplePuck.Data.Repositories
             }
             await _db.SaveChangesAsync();
             return new ResultModel { Id = u.Id, Message = "Success", Success = true };
+        }
+
+        public async Task<bool> UsernameAlreadyExists(string username, string userExternalId)
+        {
+            return await _db.Users.AnyAsync(x => username.Equals(x.Name, StringComparison.CurrentCultureIgnoreCase) && userExternalId == x.ExternalId);
         }
     }
 }
