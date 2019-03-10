@@ -29,7 +29,30 @@ namespace StaplePuck.API.Models
                 resolve: context =>
                 {
                     var user = context.GetArgument<User>("user");
+                    user.Name = user.Name.Trim();
+                    user.Email = user.Email.Trim();
                     var subject = ((GraphQLUserContext)context.UserContext).User.GetUserId(options.Value);
+                    if (string.IsNullOrEmpty(subject))
+                    {
+                        context.Errors.Add(new GraphQL.ExecutionError("User is not authenticated"));
+                        // or a machine to machine account, but who cares
+                    }
+                    else
+                    {
+                        if (fantasyRepository.UsernameAlreadyExists(user.Name, subject).Result)
+                        {
+                            context.Errors.Add(new GraphQL.ExecutionError($"Username '{user.Name}' already exists."));
+                        }
+                        if (fantasyRepository.EmailAlreadyExists(user.Email, subject).Result)
+                        {
+                            context.Errors.Add(new GraphQL.ExecutionError($"Email '{user.Email} already exists."));
+                        }
+                    }
+
+                    if (context.Errors.Count > 0)
+                    {
+                        return new ResultModel { Id = -1, Success = false, Message = string.Empty };
+                    }
                     user.ExternalId = subject;
 
                     return fantasyRepository.Update(user);
