@@ -101,7 +101,14 @@ namespace StaplePuck.API.Models
                     var team = context.GetArgument<FantasyTeam>("fantasyTeam");
                     var subject = ((GraphQLUserContext)context.UserContext).User.GetUserId(options.Value);
 
-                    return fantasyRepository.Add(team, subject);
+                    var validations = fantasyRepository.Validate(team).Result;
+                    var isValid = true;
+                    if (validations.Count > 0)
+                    {
+                        isValid = false;
+                        context.Errors.AddRange(validations.Select(x => new GraphQL.ExecutionError(x)));
+                    }
+                    return fantasyRepository.Update(team, isValid);
                 });
         }
     }
