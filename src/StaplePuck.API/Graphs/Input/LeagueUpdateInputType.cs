@@ -10,7 +10,7 @@ namespace StaplePuck.API.Graphs.Input
     {
         public LeagueUpdateInputType()
         {
-            Name = "LeagueUpdate";
+            Name = "LeagueUpdateInput";
             Field<NonNullGraphType<IntGraphType>>("id");
 
             Field<StringGraphType>("name");

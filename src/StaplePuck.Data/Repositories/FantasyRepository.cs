@@ -44,12 +44,27 @@ namespace StaplePuck.Data.Repositories
                 .FirstOrDefaultAsync(x => x.Id == league.Id);
 
             leagueInfo.AllowMultipleTeams = league.AllowMultipleTeams;
-            leagueInfo.Announcement = league.Announcement;
-            leagueInfo.Description = league.Description;
+            if (league.Announcement != null)
+            {
+                leagueInfo.Announcement = league.Announcement;
+            }
+            if (league.Description != null)
+            {
+                leagueInfo.Description = league.Description;
+            }
             leagueInfo.IsLocked = league.IsLocked;
-            leagueInfo.Name = league.Name;
-            leagueInfo.PaymentInfo = league.PaymentInfo;
-            leagueInfo.PlayersPerTeam = league.PlayersPerTeam;
+            if (league.Name != null)
+            {
+                leagueInfo.Name = league.Name;
+            }
+            if (league.PaymentInfo != null)
+            {
+                leagueInfo.PaymentInfo = league.PaymentInfo;
+            }
+            if (league.PlayersPerTeam > 0)
+            {
+                leagueInfo.PlayersPerTeam = league.PlayersPerTeam;
+            }
 
             if (league.NumberPerPositions != null && league.NumberPerPositions.Count > 0)
             {
@@ -99,7 +114,7 @@ namespace StaplePuck.Data.Repositories
             await _db.FantasyTeams.AddAsync(team);
             await _db.SaveChangesAsync();
 
-            var groupId = await _authorizationClient.CreateGroupAsync($"Team:{team.Id}");
+            var groupId = await _authorizationClient.CreateGroupAsync($"Team::{team.Id}");
             await _authorizationClient.AddUserToGroup(groupId, userExternalId);
 
             return new ResultModel { Id = team.Id, Message = "Success", Success = true };

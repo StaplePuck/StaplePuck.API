@@ -100,6 +100,32 @@ namespace StaplePuck.API.Models
                 {
                     var team = context.GetArgument<FantasyTeam>("fantasyTeam");
                     var subject = ((GraphQLUserContext)context.UserContext).User.GetUserId(options.Value);
+                    if (string.IsNullOrEmpty(subject))
+                    {
+                        context.Errors.Add(new GraphQL.ExecutionError("User is not authenticated"));
+                        // or a machine to machine account, but who cares
+                    }
+                    else
+                    {
+                        // todo validate other team name
+                    }
+
+                    if (context.Errors.Count > 0)
+                    {
+                        return new ResultModel { Id = -1, Success = false, Message = string.Empty };
+                    }
+
+                    return fantasyRepository.Add(team, subject);
+                });
+            Field<ResultGraph>(
+                "updateFantasyTeam",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<FantasyTeamUpdateInputType>> { Name = "fantasyTeam" }
+                ),
+                resolve: context =>
+                {
+                    var team = context.GetArgument<FantasyTeam>("fantasyTeam");
+                    var subject = ((GraphQLUserContext)context.UserContext).User.GetUserId(options.Value);
 
                     var validations = fantasyRepository.Validate(team).Result;
                     var isValid = true;
