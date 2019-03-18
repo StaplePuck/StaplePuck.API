@@ -3,8 +3,10 @@ using RestSharp;
 using RestSharp.Authenticators;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace StaplePuck.Core.Auth
 {
@@ -15,15 +17,17 @@ namespace StaplePuck.Core.Auth
     {
         private readonly AuthorizationSettings _settings;
         private readonly IRestClient _restClient;
+        private readonly string _issuer;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="options">The configuration options.</param>
         /// <param name="auth0Client">The auth0 client information.</param>
-        public AuthorizationClient(IOptions<AuthorizationSettings> options, IAuth0Client auth0Client)
+        public AuthorizationClient(IOptions<AuthorizationSettings> options, IOptions<Auth0APISettings> auth0Options, IAuth0Client auth0Client)
         {
             _settings = options.Value;
+            _issuer = auth0Options.Value.Domain;
             _restClient = new RestClient(_settings.BaseUrl);
 
             var token = auth0Client.GetAuthToken();
@@ -35,7 +39,7 @@ namespace StaplePuck.Core.Auth
         /// </summary>
         /// <param name="groupName">The name of the group.</param>
         /// <returns>The id of the created group.</returns>
-        public async Task<string> CreateGroupAsync(string groupName)
+        private async Task<string> CreateGroupAsync(string groupName)
         {
             var request = new RestRequest("groups", Method.POST);
             request.AddParameter("name", groupName);
@@ -51,7 +55,7 @@ namespace StaplePuck.Core.Auth
         /// <param name="groupId">The id of the group.</param>
         /// <param name="sub">The id of the user.</param>
         /// <returns>The task completion source.</returns>
-        public async Task AddUserToGroup(string groupId, string sub)
+        private async Task AddUserToGroup(string groupId, string sub)
         {
             var request = new RestRequest($"groups/{groupId}/members", Method.PATCH);
             var list = new List<string>();
@@ -60,6 +64,57 @@ namespace StaplePuck.Core.Auth
 
             var response = _restClient.Execute(request);
             await Task.CompletedTask;
+        }
+
+        public async Task AssignUserAsGM(string subjectId, int teamId)
+        {
+            var groupId = await CreateGroupAsync(this.GetGMGroupId(teamId));
+            await this.AddUserToGroup(groupId, subjectId);
+        }
+
+        public async Task AssignUserAsCommissioner(string subjectId, int leagueId)
+        {
+            var groupId = await CreateGroupAsync(this.GetCommisionerGroupId(leagueId));
+            await this.AddUserToGroup(groupId, subjectId);
+        }
+
+        public bool UserIsGM(ClaimsPrincipal user, int teamId)
+        {
+            var groupId = this.GetGMGroupId(teamId);
+            return this.HasScope(user, groupId);
+        }
+
+        public bool UserIsCommissioner(ClaimsPrincipal user, int leagueId)
+        {
+            var groupId = this.GetCommisionerGroupId(leagueId);
+            return this.HasScope(user, groupId);
+        }
+
+        public bool UserIsAdmin(ClaimsPrincipal user)
+        {
+            return this.HasScope(user, "Admin");
+        }
+
+        private string GetCommisionerGroupId(int leagueId)
+        {
+            return $"League:{_settings.SiteName}:{leagueId}";
+        }
+
+        private string GetGMGroupId(int teamId)
+        {
+            return $"Team:{_settings.SiteName}:{teamId}";
+        }
+
+        private bool HasScope(ClaimsPrincipal principal, string groupName)
+        {
+            if (!principal.HasClaim(c => c.Type == "scope" && c.Issuer == this._issuer))
+                return false;
+
+            // Split the scopes string into an array
+            var scopes = principal.FindFirst(c => c.Type == "scope" && c.Issuer == this._issuer).Value.Split(' ');
+
+            // Succeed if the scope array contains the required scope
+            return scopes.Any(s => s == groupName);
         }
 
         private class GroupResponse

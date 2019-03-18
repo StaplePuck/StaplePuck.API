@@ -100,6 +100,25 @@ namespace StaplePuck.Data
                 .HasOne(x => x.PositionType)
                 .WithMany(x => x.ScoringPositions)
                 .HasForeignKey(x => x.PositionTypeId);
+
+
+            // ScoringRulePoints
+            modelBuilder.Entity<ScoringRulePoints>()
+                .HasKey(x => new { x.PositionTypeId, x.ScoringTypeId, x.LeagueId });
+
+            modelBuilder.Entity<ScoringRulePoints>()
+                .HasOne(x => x.League)
+                .WithMany(x => x.ScoringRules)
+                .HasForeignKey(x => x.LeagueId);
+
+            // NumberPerPosition
+            modelBuilder.Entity<NumberPerPosition>()
+                .HasKey(x => new { x.PositionTypeId, x.LeagueId });
+
+            modelBuilder.Entity<NumberPerPosition>()
+                .HasOne(x => x.League)
+                .WithMany(x => x.NumberPerPositions)
+                .HasForeignKey(x => x.LeagueId);
         }
     }
 }

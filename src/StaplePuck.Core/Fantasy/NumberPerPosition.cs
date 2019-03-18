@@ -7,11 +7,11 @@ namespace StaplePuck.Core.Fantasy
 {
     public class NumberPerPosition
     {
-        public int Id { get; set; }
-        public PositionType Position { get; set; }
-        public int Count { get; set; }
-
+        public int PositionTypeId { get; set; }
+        public PositionType PositionType { get; set; }
         public int LeagueId { get; set; }
         public League League { get; set; }
+
+        public int Count { get; set; }
     }
 }

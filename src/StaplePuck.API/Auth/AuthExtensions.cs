@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Claims;
+using StaplePuck.Core.Auth;
 
 namespace StaplePuck.API.Auth
 {
     public static class AuthExtensions
     {
-        public static string GetUserId(this ClaimsPrincipal claimsPrincipal, Auth0Settings settings)
+        public static string GetUserId(this ClaimsPrincipal claimsPrincipal, Auth0APISettings settings)
         {
             var claims = claimsPrincipal.Claims.ToList();
 

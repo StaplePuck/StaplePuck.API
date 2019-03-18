@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,18 +12,25 @@ namespace StaplePuck.Core.Auth
     public interface IAuthorizationClient
     {
         /// <summary>
-        /// Creates a group.
+        /// Assigns a user to the GM group.
         /// </summary>
-        /// <param name="groupName">The name of the group.</param>
-        /// <returns>The id of the created group.</returns>
-        Task<string> CreateGroupAsync(string groupName);
+        /// <param name="subjectId">The subject id of the user.</param>
+        /// <param name="teamId">The team id.</param>
+        /// <returns>The task completion source.</returns>
+        Task AssignUserAsGM(string subjectId, int teamId);
 
         /// <summary>
-        /// Adds a user to the group.
+        /// Assigns a user to the leqauge group.
         /// </summary>
-        /// <param name="groupId">The id of the group.</param>
-        /// <param name="sub">The id of the user.</param>
+        /// <param name="subjectId">The subject id of the user.</param>
+        /// <param name="leagueId">The league id.</param>
         /// <returns>The task completion source.</returns>
-        Task AddUserToGroup(string groupId, string sub);
+        Task AssignUserAsCommissioner(string subjectId, int leagueId);
+
+        bool UserIsGM(ClaimsPrincipal user, int teamId);
+
+        bool UserIsCommissioner(ClaimsPrincipal user, int leagueId);
+
+        bool UserIsAdmin(ClaimsPrincipal user);
     }
 }

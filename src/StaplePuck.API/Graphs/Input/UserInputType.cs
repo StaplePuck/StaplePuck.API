@@ -7,7 +7,7 @@ namespace StaplePuck.API.Graphs.Input
         public UserInputType()
         {
             Name = "UserInput";
-            Field<NonNullGraphType<StringGraphType>>("name");
+            Field<StringGraphType>("name");
             Field<NonNullGraphType<StringGraphType>>("email");
 
             Field<BooleanGraphType>("receiveEmails");

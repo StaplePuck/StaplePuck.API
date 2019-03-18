@@ -8,6 +8,7 @@ using GraphQL.EntityFramework;
 using GraphQL.Types;
 using StaplePuck.API.Auth;
 using StaplePuck.API.Graphs;
+using StaplePuck.Core.Auth;
 using StaplePuck.Core.Fantasy;
 using StaplePuck.Core.Stats;
 using StaplePuck.Data;
@@ -17,7 +18,7 @@ namespace StaplePuck.API.Models
     public class Query : EfObjectGraphType
     {
         private StaplePuckContext _staplePuckContext;
-        public Query(IEfGraphQLService efGraphQlService, StaplePuckContext staplePuckContext, IOptions<Auth.Auth0Settings> options) : base(efGraphQlService)
+        public Query(IEfGraphQLService efGraphQlService, StaplePuckContext staplePuckContext, IOptions<Auth0APISettings> options) : base(efGraphQlService)
         {
             _staplePuckContext = staplePuckContext;
             //AddQueryField<FantasyTeamGraph, FantasyTeam>(

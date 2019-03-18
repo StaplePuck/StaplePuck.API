@@ -14,8 +14,9 @@ namespace StaplePuck.Core.Client
         /// <typeparam name="T">The type of object to update.</typeparam>
         /// <param name="mutationName">The name of the mutation.</param>
         /// <param name="value">The value to update.</param>
+        /// <param name="variableName">The name of the variable.</param>
         /// <returns>The resulting message.</returns>
-        Task<ResultModel> UpdateAsync<T>(string mutationName, T value);
+        Task<ResultModel> UpdateAsync<T>(string mutationName, T value, string variableName = null);
 
         Task<T> GetAsync<T>(string mutationName);
     }

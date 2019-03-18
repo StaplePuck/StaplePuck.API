@@ -64,7 +64,7 @@ namespace StaplePuck.API
                 services.AddSingleton(type);
             }
 
-            services.Configure<Auth.Auth0Settings>(Configuration.GetSection("Auth0API"));
+            services.Configure<Auth0APISettings>(Configuration.GetSection("Auth0API"));
             services.AddAuth0Client(Configuration)
                 .AddAuthorizationClient(Configuration);
             services.AddSingleton<IStatsRepository, StatsRepository>();
@@ -74,9 +74,7 @@ namespace StaplePuck.API
             services.AddSingleton<Models.Mutation>();
             services.AddSingleton<IDependencyResolver>(
                 provider => new FuncDependencyResolver(provider.GetRequiredService));
-            
-            services.AddScoped<IAuthorizationHandler,
-                          Auth.TeamAuthorizationHandler>();
+           
 
             var mvc = services.AddMvcCore()
                 .AddCustomCors()
