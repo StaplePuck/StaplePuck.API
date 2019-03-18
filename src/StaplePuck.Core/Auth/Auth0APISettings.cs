@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
-namespace StaplePuck.API.Auth
+namespace StaplePuck.Core.Auth
 {
-    public class Auth0Settings
+    public class Auth0APISettings
     {
         public string ClientSecret { get; set; }
         public string ClientId { get; set; }
@@ -20,6 +19,5 @@ namespace StaplePuck.API.Auth
                 return $"https://{Domain}/";
             }
         }
-
     }
 }

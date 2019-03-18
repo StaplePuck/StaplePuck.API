@@ -30,8 +30,7 @@ namespace StaplePuck.Data.Repositories
 
             var newLeague = await _db.Leagues.Include(l => l.Commissioner).FirstOrDefaultAsync(x => x.Id == league.Id);
             var extId = newLeague.Commissioner.ExternalId;
-            var groupId = await _authorizationClient.CreateGroupAsync($"League:{league.Id}");
-            await _authorizationClient.AddUserToGroup(groupId, extId);
+            await _authorizationClient.AssignUserAsCommissioner(extId, league.Id);;
 
             return new ResultModel { Id = league.Id, Message = "Success", Success = true };
         }
@@ -114,8 +113,7 @@ namespace StaplePuck.Data.Repositories
             await _db.FantasyTeams.AddAsync(team);
             await _db.SaveChangesAsync();
 
-            var groupId = await _authorizationClient.CreateGroupAsync($"Team::{team.Id}");
-            await _authorizationClient.AddUserToGroup(groupId, userExternalId);
+            await _authorizationClient.AssignUserAsGM(userExternalId, team.Id);
 
             return new ResultModel { Id = team.Id, Message = "Success", Success = true };
         }
@@ -151,6 +149,12 @@ namespace StaplePuck.Data.Repositories
 
             var currentTeam = await _db.FantasyTeams.Include(x => x.League).ThenInclude(x => x.NumberPerPositions).ThenInclude(x => x.PositionType).FirstOrDefaultAsync(x => x.Id == team.Id);
             var players = _db.PlayerSeasons.Where(x => x.SeasonId == currentTeam.League.SeasonId).Include(x => x.Player);
+
+            if (currentTeam.League.IsLocked)
+            {
+                errors.Add("League is currenlty locked");
+                return errors;
+            }
 
             int count = team.FantasyTeamPlayers.Count();
             var teamsCount = players.Select(x => x.TeamId).Distinct().Count();

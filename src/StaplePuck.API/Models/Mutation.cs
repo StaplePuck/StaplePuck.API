@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Authorization;
 using GraphQL.Types;
+using StaplePuck.Core.Auth;
 using StaplePuck.Core.Data;
 using StaplePuck.Core.Fantasy;
 using StaplePuck.Core.Stats;
@@ -17,7 +18,7 @@ namespace StaplePuck.API.Models
 {
     public class Mutation : ObjectGraphType
     {
-        public Mutation(IFantasyRepository fantasyRepository, IStatsRepository statsRepository, IOptions<Auth.Auth0Settings> options)
+        public Mutation(IFantasyRepository fantasyRepository, IStatsRepository statsRepository, IOptions<Auth0APISettings> options, IAuthorizationClient authorizationClient)
         {
             Name = "Mutation";
 
@@ -88,8 +89,15 @@ namespace StaplePuck.API.Models
                 resolve: context =>
                 {
                     var league = context.GetArgument<League>("league");
+
+                    if (!authorizationClient.UserIsCommissioner(((GraphQLUserContext)context.UserContext).User, league.Id))
+                    {
+                        context.Errors.Add(new GraphQL.ExecutionError("User is not authorized"));
+                        return new ResultModel { Id = -1, Success = false, Message = string.Empty };
+                    }
+
                     return fantasyRepository.Update(league);
-                }).AuthorizeWith(AuthorizationPolicyName.Admin);
+                }).RequiresAuthorization();
 
             Field<ResultGraph>(
                 "createFantasyTeam",
@@ -116,7 +124,7 @@ namespace StaplePuck.API.Models
                     }
 
                     return fantasyRepository.Add(team, subject);
-                });
+                }).RequiresAuthorization();
             Field<ResultGraph>(
                 "updateFantasyTeam",
                 arguments: new QueryArguments(
@@ -125,7 +133,12 @@ namespace StaplePuck.API.Models
                 resolve: context =>
                 {
                     var team = context.GetArgument<FantasyTeam>("fantasyTeam");
-                    var subject = ((GraphQLUserContext)context.UserContext).User.GetUserId(options.Value);
+
+                    if (!authorizationClient.UserIsCommissioner(((GraphQLUserContext)context.UserContext).User, team.Id))
+                    {
+                        context.Errors.Add(new GraphQL.ExecutionError("User is not authorized"));
+                        return new ResultModel { Id = -1, Success = false, Message = string.Empty };
+                    }
 
                     var validations = fantasyRepository.Validate(team).Result;
                     var isValid = true;
@@ -135,7 +148,7 @@ namespace StaplePuck.API.Models
                         context.Errors.AddRange(validations.Select(x => new GraphQL.ExecutionError(x)));
                     }
                     return fantasyRepository.Update(team, isValid);
-                });
+                }).RequiresAuthorization();
         }
     }
 }
