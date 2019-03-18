@@ -234,7 +234,10 @@ namespace StaplePuck.Data.Repositories
             {
                 u.Email = user.Email;
                 u.ReceiveEmails = user.ReceiveEmails;
-                u.Name = user.Name;
+                if (!string.IsNullOrEmpty(user.Name))
+                {
+                    u.Name = user.Name;
+                }
                 _db.Users.Update(u);
             }
             else
