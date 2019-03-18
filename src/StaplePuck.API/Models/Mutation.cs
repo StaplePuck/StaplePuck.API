@@ -115,7 +115,7 @@ namespace StaplePuck.API.Models
                     }
                     else
                     {
-                        // todo validate other team name
+                        context.Errors.AddRange(fantasyRepository.ValidateNew(team).Result.Select(x => new GraphQL.ExecutionError(x)));
                     }
 
                     if (context.Errors.Count > 0)

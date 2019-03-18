@@ -118,6 +118,18 @@ namespace StaplePuck.Data.Repositories
             return new ResultModel { Id = team.Id, Message = "Success", Success = true };
         }
 
+        public async Task<List<string>> ValidateNew(FantasyTeam team)
+        {
+            var errors = new List<string>();
+
+            if (await _db.FantasyTeams.AnyAsync(x => x.LeagueId == team.LeagueId && x.Name.Equals(team.Name.Trim(), StringComparison.CurrentCultureIgnoreCase)))
+            {
+                errors.Add("Team name already exists");
+            }
+
+            return errors;
+        }
+
         public async Task<ResultModel> Update(FantasyTeam team, bool isValid)
         {
             var currentTeam = await _db.FantasyTeams.FirstOrDefaultAsync(x => x.Id == team.Id);
