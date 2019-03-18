@@ -57,7 +57,7 @@ namespace StaplePuck.API.Models
                     user.ExternalId = subject;
 
                     return fantasyRepository.Update(user);
-                });
+                }).RequiresAuthorization();
 
             Field<ResultGraph>(
                 "createSeason",
