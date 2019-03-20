@@ -19,5 +19,7 @@ namespace StaplePuck.Core.Fantasy
         public bool IsValid { get; set; }
 
         public List<FantasyTeamPlayers> FantasyTeamPlayers { get; set; }
+
+        public Scoring.FantasyTeamScore FantasyTeamScore { get; set; }
     }
 }

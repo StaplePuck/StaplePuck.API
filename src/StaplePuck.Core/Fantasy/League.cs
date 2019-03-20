@@ -29,5 +29,7 @@ namespace StaplePuck.Core.Fantasy
         public List<NumberPerPosition> NumberPerPositions { get; set; }
 
         public int PlayersPerTeam { get; set; }
+
+        public List<Scoring.PlayerCalculatedScore> PlayerCalculatedScores { get; set; }
     }
 }

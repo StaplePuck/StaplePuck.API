@@ -8,19 +8,15 @@ namespace StaplePuck.Core.Scoring
 {
     public class PlayerCalculatedScore
     {
+        public int PlayerId { get; set; }
         public Player Player { get; set; }
-        public Team Team { get; set; }
+        public int LeagueId { get; set; }
+
         public List<CalculatedScoreItem> Scoring { get; set; }
         public int Count { get; set; }
         public GameState GameState { get; set; }
 
-        public int Score
-        {
-            get { return Scoring.Sum(x => x.Score); }
-        }
-        public int TodaysScore
-        {
-            get { return Scoring.Sum(x => x.TodaysScore); }
-        }
+        public int Score { get; set; }
+        public int TodaysScore { get; set; }
     }
 }
