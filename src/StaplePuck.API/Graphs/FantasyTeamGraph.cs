@@ -18,7 +18,7 @@ namespace StaplePuck.API.Graphs
                 name: "league",
                 resolve: context => context.Source.League);
             AddNavigationField<UserGraph, User>(
-                name: "gm",
+                name: "GM",
                 resolve: context => context.Source.GM);
         }
     }
