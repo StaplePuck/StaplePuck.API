@@ -17,6 +17,9 @@ namespace StaplePuck.API.Graphs
             AddNavigationField<PlayerSeasonGraph, PlayerSeason>(
                 name: "playerSeasons",
                 resolve: context => context.Source.PlayerSeasons);
+            AddNavigationField<TeamSeasonGraph, TeamSeason>(
+                name: "teamSeasons",
+                resolve: context => context.Source.TeamSeasons);
             Field(x => x.IsPlayoffs);
             AddNavigationField<LeagueGraph, League>(
                 name: "leagues",

@@ -15,6 +15,7 @@ namespace StaplePuck.API.Graphs
                 name: "fantasyTeams",
                 resolve: context => context.Source.FantasyTeams);
             Field(x => x.Name);
+            Field(x => x.ExternalId);
         }
     }
 }
