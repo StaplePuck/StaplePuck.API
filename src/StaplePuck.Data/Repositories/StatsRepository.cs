@@ -60,6 +60,12 @@ namespace StaplePuck.Data.Repositories
                     team = item;
                 }
 
+                var teamSeason = await _db.TeamSeasons.FirstOrDefaultAsync(x => x.TeamId == team.Id && x.SeasonId == dbSeason.Id);
+                if (teamSeason == null)
+                {
+                    await _db.TeamSeasons.AddAsync(new TeamSeason { SeasonId = dbSeason.Id, TeamId = team.Id });
+                }
+
                 var players = season.PlayerSeasons.Where(x => x.Team.Name == item.Name).Select(x => x.Player);
                 foreach (var p in players)
                 {

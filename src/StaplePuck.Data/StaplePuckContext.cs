@@ -33,6 +33,7 @@ namespace StaplePuck.Data
         public DbSet<Season> Seasons { get; set; }
         public DbSet<Sport> Sports { get; set; }
         public DbSet<Team> Teams { get; set; }
+        public DbSet<TeamSeason> TeamSeasons { get; set; }
         public DbSet<TeamStateOnDate> TeamStateOnDate { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -53,7 +54,7 @@ namespace StaplePuck.Data
                 .WithMany(p => p.FantasyTeamPlayers)
                 .HasForeignKey(ftp => ftp.PlayerId);
 
-            // HockeyPlayerSeason
+            // PlayerSeason
             modelBuilder.Entity<PlayerSeason>()
                 .HasKey(h => new { h.PlayerId, h.SeasonId });
 
@@ -66,6 +67,15 @@ namespace StaplePuck.Data
                 .HasOne(p => p.Player)
                 .WithMany(x => x.PlayerSeasons)
                 .HasForeignKey(x => x.PlayerId);
+
+            // TeamSeason
+            modelBuilder.Entity<TeamSeason>()
+                .HasKey(h => new { h.TeamId, h.SeasonId });
+
+            modelBuilder.Entity<TeamSeason>()
+                .HasOne(hp => hp.Season)
+                .WithMany(x => x.TeamSeasons)
+                .HasForeignKey(x => x.SeasonId);
 
             // GameDateSeason
             modelBuilder.Entity<GameDateSeason>()

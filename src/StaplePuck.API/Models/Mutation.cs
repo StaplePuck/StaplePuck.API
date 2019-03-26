@@ -30,8 +30,8 @@ namespace StaplePuck.API.Models
                 resolve: context =>
                 {
                     var user = context.GetArgument<User>("user");
-                    user.Name = user.Name.Trim();
-                    user.Email = user.Email.Trim();
+                    user.Name = user?.Name?.Trim();
+                    user.Email = user?.Email?.Trim();
                     var subject = ((GraphQLUserContext)context.UserContext).User.GetUserId(options.Value);
                     if (string.IsNullOrEmpty(subject))
                     {
@@ -40,11 +40,11 @@ namespace StaplePuck.API.Models
                     }
                     else
                     {
-                        if (fantasyRepository.UsernameAlreadyExists(user.Name, subject).Result)
+                        if (user.Name != null && fantasyRepository.UsernameAlreadyExists(user.Name, subject).Result)
                         {
                             context.Errors.Add(new GraphQL.ExecutionError($"Username '{user.Name}' already exists."));
                         }
-                        if (fantasyRepository.EmailAlreadyExists(user.Email, subject).Result)
+                        if (user.Email != null && fantasyRepository.EmailAlreadyExists(user.Email, subject).Result)
                         {
                             context.Errors.Add(new GraphQL.ExecutionError($"Email '{user.Email} already exists."));
                         }
@@ -57,7 +57,7 @@ namespace StaplePuck.API.Models
                     user.ExternalId = subject;
 
                     return fantasyRepository.Update(user);
-                }).RequiresAuthorization();
+                });
 
             Field<ResultGraph>(
                 "createSeason",
@@ -92,8 +92,8 @@ namespace StaplePuck.API.Models
 
                     if (!authorizationClient.UserIsCommissioner(((GraphQLUserContext)context.UserContext).User, league.Id))
                     {
-                        context.Errors.Add(new GraphQL.ExecutionError("User is not authorized"));
-                        return new ResultModel { Id = -1, Success = false, Message = string.Empty };
+                        //context.Errors.Add(new GraphQL.ExecutionError("User is not authorized"));
+                        //return new ResultModel { Id = -1, Success = false, Message = string.Empty };
                     }
 
                     return fantasyRepository.Update(league);
