@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using StaplePuck.Core.Fantasy;
+using StaplePuck.Core.Scoring;
 using StaplePuck.Core.Stats;
 
 namespace StaplePuck.Data
@@ -35,6 +36,11 @@ namespace StaplePuck.Data
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamSeason> TeamSeasons { get; set; }
         public DbSet<TeamStateOnDate> TeamStateOnDate { get; set; }
+
+        public DbSet<CalculatedScoreItem> CalculatedScoreItems { get; set; }
+        public DbSet<FantasyTeamScore> FantasyTeamScores { get; set; }
+        public DbSet<LeagueScore> LeagueScores { get; set; }
+        public DbSet<PlayerCalculatedScore> PlayerCalculatedScores { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

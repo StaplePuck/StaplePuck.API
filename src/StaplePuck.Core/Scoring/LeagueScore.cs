@@ -7,9 +7,12 @@ namespace StaplePuck.Core.Scoring
 {
     public class LeagueScore
     {
+        public int Id { get; set; }
+
         public int LeagueId { get; set; }
         public League League { get; set; }
         public DateTime Date { get; set; }
-        public Dictionary<int, PlayerCalculatedScore> Players { get; private set; }
+        public List<PlayerCalculatedScore> PlayersScores { get; set; }
+        public List<FantasyTeamScore> FantasyTeamScores { get; set; }
     }
 }
