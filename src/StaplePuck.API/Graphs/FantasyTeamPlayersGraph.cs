@@ -12,7 +12,7 @@ namespace StaplePuck.API.Graphs
                 name: "fantasyTeam",
                 resolve: context => context.Source.FantasyTeam);
             AddNavigationField<PlayerGraph, Player>(
-                name: "players",
+                name: "player",
                 resolve: context => context.Source.Player);
         }
     }
