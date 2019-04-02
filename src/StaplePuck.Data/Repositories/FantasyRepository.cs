@@ -137,6 +137,7 @@ namespace StaplePuck.Data.Repositories
             // remove existing assigned players
             var currentPlayers = await _db.FantasyTeamPlayers.Where(x => x.FantasyTeamId == team.Id).ToListAsync();
             _db.FantasyTeamPlayers.RemoveRange(currentPlayers);
+            await _db.SaveChangesAsync();
 
             // add the new ones in
             foreach (var player in team.FantasyTeamPlayers)
