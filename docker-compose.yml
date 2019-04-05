@@ -1,0 +1,10 @@
+version: '3.4'
+
+services:
+  staplepuck.api:
+    image: ${DOCKER_REGISTRY}staplepuckapi
+    build:
+      context: .
+      dockerfile: src/StaplePuck.API/Dockerfile
+    env_file:
+      - ./StaplePuck.env
