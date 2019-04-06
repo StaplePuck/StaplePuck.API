@@ -25,7 +25,7 @@ namespace StaplePuck.API.Graphs
                 name: "numberPerPositions",
                 resolve: context => context.Source.NumberPerPositions);
             //Field(x => x.Password);
-            Field(x => x.PaymentInfo).DefaultValue(string.Empty);
+            Field(x => x.PaymentInfo, nullable: true).DefaultValue(string.Empty);
             Field(x => x.PlayersPerTeam);
             AddNavigationField<ScoringRulePointsGraph, ScoringRulePoints>(
                 name: "scoringRules",
