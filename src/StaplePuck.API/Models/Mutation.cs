@@ -134,7 +134,9 @@ namespace StaplePuck.API.Models
                 {
                     var team = context.GetArgument<FantasyTeam>("fantasyTeam");
 
-                    if (!authorizationClient.UserIsGM(((GraphQLUserContext)context.UserContext).User, team.Id))
+                    var subject = ((GraphQLUserContext)context.UserContext).User.GetUserId(options.Value);
+                    if (!fantasyRepository.UserIsGM(team.Id, subject).Result)
+                    //if (!authorizationClient.UserIsGM(((GraphQLUserContext)context.UserContext).User, team.Id))
                     {
                         context.Errors.Add(new GraphQL.ExecutionError("User is not authorized"));
                         return new ResultModel { Id = -1, Success = false, Message = string.Empty };
