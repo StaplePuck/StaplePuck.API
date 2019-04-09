@@ -48,13 +48,9 @@ namespace StaplePuck.Data.Migrations
 
                     b.Property<int>("PlayerId");
 
-                    b.Property<int>("LeagueId");
-
                     b.HasKey("FantasyTeamId", "PlayerId");
 
                     b.HasIndex("PlayerId");
-
-                    b.HasIndex("LeagueId", "PlayerId");
 
                     b.ToTable("FantasyTeamPlayers");
                 });
@@ -163,59 +159,6 @@ namespace StaplePuck.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("StaplePuck.Core.Scoring.CalculatedScoreItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("LeagueId");
-
-                    b.Property<int>("PlayerId");
-
-                    b.Property<int>("Score");
-
-                    b.Property<int>("ScoringTypeId");
-
-                    b.Property<int>("TodaysScore");
-
-                    b.Property<int>("TodaysTotal");
-
-                    b.Property<int>("Total");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlayerId");
-
-                    b.HasIndex("ScoringTypeId");
-
-                    b.HasIndex("LeagueId", "PlayerId");
-
-                    b.ToTable("CalculatedScoreItems");
-                });
-
-            modelBuilder.Entity("StaplePuck.Core.Scoring.PlayerCalculatedScore", b =>
-                {
-                    b.Property<int>("LeagueId");
-
-                    b.Property<int>("PlayerId");
-
-                    b.Property<int>("GameState");
-
-                    b.Property<int>("Id");
-
-                    b.Property<int>("NumberOfSelectedByTeams");
-
-                    b.Property<int>("Score");
-
-                    b.Property<int>("TodaysScore");
-
-                    b.HasKey("LeagueId", "PlayerId");
-
-                    b.HasIndex("PlayerId");
-
-                    b.ToTable("PlayerCalculatedScores");
                 });
 
             modelBuilder.Entity("StaplePuck.Core.Stats.GameDate", b =>
@@ -484,19 +427,9 @@ namespace StaplePuck.Data.Migrations
                         .HasForeignKey("FantasyTeamId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("StaplePuck.Core.Fantasy.League", "League")
-                        .WithMany()
-                        .HasForeignKey("LeagueId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("StaplePuck.Core.Stats.Player", "Player")
                         .WithMany("FantasyTeamPlayers")
                         .HasForeignKey("PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("StaplePuck.Core.Scoring.PlayerCalculatedScore", "PlayerCalculatedScore")
-                        .WithMany()
-                        .HasForeignKey("LeagueId", "PlayerId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -553,42 +486,6 @@ namespace StaplePuck.Data.Migrations
                     b.HasOne("StaplePuck.Core.Stats.ScoringType", "ScoringType")
                         .WithMany()
                         .HasForeignKey("ScoringTypeId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("StaplePuck.Core.Scoring.CalculatedScoreItem", b =>
-                {
-                    b.HasOne("StaplePuck.Core.Fantasy.League", "League")
-                        .WithMany()
-                        .HasForeignKey("LeagueId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("StaplePuck.Core.Stats.Player", "Player")
-                        .WithMany()
-                        .HasForeignKey("PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("StaplePuck.Core.Stats.ScoringType", "ScoringType")
-                        .WithMany()
-                        .HasForeignKey("ScoringTypeId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("StaplePuck.Core.Scoring.PlayerCalculatedScore", "PlayerCalculatedScore")
-                        .WithMany("Scoring")
-                        .HasForeignKey("LeagueId", "PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("StaplePuck.Core.Scoring.PlayerCalculatedScore", b =>
-                {
-                    b.HasOne("StaplePuck.Core.Fantasy.League", "League")
-                        .WithMany("PlayerCalculatedScores")
-                        .HasForeignKey("LeagueId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("StaplePuck.Core.Stats.Player", "Player")
-                        .WithMany()
-                        .HasForeignKey("PlayerId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
