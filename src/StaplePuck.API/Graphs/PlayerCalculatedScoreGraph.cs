@@ -8,7 +8,7 @@ namespace StaplePuck.API.Graphs
     {
         public PlayerCalculatedScoreGraph(IEfGraphQLService graphQLService) : base(graphQLService)
         {
-            Field(x => x.Count);
+            Field(x => x.NumberOfSelectedByTeams);
             Field(x => x.GameState);
             AddNavigationField<PlayerGraph, Player>(
                 name: "player",

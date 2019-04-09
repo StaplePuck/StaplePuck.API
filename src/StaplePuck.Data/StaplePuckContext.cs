@@ -38,8 +38,6 @@ namespace StaplePuck.Data
         public DbSet<TeamStateOnDate> TeamStateOnDate { get; set; }
 
         public DbSet<CalculatedScoreItem> CalculatedScoreItems { get; set; }
-        public DbSet<FantasyTeamScore> FantasyTeamScores { get; set; }
-        public DbSet<LeagueScore> LeagueScores { get; set; }
         public DbSet<PlayerCalculatedScore> PlayerCalculatedScores { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -135,6 +133,16 @@ namespace StaplePuck.Data
                 .HasOne(x => x.League)
                 .WithMany(x => x.NumberPerPositions)
                 .HasForeignKey(x => x.LeagueId);
+
+            // NumberPerPosition
+            modelBuilder.Entity<PlayerCalculatedScore>()
+                .HasKey(x => new { x.LeagueId, x.PlayerId });
+
+            modelBuilder.Entity<PlayerCalculatedScore>()
+                .HasOne(x => x.League)
+                .WithMany(x => x.PlayerCalculatedScores)
+                .HasForeignKey(x => x.LeagueId);
+
         }
     }
 }

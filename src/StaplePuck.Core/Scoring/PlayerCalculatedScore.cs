@@ -17,7 +17,7 @@ namespace StaplePuck.Core.Scoring
         public League League { get; set; }
 
         public List<CalculatedScoreItem> Scoring { get; set; }
-        public int Count { get; set; }
+        public int NumberOfSelectedByTeams { get; set; }
         public GameState GameState { get; set; }
 
         public int Score { get; set; }

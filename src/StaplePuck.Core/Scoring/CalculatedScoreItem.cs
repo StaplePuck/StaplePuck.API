@@ -10,7 +10,12 @@ namespace StaplePuck.Core.Scoring
     {
         public int Id { get; set; }
 
-        public int PlayerCalculatedScoreId { get; set; }
+        public int PlayerId { get; set; }
+        public Player Player { get; set; }
+
+        public int LeagueId { get; set; }
+        public League League { get; set; }
+
         public PlayerCalculatedScore PlayerCalculatedScore { get; set; }
 
         public int ScoringTypeId { get; set; }
