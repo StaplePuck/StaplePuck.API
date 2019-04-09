@@ -110,14 +110,6 @@ namespace StaplePuck.Data.Migrations
                 principalTable: "Leagues",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
-
-            //migrationBuilder.AddForeignKey(
-            //    name: "FK_FantasyTeamPlayers_PlayerCalculatedScores_LeagueId_PlayerId",
-            //    table: "FantasyTeamPlayers",
-            //    columns: new[] { "LeagueId", "PlayerId" },
-            //    principalTable: "PlayerCalculatedScores",
-            //    principalColumns: new[] { "LeagueId", "PlayerId" },
-            //    onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -125,10 +117,6 @@ namespace StaplePuck.Data.Migrations
             migrationBuilder.DropForeignKey(
                 name: "FK_FantasyTeamPlayers_Leagues_LeagueId",
                 table: "FantasyTeamPlayers");
-
-            //migrationBuilder.DropForeignKey(
-            //    name: "FK_FantasyTeamPlayers_PlayerCalculatedScores_LeagueId_PlayerId",
-            //    table: "FantasyTeamPlayers");
 
             migrationBuilder.DropTable(
                 name: "CalculatedScoreItems");
