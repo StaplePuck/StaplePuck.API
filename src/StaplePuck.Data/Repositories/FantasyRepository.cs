@@ -137,6 +137,7 @@ namespace StaplePuck.Data.Repositories
             // remove existing assigned players
             var currentPlayers = await _db.FantasyTeamPlayers.Where(x => x.FantasyTeamId == team.Id).ToListAsync();
             _db.FantasyTeamPlayers.RemoveRange(currentPlayers);
+            await _db.SaveChangesAsync();
 
             // add the new ones in
             foreach (var player in team.FantasyTeamPlayers)
@@ -234,9 +235,19 @@ namespace StaplePuck.Data.Repositories
             return errors;
         }
 
+        public async Task<bool> UserIsGM(int teamId, string userExternalId)
+        {
+            var team = await _db.FantasyTeams.Include(x => x.GM).FirstOrDefaultAsync(x => x.Id == teamId);
+            if (team == null)
+            {
+                return false;
+            }
+            return team.GM.ExternalId == userExternalId;
+        }
+
         public async Task<bool> EmailAlreadyExists(string email, string userExternalId)
         {
-            return await _db.Users.AnyAsync(x => email.Equals(x.Email, StringComparison.CurrentCultureIgnoreCase) && userExternalId == x.ExternalId);
+            return await _db.Users.AnyAsync(x => email.Equals(x.Email, StringComparison.CurrentCultureIgnoreCase) && userExternalId != x.ExternalId);
         }
 
         public async Task<ResultModel> Update(User user)
@@ -263,7 +274,7 @@ namespace StaplePuck.Data.Repositories
 
         public async Task<bool> UsernameAlreadyExists(string username, string userExternalId)
         {
-            return await _db.Users.AnyAsync(x => username.Equals(x.Name, StringComparison.CurrentCultureIgnoreCase) && userExternalId == x.ExternalId);
+            return await _db.Users.AnyAsync(x => username.Equals(x.Name, StringComparison.CurrentCultureIgnoreCase) && userExternalId != x.ExternalId);
         }
     }
 }

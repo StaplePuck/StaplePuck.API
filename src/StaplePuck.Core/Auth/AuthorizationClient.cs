@@ -18,6 +18,7 @@ namespace StaplePuck.Core.Auth
         private readonly AuthorizationSettings _settings;
         private readonly IRestClient _restClient;
         private readonly string _issuer;
+        private readonly string _authority;
 
         /// <summary>
         /// 
@@ -28,6 +29,7 @@ namespace StaplePuck.Core.Auth
         {
             _settings = options.Value;
             _issuer = auth0Options.Value.Domain;
+            _authority = auth0Options.Value.Authority;
             _restClient = new RestClient(_settings.BaseUrl);
 
             var token = auth0Client.GetAuthToken();
@@ -107,11 +109,11 @@ namespace StaplePuck.Core.Auth
 
         private bool HasScope(ClaimsPrincipal principal, string groupName)
         {
-            if (!principal.HasClaim(c => c.Type == "scope" && c.Issuer == this._issuer))
+            if (!principal.HasClaim(c => c.Type == "scope" && (c.Issuer == this._issuer || c.Issuer == this._authority)))
                 return false;
 
             // Split the scopes string into an array
-            var scopes = principal.FindFirst(c => c.Type == "scope" && c.Issuer == this._issuer).Value.Split(' ');
+            var scopes = principal.FindFirst(c => c.Type == "scope" && (c.Issuer == this._issuer || c.Issuer == this._authority)).Value.Split(' ');
 
             // Succeed if the scope array contains the required scope
             return scopes.Any(s => s == groupName);
