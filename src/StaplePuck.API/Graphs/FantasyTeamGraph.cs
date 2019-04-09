@@ -20,6 +20,10 @@ namespace StaplePuck.API.Graphs
             AddNavigationField<UserGraph, User>(
                 name: "GM",
                 resolve: context => context.Source.GM);
+
+            Field(x => x.Rank);
+            Field(x => x.Score);
+            Field(x => x.TodaysScore);
         }
     }
 }

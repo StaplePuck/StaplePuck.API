@@ -134,14 +134,14 @@ namespace StaplePuck.Data
                 .WithMany(x => x.NumberPerPositions)
                 .HasForeignKey(x => x.LeagueId);
 
-            // NumberPerPosition
+            // PlayerCalculatedScore
             modelBuilder.Entity<PlayerCalculatedScore>()
                 .HasKey(x => new { x.LeagueId, x.PlayerId });
 
-            modelBuilder.Entity<PlayerCalculatedScore>()
-                .HasOne(x => x.League)
-                .WithMany(x => x.PlayerCalculatedScores)
-                .HasForeignKey(x => x.LeagueId);
+            //modelBuilder.Entity<PlayerCalculatedScore>()
+            //    .HasOne(x => x.League)
+            //    .WithMany(x => x.PlayerCalculatedScores)
+            //    .HasForeignKey(x => x.LeagueId);
 
         }
     }

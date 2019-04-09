@@ -14,12 +14,10 @@ namespace StaplePuck.API.Graphs
                 name: "player",
                 resolve: context => context.Source.Player);
             Field(x => x.Score);
-            //AddNavigationField<CalculatedScoreItemGraph, CalculatedScoreItem>(
-            //    name: "scoring",
-            //    resolve: context => context.Source.Scoring);
-            //AddNavigationField<TeamGraph, Team>(
-            //    name: "team",
-            //    resolve: context => context.Source.Team);
+            AddNavigationField<CalculatedScoreItemGraph, CalculatedScoreItem>(
+                name: "scoring",
+                resolve: context => context.Source.Scoring);
+            
             Field(x => x.TodaysScore);
         }
     }

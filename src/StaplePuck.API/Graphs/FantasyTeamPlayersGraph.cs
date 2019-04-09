@@ -1,5 +1,6 @@
 ﻿using GraphQL.EntityFramework;
 using StaplePuck.Core.Fantasy;
+using StaplePuck.Core.Scoring;
 using StaplePuck.Core.Stats;
 
 namespace StaplePuck.API.Graphs
@@ -14,6 +15,9 @@ namespace StaplePuck.API.Graphs
             AddNavigationField<PlayerGraph, Player>(
                 name: "player",
                 resolve: context => context.Source.Player);
+            AddNavigationField<PlayerCalculatedScoreGraph, PlayerCalculatedScore>(
+                name: "playerCalculatedScore",
+                resolve: context => context.Source.PlayerCalculatedScore);
         }
     }
 }
