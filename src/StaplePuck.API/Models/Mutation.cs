@@ -151,6 +151,17 @@ namespace StaplePuck.API.Models
                     }
                     return fantasyRepository.Update(team, isValid);
                 }).RequiresAuthorization();
+
+            Field<ResultGraph>(
+                "updateGameDateStats",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<SeasonInputType>> { Name = "gameDate" }
+                ),
+                resolve: context =>
+                {
+                    var season = context.GetArgument<Season>("gameDate");
+                    return statsRepository.Add(season);
+                }).AuthorizeWith(AuthorizationPolicyName.WriteStats);
         }
     }
 }
