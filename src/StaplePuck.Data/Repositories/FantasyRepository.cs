@@ -145,7 +145,8 @@ namespace StaplePuck.Data.Repositories
                 var playerInfo = new FantasyTeamPlayers
                 {
                     FantasyTeamId = team.Id,
-                    PlayerId = player.PlayerId
+                    PlayerId = player.PlayerId,
+                    LeagueId = currentTeam.LeagueId
                 };
                 _db.FantasyTeamPlayers.Add(playerInfo);
             }
