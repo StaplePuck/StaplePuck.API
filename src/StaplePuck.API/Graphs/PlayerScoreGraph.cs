@@ -9,6 +9,7 @@ namespace StaplePuck.API.Graphs
         {
             Field(x => x.Id);
             Field(x => x.AdminOverride);
+            Field(x => x.ScoringTypeId);
             AddNavigationField<PlayerStatsOnDateGraph, PlayerStatsOnDate>(
                 name: "playerStatsOnDate",
                 resolve: context => context.Source.PlayerStatsOnDate);

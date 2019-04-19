@@ -69,28 +69,26 @@ namespace StaplePuck.Core.Client
             return data.First.First.ToObject<ResultModel>();
         }
 
-        public async Task<T> GetAsync<T>(string mutationName)
+        public async Task<T[]> GetAsync<T>(string query, IDictionary<string, object> variables = null)
         {
             var name = typeof(T).Name;
-            var lowerName = Char.ToLowerInvariant(name[0]) + name.Substring(1);
 
             //var variables = new ExpandoObject() as IDictionary<string, object>;
             //variables.Add(name, value);
             var request = new GraphQLRequest
             {
-                Query = string.Concat("query myQuery { \n",
-                    "currentUser { \n",
-                    "    id\n",
-                    "    name\n",
-                    "    email\n",
-                    "  }\n",
-                    "}")
+                Query = query
                 //Variables = variables
             };
+            if (variables != null)
+            {
+                request.Variables = variables;
+            }
 
             var response = await _client.PostAsync(request);
             var data = response.Data as Newtonsoft.Json.Linq.JObject;
-            return data.First.First.ToObject<T>();
+            var item = data.First.First;
+            return item.ToObject<T[]>();
         }
     }
 }

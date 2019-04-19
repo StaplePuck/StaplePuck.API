@@ -10,5 +10,9 @@ namespace StaplePuck.Core.Data
     public interface IStatsRepository
     {
         Task<ResultModel> Add(Season season);
+
+        Task<ResultModel> Update(GameDate gameDate);
+
+        Task<ResultModel> Update(League league);
     }
 }

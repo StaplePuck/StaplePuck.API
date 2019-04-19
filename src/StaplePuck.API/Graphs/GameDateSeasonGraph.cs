@@ -9,6 +9,12 @@ namespace StaplePuck.API.Graphs
         {
             // no
             Field(x => x.GameDateId);
+            AddNavigationField<GameDateGraph, GameDate>(
+                name: "gameDate",
+                resolve: context => context.Source.GameDate);
+            AddNavigationField<SeasonGraph, Season>(
+                name: "season",
+                resolve: context => context.Source.Season);
         }
     }
 }

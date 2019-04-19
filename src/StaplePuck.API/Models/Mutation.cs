@@ -155,12 +155,23 @@ namespace StaplePuck.API.Models
             Field<ResultGraph>(
                 "updateGameDateStats",
                 arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<SeasonInputType>> { Name = "gameDate" }
+                    new QueryArgument<NonNullGraphType<GameDateInputType>> { Name = "gameDate" }
                 ),
                 resolve: context =>
                 {
-                    var season = context.GetArgument<Season>("gameDate");
-                    return statsRepository.Add(season);
+                    var gameDate = context.GetArgument<GameDate>("gameDate");
+                    return statsRepository.Update(gameDate);
+                }).AuthorizeWith(AuthorizationPolicyName.WriteStats);
+
+            Field<ResultGraph>(
+                "updateLeagueScores",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<LeagueScoreInputType>> { Name = "league" }
+                ),
+                resolve: context =>
+                {
+                    var league = context.GetArgument<League>("league");
+                    return statsRepository.Update(league);
                 }).AuthorizeWith(AuthorizationPolicyName.WriteStats);
         }
     }

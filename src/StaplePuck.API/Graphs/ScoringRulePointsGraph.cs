@@ -12,8 +12,10 @@ namespace StaplePuck.API.Graphs
                 name: "league",
                 resolve: context => context.Source.League);
             Field(x => x.PointsPerScore);
+            Field(x => x.PositionTypeId);
+            Field(x => x.ScoringTypeId);
             AddNavigationField<PositionTypeGraph, PositionType>(
-                name: "position",
+                name: "positionType",
                 resolve: context => context.Source.PositionType);
             AddNavigationField<ScoringTypeGraph, ScoringType>(
                 name: "scoringType",

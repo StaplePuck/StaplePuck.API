@@ -8,6 +8,7 @@ namespace StaplePuck.API.Graphs
         public TeamStateOnDateGraph(IEfGraphQLService graphQLService) : base(graphQLService)
         {
             Field(x => x.Id);
+            Field(x => x.GameState);
             AddNavigationField<GameDateGraph, GameDate>(
                 name: "gameDate",
                 resolve: context => context.Source.GameDate);

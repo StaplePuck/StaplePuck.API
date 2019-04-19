@@ -10,7 +10,7 @@ namespace StaplePuck.API.Graphs.Input
             Field<NonNullGraphType<StringGraphType>>("name");
             Field<NonNullGraphType<StringGraphType>>("fullName");
             Field<NonNullGraphType<StringGraphType>>("shortName");
-            Field<NonNullGraphType<StringGraphType>>("externalId");
+            Field<NonNullGraphType<IntGraphType>>("externalId");
             Field<NonNullGraphType<StringGraphType>>("locationName");
 
             Field<IntGraphType>("id");

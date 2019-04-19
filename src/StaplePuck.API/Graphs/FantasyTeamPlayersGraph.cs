@@ -9,6 +9,7 @@ namespace StaplePuck.API.Graphs
     {
         public FantasyTeamPlayersGraph(IEfGraphQLService graphQLService) : base(graphQLService)
         {
+            Field(x => x.PlayerId);
             AddNavigationField<FantasyTeamGraph, FantasyTeam>(
                 name: "fantasyTeam",
                 resolve: context => context.Source.FantasyTeam);

@@ -12,11 +12,14 @@ namespace StaplePuck.API.Graphs.Input
         {
             Name = "GameDateInput";
             Field<NonNullGraphType<StringGraphType>>("id");
-            //Field<NonNullGraphType<IntGraphType>>("leagueId");
 
-            //GameDateSeasons { get; set; }
-        //public List<TeamStateOnDate> TeamsStateOnDate { get; set; }
-        //public List<PlayerStatsOnDate> PlayersStatsOnDate
+            //Field<StringGraphType>("gameDateSeasons");
+            //Field<StringGraphType>("teamsStateOnDate");
+            //Field<StringGraphType>("playersStatsOnDate");
+
+            Field<ListGraphType<GameDateSeasonInputType>>("gameDateSeasons");
+            Field<ListGraphType<TeamStateOnDateInputType>>("teamsStateOnDate");
+            Field<ListGraphType<PlayerStatsOnDateInputType>>("playersStatsOnDate");
         }
     }
 }
