@@ -2,25 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using StaplePuck.Core.Fantasy;
 using StaplePuck.Core.Stats;
 
 namespace StaplePuck.Core.Scoring
 {
     public class PlayerCalculatedScore
     {
+        public int PlayerId { get; set; }
         public Player Player { get; set; }
-        public Team Team { get; set; }
-        public List<CalculatedScoreItem> Scoring { get; set; }
-        public int Count { get; set; }
-        public GameState GameState { get; set; }
+        public int LeagueId { get; set; }
+        public League League { get; set; }
 
-        public int Score
+        public List<CalculatedScoreItem> Scoring { get; set; }
+        public int NumberOfSelectedByTeams { get; set; }
+        public int GameState { get; set; }
+
+        public int Score { get; set; }
+        public int TodaysScore { get; set; }
+
+        public PlayerCalculatedScore()
         {
-            get { return Scoring.Sum(x => x.Score); }
-        }
-        public int TodaysScore
-        {
-            get { return Scoring.Sum(x => x.TodaysScore); }
+            Scoring = new List<CalculatedScoreItem>();
         }
     }
 }

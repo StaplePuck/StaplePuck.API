@@ -8,7 +8,7 @@ namespace StaplePuck.API.Graphs
     {
         public PlayerCalculatedScoreGraph(IEfGraphQLService graphQLService) : base(graphQLService)
         {
-            Field(x => x.Count);
+            Field(x => x.NumberOfSelectedByTeams);
             Field(x => x.GameState);
             AddNavigationField<PlayerGraph, Player>(
                 name: "player",
@@ -17,9 +17,7 @@ namespace StaplePuck.API.Graphs
             AddNavigationField<CalculatedScoreItemGraph, CalculatedScoreItem>(
                 name: "scoring",
                 resolve: context => context.Source.Scoring);
-            AddNavigationField<TeamGraph, Team>(
-                name: "team",
-                resolve: context => context.Source.Team);
+            
             Field(x => x.TodaysScore);
         }
     }

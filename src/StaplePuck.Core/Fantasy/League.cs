@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using StaplePuck.Core.Stats;
+using StaplePuck.Core.Scoring;
 
 namespace StaplePuck.Core.Fantasy
 {
@@ -29,5 +30,7 @@ namespace StaplePuck.Core.Fantasy
         public List<NumberPerPosition> NumberPerPositions { get; set; }
 
         public int PlayersPerTeam { get; set; }
+
+        public List<PlayerCalculatedScore> PlayerCalculatedScores { get; set; }
     }
 }

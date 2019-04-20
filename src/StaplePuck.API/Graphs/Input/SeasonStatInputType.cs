@@ -1,14 +1,19 @@
-﻿using GraphQL.Types;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GraphQL.Types;
 
 namespace StaplePuck.API.Graphs.Input
 {
-    public class SeasonInputType : InputObjectGraphType
+    public class SeasonStatInputType : InputObjectGraphType
     {
-        public SeasonInputType()
+        public SeasonStatInputType()
         {
-            Name = "SeasonInput";
-            Field<NonNullGraphType<StringGraphType>>("fullName");
-            Field<StringGraphType>("externalId");
+            Name = "SeasonStatInput";
+            Field<NonNullGraphType<StringGraphType>>("externalId");
+
+            Field<StringGraphType>("fullName");
             Field<BooleanGraphType>("isPlayoffs");
             Field<IntGraphType>("startRound");
             Field<SportInputType>("sport");

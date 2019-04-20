@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using StaplePuck.Core.Fantasy;
+using StaplePuck.Core.Scoring;
 
 namespace StaplePuck.Core.Stats
 {

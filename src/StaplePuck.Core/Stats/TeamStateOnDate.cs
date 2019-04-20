@@ -11,6 +11,6 @@ namespace StaplePuck.Core.Stats
         public Team Team { get; set; }
         public string GameDateId { get; set; }
         public GameDate GameDate { get; set; }
-        public GameState GameState { get; set; }
+        public int GameState { get; set; }
     }
 }

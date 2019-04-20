@@ -1,4 +1,5 @@
 ﻿using StaplePuck.Core.Data;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace StaplePuck.Core.Client
@@ -18,6 +19,6 @@ namespace StaplePuck.Core.Client
         /// <returns>The resulting message.</returns>
         Task<ResultModel> UpdateAsync<T>(string mutationName, T value, string variableName = null);
 
-        Task<T> GetAsync<T>(string mutationName);
+        Task<T[]> GetAsync<T>(string query, IDictionary<string, object> variables = null);
     }
 }

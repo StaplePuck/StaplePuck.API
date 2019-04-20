@@ -8,7 +8,6 @@ namespace StaplePuck.API.Graphs
     {
         public CalculatedScoreItemGraph(IEfGraphQLService graphQLService) : base(graphQLService)
         {
-            Field(x => x.Multiplier);
             Field(x => x.Score);
             AddNavigationField<ScoringTypeGraph, ScoringType>(
                 name: "scoringType",

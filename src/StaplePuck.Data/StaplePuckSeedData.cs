@@ -95,6 +95,17 @@ namespace StaplePuck.Data
                 db.ScoringPositions.AddRange(scoringPositions);
                 db.SaveChanges();
             }
+
+            //var league2 = db.Leagues.Include(x => x.FantasyTeams).ThenInclude(x => x.FantasyTeamPlayers).FirstOrDefault(x => x.Id == 2);
+            //foreach (var team in league2.FantasyTeams)
+            //{
+            //    foreach (var item in team.FantasyTeamPlayers)
+            //    {
+            //        item.LeagueId = 2;
+            //    }
+            //    db.UpdateRange(team.FantasyTeamPlayers);
+            //}
+            //db.SaveChanges();
         }
     }
 }

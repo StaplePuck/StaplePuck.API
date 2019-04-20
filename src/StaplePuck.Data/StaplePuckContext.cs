@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using StaplePuck.Core.Fantasy;
+using StaplePuck.Core.Scoring;
 using StaplePuck.Core.Stats;
 
 namespace StaplePuck.Data
@@ -35,6 +36,9 @@ namespace StaplePuck.Data
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamSeason> TeamSeasons { get; set; }
         public DbSet<TeamStateOnDate> TeamStateOnDate { get; set; }
+
+        public DbSet<CalculatedScoreItem> CalculatedScoreItems { get; set; }
+        public DbSet<PlayerCalculatedScore> PlayerCalculatedScores { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -129,6 +133,16 @@ namespace StaplePuck.Data
                 .HasOne(x => x.League)
                 .WithMany(x => x.NumberPerPositions)
                 .HasForeignKey(x => x.LeagueId);
+
+            // PlayerCalculatedScore
+            modelBuilder.Entity<PlayerCalculatedScore>()
+                .HasKey(x => new { x.LeagueId, x.PlayerId });
+
+            //modelBuilder.Entity<PlayerCalculatedScore>()
+            //    .HasOne(x => x.League)
+            //    .WithMany(x => x.PlayerCalculatedScores)
+            //    .HasForeignKey(x => x.LeagueId);
+
         }
     }
 }
