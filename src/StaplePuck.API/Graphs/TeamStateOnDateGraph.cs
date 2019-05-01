@@ -9,11 +9,11 @@ namespace StaplePuck.API.Graphs
         {
             Field(x => x.Id);
             Field(x => x.GameState);
-            AddNavigationField<GameDateGraph, GameDate>(
+            AddNavigationField(
                 name: "gameDate",
                 resolve: context => context.Source.GameDate);
             //todo enum Field(x => x.GameState);
-            AddNavigationField<TeamGraph, Team>(
+            AddNavigationField(
                 name: "team",
                 resolve: context => context.Source.Team);
         }

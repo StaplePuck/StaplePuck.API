@@ -10,7 +10,7 @@ namespace StaplePuck.API.Graphs
         {
             Field(x => x.Id);
             Field(x => x.ExternalId);
-            AddNavigationField<FantasyTeamPlayersGraph, FantasyTeamPlayers>(
+            AddNavigationListField(
                 name: "fantasyTeamPlayers",
                 resolve: context => context.Source.FantasyTeamPlayers);
             Field(x => x.FirstName);
@@ -18,7 +18,7 @@ namespace StaplePuck.API.Graphs
             //Field(x => x.FullNameWithPosition);
             Field(x => x.LastName);
             Field(x => x.Number);
-            AddNavigationField<PlayerSeasonGraph, PlayerSeason>(
+            AddNavigationListField(
                 name: "playerSeasons",
                 resolve: context => context.Source.PlayerSeasons);
             // todo....

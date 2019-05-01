@@ -12,30 +12,30 @@ namespace StaplePuck.API.Graphs
             Field(x => x.Id);
             Field(x => x.AllowMultipleTeams);
             Field(x => x.Announcement, nullable: true);
-            AddNavigationField<UserGraph, User>(
+            AddNavigationField(
                 name: "commissioner",
                 resolve: context => context.Source.Commissioner);
             Field(x => x.Description, nullable: true);
-            AddNavigationField<FantasyTeamGraph, FantasyTeam>(
+            AddNavigationListField(
                 name: "fantasyTeams",
                 resolve: context => context.Source.FantasyTeams);
             Field(x => x.IsLocked);
             Field(x => x.Name);
             //Field(x => x.LeagueMails);
-            AddNavigationField<NumberPerPositionGraph, NumberPerPosition>(
+            AddNavigationListField(
                 name: "numberPerPositions",
                 resolve: context => context.Source.NumberPerPositions);
             //Field(x => x.Password);
             Field(x => x.PaymentInfo, nullable: true).DefaultValue(string.Empty);
             Field(x => x.PlayersPerTeam);
-            AddNavigationField<ScoringRulePointsGraph, ScoringRulePoints>(
+            AddNavigationListField(
                 name: "scoringRules",
                 resolve: context => context.Source.ScoringRules);
-            AddNavigationField<SeasonGraph, Season>(
+            AddNavigationField(
                 name: "season",
                 resolve: context => context.Source.Season);
 
-            AddNavigationField<PlayerCalculatedScoreGraph, PlayerCalculatedScore>(
+            AddNavigationListField(
                 name: "playerCalculatedScores",
                 resolve: context => context.Source.PlayerCalculatedScores);
         }

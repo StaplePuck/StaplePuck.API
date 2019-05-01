@@ -10,13 +10,13 @@ namespace StaplePuck.API.Graphs
         public FantasyTeamPlayersGraph(IEfGraphQLService graphQLService) : base(graphQLService)
         {
             Field(x => x.PlayerId);
-            AddNavigationField<FantasyTeamGraph, FantasyTeam>(
+            AddNavigationField(
                 name: "fantasyTeam",
                 resolve: context => context.Source.FantasyTeam);
-            AddNavigationField<PlayerGraph, Player>(
+            AddNavigationField(
                 name: "player",
                 resolve: context => context.Source.Player);
-            AddNavigationField<PlayerCalculatedScoreGraph, PlayerCalculatedScore>(
+            AddNavigationField(
                 name: "playerCalculatedScore",
                 resolve: context => context.Source.PlayerCalculatedScore);
         }

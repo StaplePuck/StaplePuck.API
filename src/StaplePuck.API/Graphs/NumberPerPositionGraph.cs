@@ -9,10 +9,10 @@ namespace StaplePuck.API.Graphs
         public NumberPerPositionGraph(IEfGraphQLService graphQLService) : base(graphQLService)
         {
             Field(x => x.Count);
-            AddNavigationField<LeagueGraph, League>(
+            AddNavigationField(
                 name: "leauge",
                 resolve: context => context.Source.League);
-            AddNavigationField<PositionTypeGraph, PositionType>(
+            AddNavigationField(
                 name: "positionType",
                 resolve: context => context.Source.PositionType);
         }

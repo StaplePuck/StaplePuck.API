@@ -16,6 +16,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using StaplePuck.Core.Auth;
+using StaplePuck.Core.Fantasy;
+using StaplePuck.Core.Scoring;
+using StaplePuck.Core.Stats;
 using StaplePuck.Core.Data;
 using StaplePuck.Data.Repositories;
 using GraphQL.EntityFramework;
@@ -23,6 +26,7 @@ using GraphQL;
 using GraphQL.Http;
 using GraphQL.Server;
 using GraphQL.Types;
+using GraphQL.Utilities;
 
 using GraphQL.Authorization;
 using GraphQL.Server.Transports.AspNetCore;
@@ -48,33 +52,55 @@ namespace StaplePuck.API
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            GraphTypeTypeRegistry.Register<CalculatedScoreItem, Graphs.CalculatedScoreItemGraph>();
+            GraphTypeTypeRegistry.Register<FantasyTeam, Graphs.FantasyTeamGraph>();
+            GraphTypeTypeRegistry.Register<FantasyTeamPlayers, Graphs.FantasyTeamPlayersGraph>();
+            GraphTypeTypeRegistry.Register<GameDate, Graphs.GameDateGraph>();
+            GraphTypeTypeRegistry.Register<GameDateSeason, Graphs.GameDateSeasonGraph>();
+            GraphTypeTypeRegistry.Register<League, Graphs.LeagueGraph>();
+            GraphTypeTypeRegistry.Register<LeagueMail, Graphs.LeagueMailGraph>();
+            GraphTypeTypeRegistry.Register<NumberPerPosition, Graphs.NumberPerPositionGraph>();
+            GraphTypeTypeRegistry.Register<PlayerCalculatedScore, Graphs.PlayerCalculatedScoreGraph>();
+            GraphTypeTypeRegistry.Register<Player, Graphs.PlayerGraph>();
+            GraphTypeTypeRegistry.Register<PlayerCalculatedScore, Graphs.PlayerCalculatedScoreGraph>();
+            GraphTypeTypeRegistry.Register<PlayerScore, Graphs.PlayerScoreGraph>();
+            GraphTypeTypeRegistry.Register<PlayerSeason, Graphs.PlayerSeasonGraph>();
+            GraphTypeTypeRegistry.Register<PlayerStatsOnDate, Graphs.PlayerStatsOnDateGraph>();
+            GraphTypeTypeRegistry.Register<PositionType, Graphs.PositionTypeGraph>();
+            GraphTypeTypeRegistry.Register<ResultModel, Graphs.ResultGraph>();
+            GraphTypeTypeRegistry.Register<ScoringPositions, Graphs.ScoringPositionsGraph>();
+            GraphTypeTypeRegistry.Register<ScoringRulePoints, Graphs.ScoringRulePointsGraph>();
+            GraphTypeTypeRegistry.Register<ScoringType, Graphs.ScoringTypeGraph>();
+            GraphTypeTypeRegistry.Register<Season, Graphs.SeasonGraph>();
+            GraphTypeTypeRegistry.Register<Sport, Graphs.SportGraph>();
+            GraphTypeTypeRegistry.Register<Team, Graphs.TeamGraph>();
+            GraphTypeTypeRegistry.Register<TeamSeason, Graphs.TeamSeasonGraph>();
+            GraphTypeTypeRegistry.Register<TeamStateOnDate, Graphs.TeamStateOnDateGraph>();
+            GraphTypeTypeRegistry.Register<User, Graphs.UserGraph>();
+
+
             var connectionString = Configuration["ConnectionStrings:Default"];
-            services.AddDbContext<StaplePuckContext>(options => options.UseNpgsql(connectionString), ServiceLifetime.Singleton);
+            services.AddDbContext<StaplePuckContext>(options => options.UseNpgsql(connectionString));
 
             var optionsBuilder = new DbContextOptionsBuilder<StaplePuckContext>();
             optionsBuilder.UseNpgsql(connectionString);
 
             using (var myDataContext = new StaplePuckContext(optionsBuilder.Options))
             {
-                EfGraphQLConventions.RegisterInContainer(services, myDataContext);
-            }
-
-            foreach (var type in GetGraphQlTypes())
-            {
-                services.AddSingleton(type);
+                EfGraphQLConventions.RegisterInContainer(services, myDataContext.Model);
             }
 
             services.Configure<Auth0APISettings>(Configuration.GetSection("Auth0API"));
             services.AddAuth0Client(Configuration)
                 .AddAuthorizationClient(Configuration);
-            services.AddSingleton<IStatsRepository, StatsRepository>();
-            services.AddSingleton<IFantasyRepository, FantasyRepository>();
-            services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
-            services.AddSingleton<ISchema, Models.Schema>();
-            services.AddSingleton<Models.Mutation>();
-            services.AddSingleton<IDependencyResolver>(
+            services.AddScoped<IStatsRepository, StatsRepository>();
+            services.AddScoped<IFantasyRepository, FantasyRepository>();
+            services.AddScoped<IDocumentExecuter, EfDocumentExecuter>();
+            services.AddScoped<ISchema, Models.Schema>();
+            services.AddScoped<Models.Mutation>();
+            services.AddScoped<IDependencyResolver>(
                 provider => new FuncDependencyResolver(provider.GetRequiredService));
-           
+
 
             var mvc = services.AddMvcCore()
                 .AddCustomCors()

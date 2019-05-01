@@ -11,13 +11,13 @@ namespace StaplePuck.API.Graphs
             Field(x => x.Name);
             Field(x => x.IsPaid);
             Field(x => x.IsValid);
-            AddNavigationField<FantasyTeamPlayersGraph, FantasyTeamPlayers>(
+            AddNavigationListField(
                 name: "fantasyTeamPlayers",
                 resolve: context => context.Source.FantasyTeamPlayers);
-            AddNavigationField<LeagueGraph, League>(
+            AddNavigationField(
                 name: "league",
                 resolve: context => context.Source.League);
-            AddNavigationField<UserGraph, User>(
+            AddNavigationField(
                 name: "GM",
                 resolve: context => context.Source.GM);
 

@@ -11,7 +11,7 @@ namespace StaplePuck.API.Graphs
             // auth?
             Field(x => x.ReceiveEmails);
             Field(x => x.Email);
-            AddNavigationField<FantasyTeamGraph, FantasyTeam>(
+            AddNavigationListField(
                 name: "fantasyTeams",
                 resolve: context => context.Source.FantasyTeams);
             Field(x => x.Name);

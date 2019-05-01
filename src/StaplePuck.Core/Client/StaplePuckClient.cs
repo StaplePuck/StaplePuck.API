@@ -5,6 +5,7 @@ using StaplePuck.Core.Data;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using RestSharp;
@@ -65,6 +66,10 @@ namespace StaplePuck.Core.Client
             };
             
             var response = await _client.PostAsync(request);
+            if (response.Errors != null && response.Errors.Length > 0)
+            {
+                return new ResultModel { Success = false, Message = string.Join(", ", response.Errors.Select(x => x.Message)) };
+            }
             var data = response.Data as Newtonsoft.Json.Linq.JObject;
             return data.First.First.ToObject<ResultModel>();
         }

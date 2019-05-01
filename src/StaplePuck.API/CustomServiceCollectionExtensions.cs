@@ -2,6 +2,7 @@
 using GraphQL.Authorization;
 using GraphQL.Server;
 using GraphQL.Server.Internal;
+using GraphQL.Server.Transports.AspNetCore;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -20,7 +21,7 @@ namespace StaplePuck.API
         public static IServiceCollection AddCustomGraphQL(this IServiceCollection services, IHostingEnvironment hostingEnvironment) =>
             services
                 // Add a way for GraphQL.NET to resolve types.
-                .AddSingleton<IDependencyResolver, GraphQLDependencyResolver>()
+                //.AddScoped<IDependencyResolver, GraphQLDependencyResolver>()
                 .AddGraphQL(
                     options =>
                     {
@@ -34,11 +35,11 @@ namespace StaplePuck.API
                         options.ExposeExceptions = hostingEnvironment.IsDevelopment();
                     })
                 // Adds all graph types in the current assembly with a singleton lifetime.
-                .AddGraphTypes()
+                .AddGraphTypes(ServiceLifetime.Scoped)
                 // Adds ConnectionType<T>, EdgeType<T> and PageInfoType.
                 .AddRelayGraphTypes()
                 // Add a user context from the HttpContext and make it available in field resolvers.
-                .AddUserContextBuilder<GraphQLUserContextBuilder>()
+                .AddUserContextBuilderScoped<GraphQLUserContextBuilder>()
                 // Add GraphQL data loader to reduce the number of calls to our repository.
                 .AddDataLoader()
                 .Services;
@@ -82,5 +83,11 @@ namespace StaplePuck.API
                             .AllowAnyMethod()
                             .AllowAnyHeader());
                 });
+
+        public static IGraphQLBuilder AddUserContextBuilderScoped<TUserContextBuilder>(this IGraphQLBuilder builder) where TUserContextBuilder : class, IUserContextBuilder
+        {
+            ServiceCollectionServiceExtensions.AddScoped<IUserContextBuilder, TUserContextBuilder>(builder.Services);
+            return builder;
+        }
     }
 }

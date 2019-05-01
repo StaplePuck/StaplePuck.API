@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using StaplePuck.Core.Fantasy;
 using StaplePuck.Core.Scoring;
 using StaplePuck.Core.Stats;

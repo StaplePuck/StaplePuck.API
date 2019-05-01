@@ -11,16 +11,16 @@ namespace StaplePuck.API.Graphs
             Field(x => x.PositionTypeId);
             Field(x => x.TeamId);
             Field(x => x.SeasonId);
-            AddNavigationField<PlayerGraph, Player>(
+            AddNavigationField(
                 name: "player",
                 resolve: context => context.Source.Player);
-            AddNavigationField<SeasonGraph, Season>(
+            AddNavigationField(
                 name: "season",
                 resolve: context => context.Source.Season);
-            AddNavigationField<TeamGraph, Team>(
+            AddNavigationField(
                 name: "team",
                 resolve: context => context.Source.Team);
-            AddNavigationField<PositionTypeGraph, PositionType>(
+            AddNavigationField(
                 name: "positionType",
                 resolve: context => context.Source.PositionType);
         }

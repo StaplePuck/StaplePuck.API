@@ -9,7 +9,7 @@ namespace StaplePuck.API.Graphs
         {
             Field(x => x.Id);
             Field(x => x.Name);
-            AddNavigationField<ScoringTypeGraph, ScoringType>(
+            AddNavigationListField(
                 name: "scoringTypes",
                 resolve: context => context.Source.ScoringTypes);
         }
