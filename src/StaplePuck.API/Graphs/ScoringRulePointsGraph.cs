@@ -8,16 +8,16 @@ namespace StaplePuck.API.Graphs
     {
         public ScoringRulePointsGraph(IEfGraphQLService graphQLService) : base(graphQLService)
         {
-            AddNavigationField<LeagueGraph, League>(
+            AddNavigationField(
                 name: "league",
                 resolve: context => context.Source.League);
             Field(x => x.PointsPerScore);
             Field(x => x.PositionTypeId);
             Field(x => x.ScoringTypeId);
-            AddNavigationField<PositionTypeGraph, PositionType>(
+            AddNavigationField(
                 name: "positionType",
                 resolve: context => context.Source.PositionType);
-            AddNavigationField<ScoringTypeGraph, ScoringType>(
+            AddNavigationField(
                 name: "scoringType",
                 resolve: context => context.Source.ScoringType);
         }

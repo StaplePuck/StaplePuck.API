@@ -11,20 +11,20 @@ namespace StaplePuck.API.Graphs
             Field(x => x.Id);
             Field(x => x.ExternalId);
             Field(x => x.FullName);
-            AddNavigationField<GameDateSeasonGraph, GameDateSeason>(
+            AddNavigationListField(
                 name: "gameDates",
                 resolve: context => context.Source.GameDates);
-            AddNavigationField<PlayerSeasonGraph, PlayerSeason>(
+            AddNavigationListField(
                 name: "playerSeasons",
                 resolve: context => context.Source.PlayerSeasons);
-            AddNavigationField<TeamSeasonGraph, TeamSeason>(
+            AddNavigationListField(
                 name: "teamSeasons",
                 resolve: context => context.Source.TeamSeasons);
             Field(x => x.IsPlayoffs);
-            AddNavigationField<LeagueGraph, League>(
+            AddNavigationListField(
                 name: "leagues",
                 resolve: context => context.Source.Leagues);
-            AddNavigationField<SportGraph, Sport>(
+            AddNavigationField(
                 name: "sport",
                 resolve: context => context.Source.Sport);
             Field(x => x.StartRound);

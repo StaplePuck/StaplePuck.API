@@ -7,10 +7,10 @@ namespace StaplePuck.API.Graphs
     {
         public ScoringPositionsGraph(IEfGraphQLService graphQLService) : base(graphQLService)
         {
-            AddNavigationField<PositionTypeGraph, PositionType>(
+            AddNavigationField(
                 name: "positionType",
                 resolve: context => context.Source.PositionType);
-            AddNavigationField<ScoringTypeGraph, ScoringType>(
+            AddNavigationField(
                 name: "scoringType",
                 resolve: context => context.Source.ScoringType);
         }

@@ -131,6 +131,8 @@ namespace StaplePuck.Data.Repositories
 
             var existingGameDate = await _db.GameDates
                 .Include(x => x.GameDateSeasons)
+                .Include(x => x.PlayersStatsOnDate).ThenInclude(x => x.Player)
+                .Include(x => x.PlayersStatsOnDate).ThenInclude(x => x.PlayerScores)
                 .Include(x => x.TeamsStateOnDate).ThenInclude(x => x.Team)
                 .FirstOrDefaultAsync(x => x.Id == gameDate.Id);
             if (existingGameDate == null)
@@ -179,13 +181,12 @@ namespace StaplePuck.Data.Repositories
                 }
             }
 
-            var addTasks = new List<Task>();
-            var updateTasks = new List<Task>();
             var scoringTypes = await _db.ScoringTypes.Where(x => x.SportId == sportId).ToListAsync();
             var players = _db.Seasons.Include(x => x.PlayerSeasons).ThenInclude(x => x.Player).Where(x => x.SportId == sportId).SelectMany(x => x.PlayerSeasons).Select(x => x.Player);
             foreach (var item in gameDate.PlayersStatsOnDate)
             {
                 var existingPlayer = existingGameDate.PlayersStatsOnDate.FirstOrDefault(x => x.Player.ExternalId == item.Player.ExternalId);
+
                 if (existingPlayer == null)
                 {
                     var player = await players.FirstOrDefaultAsync(x => x.ExternalId == item.Player.ExternalId);
@@ -211,7 +212,8 @@ namespace StaplePuck.Data.Repositories
                         };
                         existingPlayer.PlayerScores.Add(ps);
                     }
-                    addTasks.Add(_db.AddAsync(existingPlayer));
+                    await _db.AddAsync(existingPlayer);
+                    await _db.SaveChangesAsync();
                     updated = true;
                 }
                 else
@@ -224,11 +226,13 @@ namespace StaplePuck.Data.Repositories
                         {
                             existingScore = new PlayerScore
                             {
+                                PlayerStatsOnDateId = existingPlayer.Id,
                                 Total = score.Total,
                                 AdminOverride = false,
                                 ScoringTypeId = type.Id
                             };
-                            addTasks.Add(_db.AddAsync(existingScore));
+                            await _db.AddAsync(existingScore);
+                            await _db.SaveChangesAsync();
                             updated = true;
                         }
                         else
@@ -243,7 +247,7 @@ namespace StaplePuck.Data.Repositories
                     }
 
                     var zeroOut = existingPlayer.PlayerScores.Where(l1 => !item.PlayerScores
-                        .Any(newScores => newScores.PlayerStatsOnDateId == l1.PlayerStatsOnDateId && newScores.ScoringType.Name == l1.ScoringType.Name));
+                        .Any(newScores => newScores.ScoringType.Name == l1.ScoringType.Name));
                     foreach (var zero in zeroOut)
                     {
                         if (!zero.AdminOverride)
@@ -256,7 +260,6 @@ namespace StaplePuck.Data.Repositories
                 }
             }
 
-            await Task.WhenAll(addTasks);
             await _db.SaveChangesAsync();
             if (updated)
             {

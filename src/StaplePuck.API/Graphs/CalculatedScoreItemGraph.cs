@@ -9,7 +9,7 @@ namespace StaplePuck.API.Graphs
         public CalculatedScoreItemGraph(IEfGraphQLService graphQLService) : base(graphQLService)
         {
             Field(x => x.Score);
-            AddNavigationField<ScoringTypeGraph, ScoringType>(
+            AddNavigationField(
                 name: "scoringType",
                 resolve: context => context.Source.ScoringType);
             Field(x => x.TodaysScore);

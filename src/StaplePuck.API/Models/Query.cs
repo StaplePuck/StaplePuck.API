@@ -12,6 +12,8 @@ using StaplePuck.Core.Auth;
 using StaplePuck.Core.Fantasy;
 using StaplePuck.Core.Stats;
 using StaplePuck.Data;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace StaplePuck.API.Models
 {
@@ -29,7 +31,7 @@ namespace StaplePuck.API.Models
             //        return dataContext.FantasyTeams;
             //    });
             
-            AddSingleField<UserGraph, User>(
+            AddSingleField(
                 name: "currentUser",
                 resolve: context =>
                 {
@@ -38,7 +40,7 @@ namespace StaplePuck.API.Models
                     return dataContext.Users.Where(x => x.ExternalId == subject);
                 });
 
-            AddQueryField<FantasyTeamGraph, FantasyTeam>(
+            AddQueryField(
                 name: "fantasyTeams",
                 resolve: context =>
                 {
@@ -46,7 +48,7 @@ namespace StaplePuck.API.Models
                     return dataContext.FantasyTeams;
                 });
 
-            AddQueryField<LeagueGraph, League>(
+            AddQueryField(
                 name: "leagues",
                 resolve: context =>
                 {
@@ -54,7 +56,7 @@ namespace StaplePuck.API.Models
                     return dataContext.Leagues;
                 });
 
-            AddQueryField<PlayerGraph, Player>(
+            AddQueryField(
                 name: "players",
                 resolve: context =>
                 {
@@ -62,7 +64,7 @@ namespace StaplePuck.API.Models
                     return dataContext.Players;
                 });
 
-            AddQueryField<PlayerSeasonGraph, PlayerSeason>(
+            AddQueryField(
                 name: "playerSeasons",
                 resolve: context =>
                 {
@@ -70,7 +72,7 @@ namespace StaplePuck.API.Models
                     return dataContext.PlayerSeasons;
                 });
 
-            AddQueryField<ScoringTypeGraph, ScoringType>(
+            AddQueryField(
                 name: "scoringTypes",
                 resolve: context =>
                 {
@@ -78,7 +80,7 @@ namespace StaplePuck.API.Models
                     return dataContext.ScoringTypes;
                 });
 
-            AddQueryField<SeasonGraph, Season>(
+            AddQueryField(
                 name: "seasons",
                 resolve: context =>
                 {
@@ -86,7 +88,7 @@ namespace StaplePuck.API.Models
                     return dataContext.Seasons;
                 });
 
-            AddQueryField<SportGraph, Sport>(
+            AddQueryField(
                 name: "sports",
                 resolve: context =>
                 {
@@ -94,7 +96,7 @@ namespace StaplePuck.API.Models
                     return dataContext.Sports;
                 });
 
-            AddQueryField<TeamGraph, Team>(
+            AddQueryField(
                 name: "teams",
                 resolve: context =>
                 {
@@ -102,13 +104,28 @@ namespace StaplePuck.API.Models
                     return dataContext.Teams;
                 });
 
-            AddQueryField<UserGraph, User>(
+            AddQueryField(
                 name: "users",
                 resolve: context =>
                 {
                     var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
                     return dataContext.Users;
                 });
+
+            Field<ListGraphType<ScoringTypeHeaderGraph>>(
+                name: "scoringTypeHeader",
+                resolve: context =>
+                {
+                    var id = context.GetArgument<int>("id");
+                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
+                    var query = dataContext.Leagues.Include(x => x.ScoringRules).ThenInclude(x => x.ScoringType).Where(x => x.Id == id);
+                    return null;
+                },
+                arguments: new QueryArguments(
+                new QueryArgument<IntGraphType>
+                {
+                    Name = "id"
+                }));
         }
     }
 }

@@ -9,11 +9,11 @@ namespace StaplePuck.API.Graphs
         {
             Field(x => x.Id);
             Field(x => x.Name);
-            AddNavigationField<ScoringPositionsGraph, ScoringPositions>(
+            AddNavigationListField(
                 name: "scoringPositions",
                 resolve: context => context.Source.ScoringPositions);
             Field(x => x.ShortName);
-            AddNavigationField<SportGraph, Sport>(
+            AddNavigationField(
                 name: "sport",
                 resolve: context => context.Source.Sport);
         }

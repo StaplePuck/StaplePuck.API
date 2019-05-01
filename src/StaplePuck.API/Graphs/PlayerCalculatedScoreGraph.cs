@@ -10,11 +10,11 @@ namespace StaplePuck.API.Graphs
         {
             Field(x => x.NumberOfSelectedByTeams);
             Field(x => x.GameState);
-            AddNavigationField<PlayerGraph, Player>(
+            AddNavigationField(
                 name: "player",
                 resolve: context => context.Source.Player);
             Field(x => x.Score);
-            AddNavigationField<CalculatedScoreItemGraph, CalculatedScoreItem>(
+            AddNavigationListField(
                 name: "scoring",
                 resolve: context => context.Source.Scoring);
             

@@ -13,7 +13,7 @@ namespace StaplePuck.API.Graphs
             Field(x => x.Name);
             Field(x => x.ShortName);
             Field(x => x.LocationName);
-            AddNavigationField<TeamStateOnDateGraph, TeamStateOnDate>(
+            AddNavigationListField(
                 name: "teamStateOnDates",
                 resolve: context => context.Source.TeamStateOnDates);
         }
