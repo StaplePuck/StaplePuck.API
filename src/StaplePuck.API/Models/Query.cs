@@ -8,6 +8,7 @@ using GraphQL.EntityFramework;
 using GraphQL.Types;
 using StaplePuck.API.Auth;
 using StaplePuck.API.Graphs;
+using StaplePuck.Core;
 using StaplePuck.Core.Auth;
 using StaplePuck.Core.Fantasy;
 using StaplePuck.Core.Stats;
@@ -113,13 +114,14 @@ namespace StaplePuck.API.Models
                 });
 
             Field<ListGraphType<ScoringTypeHeaderGraph>>(
-                name: "scoringTypeHeader",
+                name: "scoringTypeHeaders",
                 resolve: context =>
                 {
                     var id = context.GetArgument<int>("id");
                     var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
-                    var query = dataContext.Leagues.Include(x => x.ScoringRules).ThenInclude(x => x.ScoringType).Where(x => x.Id == id);
-                    return null;
+                    var league = dataContext.Leagues.Include(x => x.ScoringRules).ThenInclude(x => x.ScoringType).FirstOrDefault(x => x.Id == id);
+                    var scoring = league.ScoringRules.Where(x => x.PointsPerScore != 0).Select(x => x.ScoringType);
+                    return scoring.Distinct();
                 },
                 arguments: new QueryArguments(
                 new QueryArgument<IntGraphType>
