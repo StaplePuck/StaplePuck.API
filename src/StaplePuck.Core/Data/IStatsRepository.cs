@@ -14,5 +14,7 @@ namespace StaplePuck.Core.Data
         Task<ResultModel> Update(GameDate gameDate);
 
         Task<ResultModel> Update(League league);
+
+        Task<ResultModel> Update(PlayerStatsOnDate playerStatsOnDate);
     }
 }

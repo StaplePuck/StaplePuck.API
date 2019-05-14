@@ -350,7 +350,45 @@ namespace StaplePuck.Data.Repositories
             return new ResultModel { Id = league.Id, Message = "Success", Success = true };
         }
 
+        public async Task<ResultModel> Update(PlayerStatsOnDate playerStatsOnDate)
+        {
+            var existingPlayerStat = await _db.PlayerStatsOnDates.Include(x => x.PlayerScores)
+                .FirstOrDefaultAsync(x => x.GameDateId == playerStatsOnDate.GameDateId && x.PlayerId == playerStatsOnDate.PlayerId);
+            if (existingPlayerStat == null)
+            {
+                existingPlayerStat = new PlayerStatsOnDate
+                {
+                    GameDateId = playerStatsOnDate.GameDateId,
+                    PlayerId = playerStatsOnDate.PlayerId
+                };
+                await _db.AddAsync(existingPlayerStat);
+                await _db.SaveChangesAsync();
+            }
 
+            foreach (var item in playerStatsOnDate.PlayerScores)
+            {
+                var existingScore = existingPlayerStat.PlayerScores.FirstOrDefault(x => x.ScoringTypeId == item.ScoringTypeId);
+                if (existingScore == null)
+                {
+                    existingScore = new PlayerScore
+                    {
+                        AdminOverride = true,
+                        Total = item.Total,
+                        ScoringTypeId = item.ScoringTypeId,
+                        PlayerStatsOnDateId = existingPlayerStat.Id
+                    };
+                    await _db.AddAsync(existingScore);
+                }
+                else
+                {
+                    existingScore.Total = item.Total;
+                    existingScore.AdminOverride = true;
+                    _db.Update(existingScore);
+                }
+            }
+            await _db.SaveChangesAsync();
+            return new ResultModel { Id = existingPlayerStat.Id, Message = "Sucess", Success = true };
+        }
 
         /*
             var addTasks = new List<Task>();
