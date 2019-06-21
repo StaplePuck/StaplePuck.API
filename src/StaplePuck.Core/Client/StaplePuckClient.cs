@@ -41,21 +41,29 @@ namespace StaplePuck.Core.Client
         /// <typeparam name="T">The type of object to update.</typeparam>
         /// <param name="mutationName">The name of the mutation.</param>
         /// <param name="value">The value to update.</param>
+        /// <param name="typeName">The name of the type for the variable.</param>
         /// <returns>The resulting message.</returns>
-        public async Task<ResultModel> UpdateAsync<T>(string mutationName, T value, string variableName = null)
+        public async Task<ResultModel> UpdateAsync<T>(string mutationName, T value, string variableName = null, string typeName = null)
         {
             var name = typeof(T).Name;
-            var lowerName = Char.ToLowerInvariant(name[0]) + name.Substring(1);
+            var inputName = string.Concat(name, "Input");
+            if (!string.IsNullOrEmpty(typeName))
+            {
+                name = typeName.Trim('[', ']');
+                inputName = typeName;
+            }
+            var lowerName = (Char.ToLowerInvariant(name[0]) + name.Substring(1));
 
             if (string.IsNullOrEmpty(variableName))
             {
                 variableName = lowerName;
             }
+            
             var variables = new ExpandoObject() as IDictionary<string, object>;
             variables.Add(name, value);
             var request = new GraphQLRequest
             {
-                Query = string.Concat("mutation ($", lowerName, ": ", name, "Input!){ \n",
+                Query = string.Concat("mutation ($", lowerName, ": ", inputName, "!){ \n",
                     mutationName, "(", variableName, ": $", lowerName, ") { \n",
                     "    id\n",
                     "    success\n",

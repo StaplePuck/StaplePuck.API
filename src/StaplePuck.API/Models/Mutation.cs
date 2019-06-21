@@ -164,6 +164,17 @@ namespace StaplePuck.API.Models
                 }).AuthorizeWith(AuthorizationPolicyName.WriteStats);
 
             Field<ResultGraph>(
+                "updateTeamStates",
+                arguments: new QueryArguments(
+                    new QueryArgument<ListGraphType<TeamStateForSeasonInputType>> { Name = "teamStates" }
+                ),
+                resolve: context =>
+                {
+                    var gameDate = context.GetArgument<TeamStateForSeason[]>("teamStates");
+                    return statsRepository.Update(gameDate);
+                }).AuthorizeWith(AuthorizationPolicyName.WriteStats);
+
+            Field<ResultGraph>(
                 "updateLeagueScores",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<LeagueScoreInputType>> { Name = "league" }

@@ -18,7 +18,6 @@ namespace StaplePuck.API.Graphs.Input
             //Field<StringGraphType>("playersStatsOnDate");
 
             Field<ListGraphType<GameDateSeasonInputType>>("gameDateSeasons");
-            Field<ListGraphType<TeamStateOnDateInputType>>("teamsStateOnDate");
             Field<ListGraphType<PlayerStatsOnDateInputType>>("playersStatsOnDate");
         }
     }

@@ -18,5 +18,9 @@ namespace StaplePuck.Core.Fantasy
         public League League { get; set; }
 
         public PlayerCalculatedScore PlayerCalculatedScore { get; set; }
+
+        public int SeasonId{ get; set; }
+        public PlayerSeason PlayerSeason { get; set; }
+
     }
 }

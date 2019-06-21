@@ -7,18 +7,17 @@ using GraphQL.Types;
 
 namespace StaplePuck.API.Graphs.Input
 {
-    public class TeamStateOnDateInputType : InputObjectGraphType
+    public class TeamStateForSeasonInputType : InputObjectGraphType
     {
-        public TeamStateOnDateInputType()
+        public TeamStateForSeasonInputType()
         {
-            Name = "TeamStateOnDateInput";
+            Name = "TeamStateForSeasonInput";
             Field<NonNullGraphType<TeamStatInputType>>("team");
+            Field<NonNullGraphType<SeasonStatInputType>>("season");
             Field<NonNullGraphType<IntGraphType>>("gameState");
 
-            Field<IntGraphType>("id");
             Field<IntGraphType>("teamId");
-            Field<StringGraphType>("gameDateId");
-            Field<StringGraphType>("gameDate");
+            Field<IntGraphType>("seasonId");
         }
     }
 }

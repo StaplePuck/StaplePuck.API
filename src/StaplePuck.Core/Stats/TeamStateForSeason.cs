@@ -4,13 +4,12 @@ using System.Text;
 
 namespace StaplePuck.Core.Stats
 {
-    public class TeamStateOnDate
+    public class TeamStateForSeason
     {
-        public int Id { get; set; }
         public int TeamId { get; set; }
         public Team Team { get; set; }
-        public string GameDateId { get; set; }
-        public GameDate GameDate { get; set; }
+        public int SeasonId { get; set; }
+        public Season Season { get; set; }
         public int GameState { get; set; }
     }
 }

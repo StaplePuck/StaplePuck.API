@@ -133,7 +133,7 @@ namespace StaplePuck.Data.Repositories
                 .Include(x => x.GameDateSeasons)
                 .Include(x => x.PlayersStatsOnDate).ThenInclude(x => x.Player)
                 .Include(x => x.PlayersStatsOnDate).ThenInclude(x => x.PlayerScores)
-                .Include(x => x.TeamsStateOnDate).ThenInclude(x => x.Team)
+                //.Include(x => x.TeamsStateOnDate).ThenInclude(x => x.Team)
                 .FirstOrDefaultAsync(x => x.Id == gameDate.Id);
             if (existingGameDate == null)
             {
@@ -155,29 +155,6 @@ namespace StaplePuck.Data.Repositories
                         GameDateId = gameDate.Id
                     };
                     await _db.GameDateSeason.AddAsync(existingSeason);
-                }
-            }
-
-            var teams = _db.Seasons.Include(x => x.TeamSeasons).ThenInclude(x => x.Team).Where(x => x.SportId == sportId).SelectMany(x => x.TeamSeasons).Select(x => x.Team);
-            foreach (var item in gameDate.TeamsStateOnDate)
-            {
-                var existingTeam = existingGameDate.TeamsStateOnDate.FirstOrDefault(x => x.Team.ExternalId == item.Team.ExternalId);
-                if (existingTeam == null)
-                {
-                    var team = await teams.FirstOrDefaultAsync(x => x.ExternalId == item.Team.ExternalId);
-                    if (team == null)
-                    {
-                        Console.Out.WriteLine($"Warning: unable to find team {item.Team.ExternalId}");
-                        continue;
-                    }
-                    existingTeam = new TeamStateOnDate
-                    {
-                        TeamId = team.Id,
-                        GameDateId = gameDate.Id,
-                        GameState = item.GameState
-                    };
-
-                    await _db.TeamStateOnDate.AddAsync(existingTeam);
                 }
             }
 
@@ -390,6 +367,52 @@ namespace StaplePuck.Data.Repositories
             return new ResultModel { Id = existingPlayerStat.Id, Message = "Sucess", Success = true };
         }
 
+        public async Task<ResultModel> Update(TeamStateForSeason[] teamStates)
+        {
+            if (teamStates.Length == 0)
+            {
+                return new ResultModel { Id = 0, Message = "No team states", Success = false };
+            }
+
+            var seasons = _db.Seasons.Where(x => x.ExternalId == teamStates.First().Season.ExternalId);
+            foreach (var season in seasons)
+            {
+                var teams = _db.Seasons
+                    .Include(x => x.TeamSeasons).ThenInclude(x => x.Team)
+                    .Where(x => x.Id == season.Id)
+                    .SelectMany(x => x.TeamSeasons).Select(x => x.Team);
+                var existingTeamStates = _db.TeamStateForSeason.Where(x => x.SeasonId == season.Id).Include(x => x.Team);
+                foreach (var item in teamStates)
+                {
+                    var team = await teams.FirstOrDefaultAsync(x => x.ExternalId == item.Team.ExternalId);
+                    if (team == null)
+                    {
+                        Console.Out.WriteLine($"Team not part of season {item.Team.ExternalId}");
+                        continue;
+                    }
+                    var existingState = await existingTeamStates.FirstOrDefaultAsync(x => x.TeamId == team.Id);
+                    if (existingState == null)
+                    {
+                        existingState = new TeamStateForSeason
+                        {
+                            GameState = item.GameState,
+                            TeamId = team.Id,
+                            SeasonId = season.Id
+                        };
+                        await _db.AddAsync(existingState);
+                    }
+                    else
+                    {
+                        existingState.GameState = item.GameState;
+                        _db.Update(existingState);
+                    }
+                }
+            }
+
+            await _db.SaveChangesAsync();
+            return new ResultModel { Id = 1, Message = "Success", Success = true };
+        }
+
         /*
             var addTasks = new List<Task>();
             var updateTasks = new List<Task>();
@@ -451,4 +474,4 @@ namespace StaplePuck.Data.Repositories
                 updated = true;
             }*/
     }
-                }
+}
