@@ -16,7 +16,7 @@ namespace StaplePuck.Core
 
         public static string ToGameDateId(this DateTime date)
         {
-            return date.ToString("yyyy-MM-d");
+            return date.ToString("yyyy-MM-dd");
         }
 
         public static DateTime TodaysDate()

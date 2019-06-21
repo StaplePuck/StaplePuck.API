@@ -23,6 +23,9 @@ namespace StaplePuck.API.Graphs
             AddNavigationField(
                 name: "positionType",
                 resolve: context => context.Source.PositionType);
+            AddNavigationField(
+                name: "teamStateForSeason",
+                resolve: context => context.Source.TeamStateForSeason);
         }
     }
 }

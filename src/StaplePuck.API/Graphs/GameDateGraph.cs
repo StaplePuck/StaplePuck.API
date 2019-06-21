@@ -14,9 +14,6 @@ namespace StaplePuck.API.Graphs
             AddNavigationListField(
                 name: "playersStatsOnDate",
                 resolve: context => context.Source.PlayersStatsOnDate);
-            AddNavigationListField(
-                name: "teamsStateOnDate",
-                resolve: context => context.Source.TeamsStateOnDate);
         }
     }
 }

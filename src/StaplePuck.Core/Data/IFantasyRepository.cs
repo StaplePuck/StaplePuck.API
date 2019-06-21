@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using StaplePuck.Core.Fantasy;
+using StaplePuck.Core.Stats;
 
 namespace StaplePuck.Core.Data
 {

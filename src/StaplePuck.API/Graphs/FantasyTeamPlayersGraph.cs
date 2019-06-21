@@ -19,6 +19,9 @@ namespace StaplePuck.API.Graphs
             AddNavigationField(
                 name: "playerCalculatedScore",
                 resolve: context => context.Source.PlayerCalculatedScore);
+            AddNavigationField(
+                name: "playerSeason",
+                resolve: context => context.Source.PlayerSeason);
         }
     }
 }

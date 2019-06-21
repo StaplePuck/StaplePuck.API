@@ -75,7 +75,7 @@ namespace StaplePuck.API
             GraphTypeTypeRegistry.Register<Sport, Graphs.SportGraph>();
             GraphTypeTypeRegistry.Register<Team, Graphs.TeamGraph>();
             GraphTypeTypeRegistry.Register<TeamSeason, Graphs.TeamSeasonGraph>();
-            GraphTypeTypeRegistry.Register<TeamStateOnDate, Graphs.TeamStateOnDateGraph>();
+            GraphTypeTypeRegistry.Register<TeamStateForSeason, Graphs.TeamStateForSeasonGraph>();
             GraphTypeTypeRegistry.Register<User, Graphs.UserGraph>();
 
 

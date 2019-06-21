@@ -12,6 +12,5 @@ namespace StaplePuck.Core.Stats
         public string ShortName { get; set; }
         public string LocationName { get; set; }
         public int ExternalId { get; set; }
-        public List<TeamStateOnDate> TeamStateOnDates { get; set; }
     }
 }

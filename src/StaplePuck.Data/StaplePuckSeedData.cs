@@ -106,6 +106,14 @@ namespace StaplePuck.Data
             //    db.UpdateRange(team.FantasyTeamPlayers);
             //}
             //db.SaveChanges();
+
+            //var teamPlayers = db.FantasyTeamPlayers.Include(x => x.League);
+            //foreach (var player in teamPlayers)
+            //{
+            //    player.SeasonId = player.League.SeasonId;
+            //    db.Update(player);
+            //}
+            //db.SaveChanges();
         }
     }
 }

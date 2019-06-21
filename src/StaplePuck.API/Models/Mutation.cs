@@ -164,6 +164,17 @@ namespace StaplePuck.API.Models
                 }).AuthorizeWith(AuthorizationPolicyName.WriteStats);
 
             Field<ResultGraph>(
+                "updateTeamStates",
+                arguments: new QueryArguments(
+                    new QueryArgument<ListGraphType<TeamStateForSeasonInputType>> { Name = "teamStates" }
+                ),
+                resolve: context =>
+                {
+                    var gameDate = context.GetArgument<TeamStateForSeason[]>("teamStates");
+                    return statsRepository.Update(gameDate);
+                }).AuthorizeWith(AuthorizationPolicyName.WriteStats);
+
+            Field<ResultGraph>(
                 "updateLeagueScores",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<LeagueScoreInputType>> { Name = "league" }
@@ -172,6 +183,17 @@ namespace StaplePuck.API.Models
                 {
                     var league = context.GetArgument<League>("league");
                     return statsRepository.Update(league);
+                }).AuthorizeWith(AuthorizationPolicyName.WriteStats);
+
+            Field<ResultGraph>(
+                "overridePlayerScore",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<PlayerStatsOnDateUpdateInputType>> { Name = "playerStats" }
+                ),
+                resolve: context =>
+                {
+                    var playerStats = context.GetArgument<PlayerStatsOnDate>("playerStats");
+                    return statsRepository.Update(playerStats);
                 }).AuthorizeWith(AuthorizationPolicyName.WriteStats);
         }
     }

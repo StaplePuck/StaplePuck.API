@@ -36,7 +36,7 @@ namespace StaplePuck.Data
         public DbSet<Sport> Sports { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamSeason> TeamSeasons { get; set; }
-        public DbSet<TeamStateOnDate> TeamStateOnDate { get; set; }
+        public DbSet<TeamStateForSeason> TeamStateForSeason { get; set; }
 
         public DbSet<CalculatedScoreItem> CalculatedScoreItems { get; set; }
         public DbSet<PlayerCalculatedScore> PlayerCalculatedScores { get; set; }
@@ -144,6 +144,9 @@ namespace StaplePuck.Data
             //    .WithMany(x => x.PlayerCalculatedScores)
             //    .HasForeignKey(x => x.LeagueId);
 
+            // TeamStateForSeason
+            modelBuilder.Entity<TeamStateForSeason>()
+                .HasKey(x => new { x.SeasonId, x.TeamId });
         }
     }
 }
