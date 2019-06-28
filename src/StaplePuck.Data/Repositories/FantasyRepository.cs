@@ -118,13 +118,23 @@ namespace StaplePuck.Data.Repositories
             return new ResultModel { Id = team.Id, Message = "Success", Success = true };
         }
 
-        public async Task<List<string>> ValidateNew(FantasyTeam team)
+        public async Task<List<string>> ValidateNew(FantasyTeam team, string userExternalId)
         {
             var errors = new List<string>();
 
             if (await _db.FantasyTeams.AnyAsync(x => x.LeagueId == team.LeagueId && x.Name.Equals(team.Name.Trim(), StringComparison.CurrentCultureIgnoreCase)))
             {
                 errors.Add("Team name already exists");
+            }
+
+            var leagueInfo = await _db.Leagues.Include(x => x.FantasyTeams).ThenInclude(x => x.GM).SingleOrDefaultAsync(x => x.Id == team.LeagueId);
+            if (leagueInfo.IsLocked)
+            {
+                errors.Add("League is currently locked");
+            }
+            if (!leagueInfo.AllowMultipleTeams && (leagueInfo.FantasyTeams.Count(x => x.GM.ExternalId == userExternalId) > 0))
+            {
+                errors.Add("This league only allows one team per user");
             }
 
             return errors;
