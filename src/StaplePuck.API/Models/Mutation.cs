@@ -115,7 +115,7 @@ namespace StaplePuck.API.Models
                     }
                     else
                     {
-                        context.Errors.AddRange(fantasyRepository.ValidateNew(team).Result.Select(x => new GraphQL.ExecutionError(x)));
+                        context.Errors.AddRange(fantasyRepository.ValidateNew(team, subject).Result.Select(x => new GraphQL.ExecutionError(x)));
                     }
 
                     if (context.Errors.Count > 0)

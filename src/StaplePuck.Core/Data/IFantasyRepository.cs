@@ -18,6 +18,6 @@ namespace StaplePuck.Core.Data
         Task<bool> EmailAlreadyExists(string email, string userExternalId);
         Task<ResultModel> Update(FantasyTeam team, bool isValid);
         Task<List<string>> Validate(FantasyTeam team);
-        Task<List<string>> ValidateNew(FantasyTeam team);
+        Task<List<string>> ValidateNew(FantasyTeam team, string userExternalId);
     }
 }
