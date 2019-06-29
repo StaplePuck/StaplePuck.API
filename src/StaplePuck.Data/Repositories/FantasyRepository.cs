@@ -142,6 +142,11 @@ namespace StaplePuck.Data.Repositories
 
         public async Task<ResultModel> Update(FantasyTeam team, bool isValid)
         {
+            var leagueInfo = await _db.Leagues.FirstOrDefaultAsync(x => x.Id == team.LeagueId);
+            if (leagueInfo == null || leagueInfo.IsLocked)
+            {
+                return new ResultModel { Id = team.Id, Message = "League is locked", Success = false };
+            }
             var currentTeam = await _db.FantasyTeams.FirstOrDefaultAsync(x => x.Id == team.Id);
 
             // remove existing assigned players
