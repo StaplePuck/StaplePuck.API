@@ -18,12 +18,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace StaplePuck.API.Models
 {
-    public class Query : EfObjectGraphType
+    public class Query : QueryGraphType<StaplePuckContext>
     {
-        private StaplePuckContext _staplePuckContext;
-        public Query(IEfGraphQLService efGraphQlService, StaplePuckContext staplePuckContext, IOptions<Auth0APISettings> options) : base(efGraphQlService)
+        public Query(IEfGraphQLService<StaplePuckContext> efGraphQlService, IOptions<Auth0APISettings> options) : base(efGraphQlService)
         {
-            _staplePuckContext = staplePuckContext;
             //AddQueryField<FantasyTeamGraph, FantasyTeam>(
             //    name: "fantasyTeams",
             //    resolve: context =>

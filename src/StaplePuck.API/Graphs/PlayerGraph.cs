@@ -1,12 +1,13 @@
 ﻿using GraphQL.EntityFramework;
 using StaplePuck.Core.Fantasy;
 using StaplePuck.Core.Stats;
+using StaplePuck.Data;
 
 namespace StaplePuck.API.Graphs
 {
-    public class PlayerGraph : EfObjectGraphType<Player>
+    public class PlayerGraph : EfObjectGraphType<StaplePuckContext, Player>
     {
-        public PlayerGraph(IEfGraphQLService graphQLService) : base(graphQLService)
+        public PlayerGraph(IEfGraphQLService<StaplePuckContext> graphQLService) : base(graphQLService)
         {
             Field(x => x.Id);
             Field(x => x.ExternalId);

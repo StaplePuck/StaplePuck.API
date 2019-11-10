@@ -1,12 +1,13 @@
 ﻿using GraphQL.EntityFramework;
 using StaplePuck.Core.Fantasy;
 using StaplePuck.Core.Stats;
+using StaplePuck.Data;
 
 namespace StaplePuck.API.Graphs
 {
-    public class ScoringRulePointsGraph : EfObjectGraphType<ScoringRulePoints>
+    public class ScoringRulePointsGraph : EfObjectGraphType<StaplePuckContext, ScoringRulePoints>
     {
-        public ScoringRulePointsGraph(IEfGraphQLService graphQLService) : base(graphQLService)
+        public ScoringRulePointsGraph(IEfGraphQLService<StaplePuckContext> graphQLService) : base(graphQLService)
         {
             AddNavigationField(
                 name: "league",

@@ -2,12 +2,13 @@
 using StaplePuck.Core.Fantasy;
 using StaplePuck.Core.Stats;
 using StaplePuck.Core.Scoring;
+using StaplePuck.Data;
 
 namespace StaplePuck.API.Graphs
 {
-    public class LeagueGraph : EfObjectGraphType<League>
+    public class LeagueGraph : EfObjectGraphType<StaplePuckContext, League>
     {
-        public LeagueGraph(IEfGraphQLService graphQLService) : base(graphQLService)
+        public LeagueGraph(IEfGraphQLService<StaplePuckContext> graphQLService) : base(graphQLService)
         {
             Field(x => x.Id);
             Field(x => x.AllowMultipleTeams);

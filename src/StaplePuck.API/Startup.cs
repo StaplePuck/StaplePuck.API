@@ -81,13 +81,23 @@ namespace StaplePuck.API
 
             var connectionString = Configuration["ConnectionStrings:Default"];
             services.AddDbContext<StaplePuckContext>(options => options.UseNpgsql(connectionString));
-
-            var optionsBuilder = new DbContextOptionsBuilder<StaplePuckContext>();
+            var optionsBuilder = new DbContextOptionsBuilder();
             optionsBuilder.UseNpgsql(connectionString);
+            var context = new StaplePuckContext(optionsBuilder.Options);
+            services.AddTransient(_ => DbContextBuilder.BuildDBContext(connectionString));
+            //services.AddScoped(_ => context);
+            services.AddSingleton<Func<StaplePuckContext>>(provider => provider.GetRequiredService<StaplePuckContext>);
 
-            using (var myDataContext = new StaplePuckContext(optionsBuilder.Options))
+
+
+            EfGraphQLConventions.RegisterInContainer<StaplePuckContext>(
+                services,
+                model: StaplePuckContext.GetModel());
+            EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
+
+            foreach (var type in GetGraphQlTypes())
             {
-                EfGraphQLConventions.RegisterInContainer(services, myDataContext.Model);
+                services.AddSingleton(type);
             }
 
             services.Configure<Auth0APISettings>(Configuration.GetSection("Auth0API"));

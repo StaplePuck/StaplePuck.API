@@ -1,11 +1,12 @@
 ﻿using GraphQL.EntityFramework;
 using StaplePuck.Core.Stats;
+using StaplePuck.Data;
 
 namespace StaplePuck.API.Graphs
 {
-    public class ScoringPositionsGraph : EfObjectGraphType<ScoringPositions>
+    public class ScoringPositionsGraph : EfObjectGraphType<StaplePuckContext, ScoringPositions>
     {
-        public ScoringPositionsGraph(IEfGraphQLService graphQLService) : base(graphQLService)
+        public ScoringPositionsGraph(IEfGraphQLService<StaplePuckContext> graphQLService) : base(graphQLService)
         {
             AddNavigationField(
                 name: "positionType",

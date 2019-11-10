@@ -2,12 +2,13 @@
 using StaplePuck.Core.Fantasy;
 using StaplePuck.Core.Scoring;
 using StaplePuck.Core.Stats;
+using StaplePuck.Data;
 
 namespace StaplePuck.API.Graphs
 {
-    public class FantasyTeamPlayersGraph : EfObjectGraphType<FantasyTeamPlayers>
+    public class FantasyTeamPlayersGraph : EfObjectGraphType<StaplePuckContext, FantasyTeamPlayers>
     {
-        public FantasyTeamPlayersGraph(IEfGraphQLService graphQLService) : base(graphQLService)
+        public FantasyTeamPlayersGraph(IEfGraphQLService<StaplePuckContext> graphQLService) : base(graphQLService)
         {
             Field(x => x.PlayerId);
             AddNavigationField(

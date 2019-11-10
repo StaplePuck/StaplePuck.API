@@ -1,11 +1,12 @@
 ﻿using GraphQL.EntityFramework;
 using StaplePuck.Core.Stats;
+using StaplePuck.Data;
 
 namespace StaplePuck.API.Graphs
 {
-    public class TeamGraph : EfObjectGraphType<Team>
+    public class TeamGraph : EfObjectGraphType<StaplePuckContext, Team>
     {
-        public TeamGraph(IEfGraphQLService graphQLService) : base(graphQLService)
+        public TeamGraph(IEfGraphQLService<StaplePuckContext> graphQLService) : base(graphQLService)
         {
             Field(x => x.Id);
             Field(x => x.ExternalId);

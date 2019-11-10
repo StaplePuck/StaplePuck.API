@@ -1,11 +1,12 @@
 ﻿using GraphQL.EntityFramework;
 using StaplePuck.Core.Stats;
+using StaplePuck.Data;
 
 namespace StaplePuck.API.Graphs
 {
-    public class PlayerSeasonGraph : EfObjectGraphType<PlayerSeason>
+    public class PlayerSeasonGraph : EfObjectGraphType<StaplePuckContext, PlayerSeason>
     {
-        public PlayerSeasonGraph(IEfGraphQLService graphQLService) : base(graphQLService)
+        public PlayerSeasonGraph(IEfGraphQLService<StaplePuckContext> graphQLService) : base(graphQLService)
         {
             Field(x => x.PlayerId);
             Field(x => x.PositionTypeId);

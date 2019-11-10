@@ -1,12 +1,13 @@
 ﻿using GraphQL.EntityFramework;
 using StaplePuck.Core.Fantasy;
 using StaplePuck.Core.Stats;
+using StaplePuck.Data;
 
 namespace StaplePuck.API.Graphs
 {
-    public class NumberPerPositionGraph : EfObjectGraphType<NumberPerPosition>
+    public class NumberPerPositionGraph : EfObjectGraphType<StaplePuckContext, NumberPerPosition>
     {
-        public NumberPerPositionGraph(IEfGraphQLService graphQLService) : base(graphQLService)
+        public NumberPerPositionGraph(IEfGraphQLService<StaplePuckContext> graphQLService) : base(graphQLService)
         {
             Field(x => x.Count);
             AddNavigationField(

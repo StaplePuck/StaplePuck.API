@@ -1,12 +1,13 @@
 ﻿using GraphQL.EntityFramework;
 using StaplePuck.Core.Stats;
+using StaplePuck.Data;
 
 
 namespace StaplePuck.API.Graphs
 {
-    public class TeamSeasonGraph : EfObjectGraphType<TeamSeason>
+    public class TeamSeasonGraph : EfObjectGraphType<StaplePuckContext, TeamSeason>
     {
-        public TeamSeasonGraph(IEfGraphQLService graphQLService) : base(graphQLService)
+        public TeamSeasonGraph(IEfGraphQLService<StaplePuckContext> graphQLService) : base(graphQLService)
         {
             Field(x => x.TeamId);
             AddNavigationField(
