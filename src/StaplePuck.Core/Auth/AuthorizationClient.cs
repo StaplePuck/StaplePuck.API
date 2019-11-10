@@ -19,6 +19,7 @@ namespace StaplePuck.Core.Auth
         private readonly IRestClient _restClient;
         private readonly string _issuer;
         private readonly string _authority;
+        private readonly IAuth0Client _auth0Client;
 
         /// <summary>
         /// 
@@ -31,6 +32,7 @@ namespace StaplePuck.Core.Auth
             _issuer = auth0Options.Value.Domain;
             _authority = auth0Options.Value.Authority;
             _restClient = new RestClient(_settings.BaseUrl);
+            _auth0Client = auth0Client;
 
             var token = auth0Client.GetAuthToken();
             _restClient.Authenticator = new JwtAuthenticator(token);
@@ -41,14 +43,22 @@ namespace StaplePuck.Core.Auth
         /// </summary>
         /// <param name="groupName">The name of the group.</param>
         /// <returns>The id of the created group.</returns>
-        private async Task<string> CreateGroupAsync(string groupName)
+        private Task<string> CreateGroupAsync(string groupName)
         {
             var request = new RestRequest("groups", Method.POST);
             request.AddParameter("name", groupName);
             request.AddParameter("description", $"Security group for {groupName}");
 
-            var response = await _restClient.PostAsync<GroupResponse>(request);
-            return response._id;
+            var response = _restClient.Post(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                var token = _auth0Client.GetAuthToken();
+                _restClient.Authenticator = new JwtAuthenticator(token);
+                response = _restClient.Post(request);
+                //if (response.IsSuccessful)
+            }
+            var result = Newtonsoft.Json.JsonConvert.DeserializeObject<GroupResponse>(response.Content);
+            return Task.FromResult(result._id);
         }
 
         /// <summary>
@@ -57,7 +67,7 @@ namespace StaplePuck.Core.Auth
         /// <param name="groupId">The id of the group.</param>
         /// <param name="sub">The id of the user.</param>
         /// <returns>The task completion source.</returns>
-        private async Task AddUserToGroup(string groupId, string sub)
+        private Task AddUserToGroup(string groupId, string sub)
         {
             var request = new RestRequest($"groups/{groupId}/members", Method.PATCH);
             var list = new List<string>();
@@ -65,7 +75,14 @@ namespace StaplePuck.Core.Auth
             request.AddJsonBody(list);
 
             var response = _restClient.Execute(request);
-            await Task.CompletedTask;
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                var token = _auth0Client.GetAuthToken();
+                _restClient.Authenticator = new JwtAuthenticator(token);
+                response = _restClient.Execute(request);
+                // todo log error message if not success
+            }
+            return Task.CompletedTask;
         }
 
         public async Task AssignUserAsGM(string subjectId, int teamId)

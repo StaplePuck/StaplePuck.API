@@ -1,11 +1,12 @@
 ﻿using GraphQL.EntityFramework;
 using StaplePuck.Core.Fantasy;
+using StaplePuck.Data;
 
 namespace StaplePuck.API.Graphs
 {
-    public class FantasyTeamGraph : EfObjectGraphType<FantasyTeam>
+    public class FantasyTeamGraph : EfObjectGraphType<StaplePuckContext, FantasyTeam>
     {
-        public FantasyTeamGraph(IEfGraphQLService graphQLService) : base(graphQLService)
+        public FantasyTeamGraph(IEfGraphQLService<StaplePuckContext> graphQLService) : base(graphQLService)
         {
             Field(x => x.Id);
             Field(x => x.Name);

@@ -1,12 +1,13 @@
 ﻿using GraphQL.EntityFramework;
 using StaplePuck.Core.Scoring;
 using StaplePuck.Core.Stats;
+using StaplePuck.Data;
 
 namespace StaplePuck.API.Graphs
 {
-    public class PlayerCalculatedScoreGraph : EfObjectGraphType<PlayerCalculatedScore>
+    public class PlayerCalculatedScoreGraph : EfObjectGraphType<StaplePuckContext, PlayerCalculatedScore>
     {
-        public PlayerCalculatedScoreGraph(IEfGraphQLService graphQLService) : base(graphQLService)
+        public PlayerCalculatedScoreGraph(IEfGraphQLService<StaplePuckContext> graphQLService) : base(graphQLService)
         {
             Field(x => x.NumberOfSelectedByTeams);
             Field(x => x.GameState);

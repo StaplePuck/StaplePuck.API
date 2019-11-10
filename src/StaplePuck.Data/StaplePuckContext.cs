@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using StaplePuck.Core.Fantasy;
@@ -12,7 +13,23 @@ namespace StaplePuck.Data
         public StaplePuckContext(DbContextOptions options) : base(options)
         {
             //var result = Database.EnsureCreated();
-            Database.Migrate();
+            
+            var dbOptions = options.FindExtension<Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure.Internal.NpgsqlOptionsExtension>();
+            if (dbOptions != null && dbOptions.ConnectionString != "Fake")
+            {
+                //if (options.Extensions.FirstOrDefault()?.)
+                //Database.Migrate();
+            }
+        }
+
+        public static IModel GetModel()
+        {
+            var builder = new DbContextOptionsBuilder();
+            builder.UseNpgsql("Fake");
+            using (var dbContext = new StaplePuckContext(builder.Options))
+            {
+                return dbContext.Model;
+            }
         }
 
         public DbSet<FantasyTeam> FantasyTeams { get; set; }

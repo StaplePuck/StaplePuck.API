@@ -1,11 +1,12 @@
 ﻿using GraphQL.EntityFramework;
 using StaplePuck.Core.Fantasy;
+using StaplePuck.Data;
 
 namespace StaplePuck.API.Graphs
 {
-    public class UserGraph : EfObjectGraphType<User>
+    public class UserGraph : EfObjectGraphType<StaplePuckContext, User>
     {
-        public UserGraph(IEfGraphQLService graphQLService) : base(graphQLService)
+        public UserGraph(IEfGraphQLService<StaplePuckContext> graphQLService) : base(graphQLService)
         {
             Field(x => x.Id);
             // auth?
