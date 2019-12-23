@@ -35,9 +35,14 @@ namespace StaplePuck.API.Models
                 resolve: context =>
                 {
                     var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
-                    var subject = ((GraphQLUserContext)context.UserContext).User.GetUserId(options.Value);
+                    var user = ((GraphQLUserContext)context.UserContext).User;
+                    if (user.Claims.Count() == 0)
+                    {
+                        throw new Exception("Not authenticated");
+                    }
+                    var subject = user.GetUserId(options.Value);
                     return dataContext.Users.Where(x => x.ExternalId == subject);
-                });
+                }).RequiresAuthorization();
 
             AddQueryField(
                 name: "fantasyTeams",

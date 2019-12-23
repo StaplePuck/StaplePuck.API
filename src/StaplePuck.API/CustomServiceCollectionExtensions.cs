@@ -7,6 +7,7 @@ using GraphQL.Validation;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using StaplePuck.API.Constants;
 using System;
@@ -18,7 +19,7 @@ namespace StaplePuck.API
 {
     public static class CustomServiceCollectionExtensions
     {
-        public static IServiceCollection AddCustomGraphQL(this IServiceCollection services, IHostingEnvironment hostingEnvironment) =>
+        public static IServiceCollection AddCustomGraphQL(this IServiceCollection services, IWebHostEnvironment hostingEnvironment) =>
             services
                 // Add a way for GraphQL.NET to resolve types.
                 //.AddScoped<IDependencyResolver, GraphQLDependencyResolver>()
@@ -71,7 +72,7 @@ namespace StaplePuck.API
         /// Add cross-origin resource sharing (CORS) services and configures named CORS policies. See
         /// https://docs.asp.net/en/latest/security/cors.html
         /// </summary>
-        public static IMvcCoreBuilder AddCustomCors(this IMvcCoreBuilder builder) =>
+        public static IServiceCollection AddCustomCors(this IServiceCollection builder) =>
             builder.AddCors(
                 options =>
                 {

@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using StaplePuck.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -33,20 +30,22 @@ using GraphQL.Server.Transports.AspNetCore;
 using GraphQL.Server.Ui.GraphiQL;
 using GraphQL.Validation;
 using StaplePuck.API.Constants;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 //using GraphiQl;
 
 namespace StaplePuck.API
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
+        public Startup(IConfiguration configuration, IWebHostEnvironment hostingEnvironment)
         {
             Configuration = configuration;
             HostingEnvironment = hostingEnvironment;
         }
 
         public IConfiguration Configuration { get; }
-        public IHostingEnvironment HostingEnvironment { get; }
+        public IWebHostEnvironment HostingEnvironment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -101,6 +100,10 @@ namespace StaplePuck.API
             }
 
             services.Configure<Auth0APISettings>(Configuration.GetSection("Auth0API"));
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
             services.AddAuth0Client(Configuration)
                 .AddAuthorizationClient(Configuration);
             services.AddScoped<IStatsRepository, StatsRepository>();
@@ -112,16 +115,17 @@ namespace StaplePuck.API
                 provider => new FuncDependencyResolver(provider.GetRequiredService));
 
 
-            var mvc = services.AddMvcCore()
-                .AddCustomCors()
-                .SetCompatibilityVersion(CompatibilityVersion.Latest)
-                .AddAuthorization()
-                .AddJsonFormatters()
-                .Services
+            //var mvc = services.AddMvc(option => option.EnableEndpointRouting = false);
+            //mvc.SetCompatibilityVersion(CompatibilityVersion.Latest);
+            services.AddCustomCors()
+                //.AddAuthorization()
                 .AddCustomGraphQL(this.HostingEnvironment)
-                .AddCustomGraphQLAuthorization(Configuration)
-                .BuildServiceProvider();
-            
+                .AddCustomGraphQLAuthorization(Configuration);
+
+            var mvc = services.AddMvc(option => option.EnableEndpointRouting = false)
+                .SetCompatibilityVersion(CompatibilityVersion.Latest);
+            mvc.AddNewtonsoftJson();
+
             ConfigureAuth(services);
         }
 
@@ -149,7 +153,7 @@ namespace StaplePuck.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, StaplePuckContext db)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, StaplePuckContext db)
         {
             if (env.IsDevelopment())
             {
@@ -160,14 +164,10 @@ namespace StaplePuck.API
 
             app.UseCors(CorsPolicyName.AllowAny);
             db.EnsureSeedData();
+            app.UseGraphQLWebSockets<ISchema>();
             app.UseGraphQL<ISchema>("/graphql");
             app.UseGraphiQLServer(new GraphiQLOptions());
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
+            app.UseMvc();
         }
     }
 }
