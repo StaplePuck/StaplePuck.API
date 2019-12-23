@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading.Tasks;
 using StaplePuck.Data;
 using System.Text;
-using Microsoft.AspNetCore.Http.Internal;
 
 namespace StaplePuck.API
 {
