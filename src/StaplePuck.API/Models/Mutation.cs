@@ -13,12 +13,13 @@ using StaplePuck.API.Auth;
 using StaplePuck.API.Graphs;
 using StaplePuck.API.Graphs.Input;
 using StaplePuck.API.Constants;
+using Microsoft.Extensions.Logging;
 
 namespace StaplePuck.API.Models
 {
     public class Mutation : ObjectGraphType
     {
-        public Mutation(IFantasyRepository fantasyRepository, IStatsRepository statsRepository, IOptions<Auth0APISettings> options, IAuthorizationClient authorizationClient)
+        public Mutation(IFantasyRepository fantasyRepository, IStatsRepository statsRepository, IOptions<Auth0APISettings> options, IAuthorizationClient authorizationClient, ILogger<Mutation> logger)
         {
             Name = "Mutation";
 
@@ -97,7 +98,7 @@ namespace StaplePuck.API.Models
                     }
 
                     return fantasyRepository.Update(league);
-                }).RequiresAuthorization();
+                }).AuthorizeWith(AuthorizationPolicyName.WriteStats);
 
             Field<ResultGraph>(
                 "createFantasyTeam",

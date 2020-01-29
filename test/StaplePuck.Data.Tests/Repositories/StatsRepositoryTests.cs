@@ -20,7 +20,7 @@ namespace StaplePuck.Data.Tests.Repositories
 
             using (var context = new StaplePuckContext(options))
             {
-                var repo = new StatsRepository(context);
+                //var repo = new StatsRepository(context);
                 //repo.Add();
             }
             //var repo = new StatsRepository();

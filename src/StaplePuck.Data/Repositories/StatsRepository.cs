@@ -8,16 +8,19 @@ using StaplePuck.Core.Data;
 using StaplePuck.Core.Fantasy;
 using StaplePuck.Core.Stats;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace StaplePuck.Data.Repositories
 {
     public class StatsRepository : IStatsRepository
     {
         private readonly StaplePuckContext _db;
+        private readonly ILogger _logger;
 
-        public StatsRepository(StaplePuckContext db)
+        public StatsRepository(StaplePuckContext db, ILogger<IStatsRepository> logger)
         {
             _db = db;
+            _logger = logger;
         }
 
         
@@ -27,8 +30,10 @@ namespace StaplePuck.Data.Repositories
             var sport = await _db.Sports.FirstOrDefaultAsync(x => x.Name == season.Sport.Name);
             if (sport == null)
             {
+                _logger.LogError($"Failed to add season, because sport {season.Sport.Name} does not exist");
                 throw new Exception("Sport not found");
             }
+            _logger.LogInformation($"Adding season {season.FullName}");
             var dbSeason = await _db.Seasons.FirstOrDefaultAsync(x => x.FullName == season.FullName && x.SportId == sport.Id);
             if (dbSeason == null)
             {
@@ -42,11 +47,13 @@ namespace StaplePuck.Data.Repositories
                 };
                 await _db.Seasons.AddAsync(dbSeason);
                 await _db.SaveChangesAsync();
+                _logger.LogInformation($"Added Season {season.FullName}. Id: {dbSeason.Id}");
             }
 
             var positions = await _db.Positions.Where(x => x.SportId == sport.Id).ToListAsync();
             if (season.PlayerSeasons == null)
             {
+                _logger.LogError($"Failed to update player seasons for {dbSeason.FullName} due to no players being defined");
                 return new ResultModel {  Id = -1, Success = false, Message = "No players defined" };
             }
             // get list of teams
@@ -112,9 +119,11 @@ namespace StaplePuck.Data.Repositories
                     }
                 }
 
+                _logger.LogInformation($"Finished updating team {item.FullName} for season {dbSeason.FullName}");
                 await _db.SaveChangesAsync();
             }
 
+            _logger.LogInformation($"Finshed updating season {dbSeason.FullName}");
             return new ResultModel { Id = dbSeason.Id, Message = "Success", Success = true };
         }
 
@@ -124,6 +133,7 @@ namespace StaplePuck.Data.Repositories
             var seasonInfo = await _db.Seasons.FirstOrDefaultAsync(x => x.ExternalId == seasonId);
             if (seasonInfo == null)
             {
+                _logger.LogError($"Failed to update gameDate {gameDate.Id} since season not found");
                 return new ResultModel { Id = -1, Message = "Season not found", Success = false };
             }
             var sportId = seasonInfo.SportId;
@@ -141,6 +151,7 @@ namespace StaplePuck.Data.Repositories
                     Id = gameDate.Id
                 };
                 await _db.GameDates.AddAsync(existingGameDate);
+                _logger.LogInformation($"Added gameDate {gameDate.Id}");
             }
 
             var seasons = _db.Seasons.Where(x => x.ExternalId == seasonId);
@@ -169,7 +180,7 @@ namespace StaplePuck.Data.Repositories
                     var player = await players.FirstOrDefaultAsync(x => x.ExternalId == item.Player.ExternalId);
                     if (player == null)
                     {
-                        Console.Out.WriteLine($"Warning: unable to find team {item.Player.ExternalId}");
+                        _logger.LogWarning($"Unable to find team {item.Player.ExternalId}");
                         continue;
                     }
                     existingPlayer = new PlayerStatsOnDate
@@ -238,6 +249,7 @@ namespace StaplePuck.Data.Repositories
             }
 
             await _db.SaveChangesAsync();
+            _logger.LogInformation($"Updated game date {gameDate.Id}");
             if (updated)
             {
                 //foreach (var item in seasons)
@@ -324,6 +336,7 @@ namespace StaplePuck.Data.Repositories
             }
 
             await _db.SaveChangesAsync();
+            _logger.LogInformation($"Updated league {league.Name}");
             return new ResultModel { Id = league.Id, Message = "Success", Success = true };
         }
 
@@ -364,6 +377,7 @@ namespace StaplePuck.Data.Repositories
                 }
             }
             await _db.SaveChangesAsync();
+            _logger.LogInformation($"Updated player stats on date for date {playerStatsOnDate.GameDateId}");
             return new ResultModel { Id = existingPlayerStat.Id, Message = "Sucess", Success = true };
         }
 
