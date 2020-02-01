@@ -9,6 +9,7 @@ using StaplePuck.Core.Data;
 using StaplePuck.Core.Fantasy;
 using StaplePuck.Core.Stats;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace StaplePuck.Data.Repositories
 {
@@ -16,11 +17,13 @@ namespace StaplePuck.Data.Repositories
     {
         private readonly StaplePuckContext _db;
         private readonly IAuthorizationClient _authorizationClient;
+        private readonly ILogger _logger;
 
-        public FantasyRepository(StaplePuckContext db, IAuthorizationClient authorizationClient)
+        public FantasyRepository(StaplePuckContext db, IAuthorizationClient authorizationClient, ILogger<IFantasyRepository> logger)
         {
             _db = db;
             _authorizationClient = authorizationClient;
+            _logger = logger;
         }
 
         public async Task<ResultModel> Add(League league)
@@ -31,6 +34,8 @@ namespace StaplePuck.Data.Repositories
             var newLeague = await _db.Leagues.Include(l => l.Commissioner).FirstOrDefaultAsync(x => x.Id == league.Id);
             var extId = newLeague.Commissioner.ExternalId;
             await _authorizationClient.AssignUserAsCommissioner(extId, league.Id);;
+
+            _logger.LogInformation($"Added league. Name: {league.Name} Id: new{newLeague.Id}. Commosioner ID: {extId}");
 
             return new ResultModel { Id = league.Id, Message = "Success", Success = true };
         }
@@ -45,24 +50,29 @@ namespace StaplePuck.Data.Repositories
             leagueInfo.AllowMultipleTeams = league.AllowMultipleTeams;
             if (league.Announcement != null)
             {
+                _logger.LogInformation($"Updating league {league.Id}. Announcement: {league.Announcement}");
                 leagueInfo.Announcement = league.Announcement;
             }
             if (league.Description != null)
             {
                 leagueInfo.Description = league.Description;
+                _logger.LogInformation($"Updating league {league.Id}. Description: {league.Description}");
             }
             leagueInfo.IsLocked = league.IsLocked;
             if (league.Name != null)
             {
                 leagueInfo.Name = league.Name;
+                _logger.LogInformation($"Updating league {league.Id}. Name: {league.Name}");
             }
             if (league.PaymentInfo != null)
             {
                 leagueInfo.PaymentInfo = league.PaymentInfo;
+                _logger.LogInformation($"Updating league {league.Id}. PaymentInfo: {league.PaymentInfo}");
             }
             if (league.PlayersPerTeam > 0)
             {
                 leagueInfo.PlayersPerTeam = league.PlayersPerTeam;
+                _logger.LogInformation($"Updating league {league.Id}. PlayersPerTeam: {league.PlayersPerTeam}");
             }
 
             if (league.NumberPerPositions != null && league.NumberPerPositions.Count > 0)
@@ -99,6 +109,8 @@ namespace StaplePuck.Data.Repositories
 
             _db.Leagues.Update(leagueInfo);
             await _db.SaveChangesAsync();
+
+            _logger.LogInformation($"Update league {league.Id}");
             return new ResultModel { Id = league.Id, Message = "Success", Success = true };
         }
 
@@ -115,6 +127,7 @@ namespace StaplePuck.Data.Repositories
 
             await _authorizationClient.AssignUserAsGM(userExternalId, team.Id);
 
+            _logger.LogInformation($"Added fantasy team. Name: {team.Name}. ID: {team.Id}. GM: {user.Name}");
             return new ResultModel { Id = team.Id, Message = "Success", Success = true };
         }
 
@@ -145,6 +158,7 @@ namespace StaplePuck.Data.Repositories
             var leagueInfo = await _db.Leagues.FirstOrDefaultAsync(x => x.Id == team.LeagueId);
             if (leagueInfo == null || leagueInfo.IsLocked)
             {
+                _logger.LogWarning($"League is locked and someone is trying to update fantasy team: {team.Name} for league: {leagueInfo.Name}");
                 return new ResultModel { Id = team.Id, Message = "League is locked", Success = false };
             }
             var currentTeam = await _db.FantasyTeams.FirstOrDefaultAsync(x => x.Id == team.Id);
@@ -169,6 +183,7 @@ namespace StaplePuck.Data.Repositories
             _db.FantasyTeams.Update(currentTeam);
 
             await _db.SaveChangesAsync();
+            _logger.LogInformation($"Updated fantasy team {team.Name} for league {leagueInfo.Name}");
             return new ResultModel { Id = team.Id, Message = "Success", Success = true };
         }
 
@@ -278,13 +293,16 @@ namespace StaplePuck.Data.Repositories
                     u.Name = user.Name;
                 }
                 _db.Users.Update(u);
+                _logger.LogInformation($"Updated user {u.Name}");
             }
             else
             {
                 await _db.Users.AddAsync(user);
                 u = user;
+                _logger.LogInformation($"Added user {u.Name}");
             }
             await _db.SaveChangesAsync();
+
             return new ResultModel { Id = u.Id, Message = "Success", Success = true };
         }
 

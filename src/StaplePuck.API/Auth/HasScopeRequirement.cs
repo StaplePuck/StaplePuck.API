@@ -30,8 +30,7 @@ namespace StaplePuck.API.Auth
 
             // Succeed if the scope array contains the required scope
             if (!scopes.Any(s => s == this.Scope))
-                context.ReportError("test");
-                //context.Succeed(this);
+                context.ReportError($"Missing scope of {this.Scope}");
             
             return Task.CompletedTask;
         }
