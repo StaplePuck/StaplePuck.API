@@ -31,7 +31,13 @@ namespace StaplePuck.Core.Client
             _settings = options.Value;
             _client = new GraphQLClient(_settings.Endpoint);
 
+            auth.OnNewToken += Auth_OnNewToken;
             var token = auth.GetAuthToken();
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+
+        private void Auth_OnNewToken(string token)
+        {
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 

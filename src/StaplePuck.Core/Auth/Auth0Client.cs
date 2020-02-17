@@ -2,9 +2,16 @@
 using Newtonsoft.Json;
 using RestSharp;
 using System;
+using System.Threading.Tasks;
 
 namespace StaplePuck.Core.Auth
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="token"></param>
+    public delegate void NewToken(string token);
+
     /// <summary>
     /// Provides a class for communicating to Auth0.
     /// </summary>
@@ -14,6 +21,8 @@ namespace StaplePuck.Core.Auth
         private string _accessToken;
         private DateTime _expireDate;
         private object _authLock = new object();
+
+        public event NewToken OnNewToken;
 
         /// <summary>
         /// 
@@ -47,7 +56,17 @@ namespace StaplePuck.Core.Auth
                 var authResponse = JsonConvert.DeserializeObject<Auth0Response>(response.Content);
                 _accessToken = authResponse.access_token;
                 _expireDate = DateTime.Now.AddSeconds(authResponse.expires_in);
+                Task.Delay((authResponse.expires_in - 120) * 1000).ContinueWith(x => RenewToken());
                 return authResponse.access_token;
+            }
+        }
+
+        private void RenewToken()
+        {
+            var token = GetAuthToken();
+            if (OnNewToken != null)
+            {
+                OnNewToken(token);
             }
         }
     }
