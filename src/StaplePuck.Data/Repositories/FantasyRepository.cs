@@ -278,7 +278,8 @@ namespace StaplePuck.Data.Repositories
 
         public async Task<bool> EmailAlreadyExists(string email, string userExternalId)
         {
-            return await _db.Users.AnyAsync(x => email.Equals(x.Email, StringComparison.CurrentCultureIgnoreCase) && userExternalId != x.ExternalId);
+            var users = await _db.Users.ToArrayAsync();
+            return users.Any(x => email.Equals(x.Email, StringComparison.CurrentCultureIgnoreCase) && userExternalId != x.ExternalId);
         }
 
         public async Task<ResultModel> Update(User user)
@@ -308,7 +309,8 @@ namespace StaplePuck.Data.Repositories
 
         public async Task<bool> UsernameAlreadyExists(string username, string userExternalId)
         {
-            return await _db.Users.AnyAsync(x => username.Equals(x.Name, StringComparison.CurrentCultureIgnoreCase) && userExternalId != x.ExternalId);
+            var users = await _db.Users.ToArrayAsync();
+            return users.Any(x => username.Equals(x.Name, StringComparison.CurrentCultureIgnoreCase) && userExternalId != x.ExternalId);
         }
     }
 }
