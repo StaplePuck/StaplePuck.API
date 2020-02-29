@@ -21,6 +21,8 @@ namespace StaplePuck.Core.Scoring
         public int Score { get; set; }
         public int TodaysScore { get; set; }
 
+        public List<FantasyTeamPlayers> FantasyTeamPlayers { get; set; }
+
         public PlayerCalculatedScore()
         {
             Scoring = new List<CalculatedScoreItem>();

@@ -16,7 +16,10 @@ namespace StaplePuck.Core.Stats
         public Team Team { get; set; }
         public int PositionTypeId { get; set; }
         public PositionType PositionType { get; set; }
+        public TeamSeason TeamSeason { get; set; }
 
         public TeamStateForSeason TeamStateForSeason { get; set; }
+
+        public List<Fantasy.FantasyTeamPlayers> FantasyTeamPlayers { get; set; }
     }
 }
