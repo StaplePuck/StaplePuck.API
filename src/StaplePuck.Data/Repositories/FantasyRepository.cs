@@ -135,7 +135,7 @@ namespace StaplePuck.Data.Repositories
         {
             var errors = new List<string>();
 
-            if (await _db.FantasyTeams.AnyAsync(x => x.LeagueId == team.LeagueId && x.Name.Equals(team.Name.Trim(), StringComparison.CurrentCultureIgnoreCase)))
+            if ((await _db.FantasyTeams.ToListAsync()).Any(x => x.LeagueId == team.LeagueId && x.Name.Equals(team.Name.Trim(), StringComparison.CurrentCultureIgnoreCase)))
             {
                 errors.Add("Team name already exists");
             }
@@ -155,13 +155,12 @@ namespace StaplePuck.Data.Repositories
 
         public async Task<ResultModel> Update(FantasyTeam team, bool isValid)
         {
-            var leagueInfo = await _db.Leagues.FirstOrDefaultAsync(x => x.Id == team.LeagueId);
-            if (leagueInfo == null || leagueInfo.IsLocked)
+            var currentTeam = await _db.FantasyTeams.Include(x => x.League).FirstOrDefaultAsync(x => x.Id == team.Id);
+            if (currentTeam?.League == null || currentTeam.League.IsLocked)
             {
-                _logger.LogWarning($"League is locked and someone is trying to update fantasy team: {team.Name} for league: {leagueInfo.Name}");
+                _logger.LogWarning($"League is locked and someone is trying to update fantasy team: {currentTeam.Name} for league: {currentTeam.League.Name}");
                 return new ResultModel { Id = team.Id, Message = "League is locked", Success = false };
             }
-            var currentTeam = await _db.FantasyTeams.FirstOrDefaultAsync(x => x.Id == team.Id);
 
             // remove existing assigned players
             var currentPlayers = await _db.FantasyTeamPlayers.Where(x => x.FantasyTeamId == team.Id).ToListAsync();
@@ -175,15 +174,16 @@ namespace StaplePuck.Data.Repositories
                 {
                     FantasyTeamId = team.Id,
                     PlayerId = player.PlayerId,
-                    LeagueId = currentTeam.LeagueId
+                    LeagueId = currentTeam.LeagueId,
+                    SeasonId = currentTeam.League.SeasonId
                 };
                 _db.FantasyTeamPlayers.Add(playerInfo);
             }
             currentTeam.IsValid = isValid;
-            _db.FantasyTeams.Update(currentTeam);
+             _db.FantasyTeams.Update(currentTeam);
 
             await _db.SaveChangesAsync();
-            _logger.LogInformation($"Updated fantasy team {team.Name} for league {leagueInfo.Name}");
+            _logger.LogInformation($"Updated fantasy team {team.Name} for league {currentTeam.League.Name}");
             return new ResultModel { Id = team.Id, Message = "Success", Success = true };
         }
 
