@@ -76,6 +76,16 @@ namespace StaplePuck.Data
                 .WithMany(p => p.FantasyTeamPlayers)
                 .HasForeignKey(ftp => ftp.PlayerId);
 
+            modelBuilder.Entity<FantasyTeamPlayers>()
+                .HasOne(ftp => ftp.PlayerCalculatedScore)
+                .WithMany(p => p.FantasyTeamPlayers)
+                .HasForeignKey(ftp => new { ftp.LeagueId, ftp.PlayerId });
+
+            modelBuilder.Entity<FantasyTeamPlayers>()
+                .HasOne(ftp => ftp.PlayerSeason)
+                .WithMany(p => p.FantasyTeamPlayers)
+                .HasForeignKey(ftp => new { ftp.PlayerId, ftp.SeasonId });
+
             // PlayerSeason
             modelBuilder.Entity<PlayerSeason>()
                 .HasKey(h => new { h.PlayerId, h.SeasonId });
@@ -89,6 +99,16 @@ namespace StaplePuck.Data
                 .HasOne(p => p.Player)
                 .WithMany(x => x.PlayerSeasons)
                 .HasForeignKey(x => x.PlayerId);
+
+            modelBuilder.Entity<PlayerSeason>()
+                .HasOne(p => p.TeamSeason)
+                .WithMany(x => x.PlayerSeasons)
+                .HasForeignKey(x => new { x.TeamId, x.SeasonId });
+
+            modelBuilder.Entity<PlayerSeason>()
+                .HasOne(p => p.TeamStateForSeason)
+                .WithMany(x => x.PlayerSeasons)
+                .HasForeignKey(x => new { x.SeasonId, x.TeamId });
 
             // TeamSeason
             modelBuilder.Entity<TeamSeason>()
@@ -152,14 +172,20 @@ namespace StaplePuck.Data
                 .WithMany(x => x.NumberPerPositions)
                 .HasForeignKey(x => x.LeagueId);
 
+            // CalculatedScoreItem>
+            modelBuilder.Entity<CalculatedScoreItem>()
+                .HasOne(x => x.PlayerCalculatedScore)
+                .WithMany(x => x.Scoring)
+                .HasForeignKey(x => new { x.LeagueId, x.PlayerId });
+
             // PlayerCalculatedScore
             modelBuilder.Entity<PlayerCalculatedScore>()
                 .HasKey(x => new { x.LeagueId, x.PlayerId });
 
-            //modelBuilder.Entity<PlayerCalculatedScore>()
-            //    .HasOne(x => x.League)
-            //    .WithMany(x => x.PlayerCalculatedScores)
-            //    .HasForeignKey(x => x.LeagueId);
+            modelBuilder.Entity<PlayerCalculatedScore>()
+                .HasOne(x => x.League)
+                .WithMany(x => x.PlayerCalculatedScores)
+                .HasForeignKey(x => x.LeagueId);
 
             // TeamStateForSeason
             modelBuilder.Entity<TeamStateForSeason>()

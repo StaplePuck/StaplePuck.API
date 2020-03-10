@@ -12,6 +12,7 @@ namespace StaplePuck.Data
     {
         public static void EnsureSeedData(this StaplePuckContext db)
         {
+            var t = db.FantasyTeamPlayers.Include(x => x.PlayerCalculatedScore).ToList();
             if (!db.Sports.Any())
             {
                 var sports = new List<Sport>

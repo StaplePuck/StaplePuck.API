@@ -131,6 +131,22 @@ namespace StaplePuck.API.Models
                 {
                     Name = "id"
                 }));
+
+            Field<ListGraphType<ScoringTypeHeaderGraph>>(
+                name: "scoringTypeHeadersForTeam",
+                resolve: context =>
+                {
+                    var id = context.GetArgument<int>("id");
+                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
+                    var team = dataContext.FantasyTeams.Include(x => x.League).ThenInclude(x => x.ScoringRules).ThenInclude(x => x.ScoringType).FirstOrDefault(x => x.Id == id);
+                    var scoring = team.League.ScoringRules.Where(x => x.PointsPerScore != 0).Select(x => x.ScoringType);
+                    return scoring.Distinct().OrderBy(x => x.Id);
+                },
+                arguments: new QueryArguments(
+                new QueryArgument<IntGraphType>
+                {
+                    Name = "id"
+                }));
         }
     }
 }
