@@ -160,14 +160,13 @@ namespace StaplePuck.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseAuthentication();
-
-            app.UseCors(CorsPolicyName.AllowAny);
             db.EnsureSeedData();
-            app.UseGraphQLWebSockets<ISchema>();
-            app.UseGraphQL<ISchema>("/graphql");
-            app.UseGraphiQLServer(new GraphiQLOptions());
-            app.UseMvc();
+            app.UseCors(CorsPolicyName.AllowAny)
+               .UseAuthentication()
+               .UseGraphQLWebSockets<ISchema>()
+               .UseGraphQL<ISchema>("/graphql")
+               .UseGraphiQLServer(new GraphiQLOptions())
+               .UseMvc();
         }
     }
 }
