@@ -32,7 +32,9 @@ using GraphQL.Validation;
 using StaplePuck.API.Constants;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-//using GraphiQl;
+using FluffySpoon.AspNet.LetsEncrypt;
+using FluffySpoon.AspNet.LetsEncrypt.Certes;
+using Certes;
 
 namespace StaplePuck.API
 {
@@ -122,6 +124,8 @@ namespace StaplePuck.API
                 .AddCustomGraphQL(this.HostingEnvironment)
                 .AddCustomGraphQLAuthorization(Configuration);
 
+            ConfigureSSL(services, Configuration);
+
             var mvc = services.AddMvc(option => option.EnableEndpointRouting = false)
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
             mvc.AddNewtonsoftJson();
@@ -141,6 +145,37 @@ namespace StaplePuck.API
                 options.Authority = $"https://{Configuration["Auth0API:Domain"]}/";
                 options.Audience = Configuration["Auth0API:Audience"];
             });
+        }
+
+        private void ConfigureSSL(IServiceCollection services, IConfiguration configuration)
+        {
+            var settings = new LetsEncryptSettings();
+            configuration.GetSection("LetsEncrypt").Bind(settings);
+            if (settings != null && !string.IsNullOrEmpty(settings.Email))
+            {
+                var isDebug = false;
+#if DEBUG
+                isDebug = true;
+#endif
+                services.AddFluffySpoonLetsEncrypt(new LetsEncryptOptions
+                {
+                    Email = settings.Email,
+                    UseStaging = isDebug,
+                    Domains = settings.Domains.Split(","),
+                    TimeUntilExpiryBeforeRenewal = TimeSpan.FromDays(30),
+                    TimeAfterIssueDateBeforeRenewal = TimeSpan.FromDays(7),
+                    CertificateSigningRequest = new CsrInfo()
+                    {
+                        CountryName = settings.CountryName,
+                        Locality = settings.Locality,
+                        Organization = settings.Organization,
+                        OrganizationUnit = settings.OrganizationUnit,
+                        State = settings.State
+                    }
+                });
+                services.AddFluffySpoonLetsEncryptFileCertificatePersistence("LetsEncrypt/Certificate");
+                services.AddFluffySpoonLetsEncryptFileChallengePersistence("LetsEncrypt/Challenge");
+            }
         }
 
         static IEnumerable<Type> GetGraphQlTypes()
@@ -167,6 +202,7 @@ namespace StaplePuck.API
                .UseGraphQL<ISchema>("/graphql")
                .UseGraphiQLServer(new GraphiQLOptions())
                .UseMvc();
+            app.UseFluffySpoonLetsEncrypt();
         }
     }
 }
