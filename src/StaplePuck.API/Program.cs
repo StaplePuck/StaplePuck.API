@@ -19,6 +19,7 @@ namespace StaplePuck.API
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .UseUrls(new string[] { "http://*", "https://*" })
                 .UseStartup<Startup>();
     }
 }

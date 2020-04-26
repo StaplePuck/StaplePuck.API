@@ -81,9 +81,10 @@ namespace StaplePuck.API
                     options.AddPolicy(
                         CorsPolicyName.AllowAny,
                         x => x
-                            .AllowAnyOrigin()
                             .AllowAnyMethod()
-                            .AllowAnyHeader());
+                            .AllowAnyHeader()
+                            .SetIsOriginAllowed(_ => true)
+                            .AllowCredentials());
                 });
 
         public static IGraphQLBuilder AddUserContextBuilderScoped<TUserContextBuilder>(this IGraphQLBuilder builder) where TUserContextBuilder : class, IUserContextBuilder
