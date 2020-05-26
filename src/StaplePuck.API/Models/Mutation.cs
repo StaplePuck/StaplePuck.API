@@ -93,12 +93,12 @@ namespace StaplePuck.API.Models
 
                     if (!authorizationClient.UserIsCommissioner(((GraphQLUserContext)context.UserContext).User, league.Id))
                     {
-                        //context.Errors.Add(new GraphQL.ExecutionError("User is not authorized"));
-                        //return new ResultModel { Id = -1, Success = false, Message = string.Empty };
+                        context.Errors.Add(new GraphQL.ExecutionError("User is not authorized"));
+                        return new ResultModel { Id = -1, Success = false, Message = string.Empty };
                     }
 
                     return fantasyRepository.Update(league);
-                }).AuthorizeWith(AuthorizationPolicyName.WriteStats);
+                });
 
             Field<ResultGraph>(
                 "createFantasyTeam",
