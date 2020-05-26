@@ -23,6 +23,7 @@ namespace StaplePuck.API.Graphs.Input
 
             Field<ListGraphType<ScoringRulePointsInputType>>("scoringRules");
             Field<ListGraphType<NumberPerPositionInputType>>("numberPerPositions");
+            Field<ListGraphType<FantasyTeamManageType>>("fantasyTeams");
         }
     }
 }

@@ -45,6 +45,7 @@ namespace StaplePuck.Data.Repositories
             var leagueInfo = await _db.Leagues
                 .Include(x => x.NumberPerPositions)
                 .Include(x => x.ScoringRules)
+                .Include(x => x.FantasyTeams)
                 .FirstOrDefaultAsync(x => x.Id == league.Id);
 
             leagueInfo.AllowMultipleTeams = league.AllowMultipleTeams;
@@ -105,6 +106,16 @@ namespace StaplePuck.Data.Repositories
                     list.Add(item);
                 }
                 leagueInfo.ScoringRules = list;
+            }
+
+            // Update who has paid
+            if (league.FantasyTeams != null && league.FantasyTeams.Count > 0)
+            {
+                foreach (var item in league.FantasyTeams)
+                {
+                    var currentTeam = leagueInfo.FantasyTeams.FirstOrDefault(x => x.Id == item.Id);
+                    currentTeam.IsPaid = item.IsPaid;
+                }
             }
 
             _db.Leagues.Update(leagueInfo);
