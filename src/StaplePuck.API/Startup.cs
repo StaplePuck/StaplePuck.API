@@ -123,8 +123,9 @@ namespace StaplePuck.API
                 //.AddAuthorization()
                 .AddCustomGraphQL(this.HostingEnvironment)
                 .AddCustomGraphQLAuthorization(Configuration);
-
-            ConfigureSSL(services, Configuration);
+#if !DEBUG
+            //ConfigureSSL(services, Configuration);
+#endif
 
             var mvc = services.AddMvc(option => option.EnableEndpointRouting = false)
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
@@ -202,7 +203,9 @@ namespace StaplePuck.API
                .UseGraphQL<ISchema>("/graphql")
                .UseGraphiQLServer(new GraphiQLOptions())
                .UseMvc();
+#if !DEBUG
             app.UseFluffySpoonLetsEncrypt();
+#endif
         }
     }
 }
