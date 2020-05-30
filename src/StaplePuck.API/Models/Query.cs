@@ -147,6 +147,60 @@ namespace StaplePuck.API.Models
                 {
                     Name = "id"
                 }));
+
+            Field<LeagueGraph>(
+                name: "leagueScores",
+                resolve: context =>
+                {
+                    var id = context.GetArgument<int>("id");
+                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
+                    var league = dataContext.Leagues.Include(x => x.FantasyTeams).ThenInclude(x => x.GM).FirstOrDefault(x => x.Id == id);
+                    if (league != null)
+                    {
+                        if (league.IsLocked)
+                        {
+                            foreach (var fteam in league.FantasyTeams.Where(x => !x.IsPaid))
+                            {
+                                fteam.Name = null;
+                                fteam.GM = null;
+                                fteam.Score = -1;
+                                fteam.TodaysScore = -1;
+                                fteam.Id = -1;
+                            }
+                        }
+                    }
+                    
+                    return league;
+                },
+                arguments: new QueryArguments(
+                new QueryArgument<IntGraphType>
+                {
+                    Name = "id"
+                }));
+
+            Field<ListGraphType<FantasyTeamGraph>>(
+                name: "fantasyTeamsNotPaid",
+                resolve: context =>
+                {
+                    var id = context.GetArgument<int>("id");
+                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
+                    var league = dataContext.Leagues.Include(x => x.FantasyTeams).ThenInclude(x => x.GM).FirstOrDefault(x => x.Id == id);
+                    if (league == null || !league.IsLocked)
+                    {
+                        return null;
+                    }
+                    foreach (var fteam in league.FantasyTeams.Where(x => !x.IsPaid))
+                    {
+                        fteam.Score = -1;
+                        fteam.TodaysScore = -1;
+                    }
+                    return league.FantasyTeams.Where(x => !x.IsPaid);
+                },
+                arguments: new QueryArguments(
+                new QueryArgument<IntGraphType>
+                {
+                    Name = "id"
+                }));
         }
     }
 }
