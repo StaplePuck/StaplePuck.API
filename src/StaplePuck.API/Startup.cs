@@ -124,7 +124,7 @@ namespace StaplePuck.API
                 .AddCustomGraphQL(this.HostingEnvironment)
                 .AddCustomGraphQLAuthorization(Configuration);
 #if !DEBUG
-            //ConfigureSSL(services, Configuration);
+            ConfigureSSL(services, Configuration);
 #endif
 
             var mvc = services.AddMvc(option => option.EnableEndpointRouting = false)
