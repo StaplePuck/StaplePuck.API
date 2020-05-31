@@ -165,7 +165,6 @@ namespace StaplePuck.API.Models
                                 fteam.GM = null;
                                 fteam.Score = -1;
                                 fteam.TodaysScore = -1;
-                                fteam.Id = -1;
                             }
                         }
                     }
