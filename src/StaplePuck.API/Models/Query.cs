@@ -161,8 +161,6 @@ namespace StaplePuck.API.Models
                         {
                             foreach (var fteam in league.FantasyTeams.Where(x => !x.IsPaid))
                             {
-                                fteam.Name = null;
-                                fteam.GM = null;
                                 fteam.Score = -1;
                                 fteam.TodaysScore = -1;
                             }
