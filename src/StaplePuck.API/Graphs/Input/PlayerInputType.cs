@@ -15,11 +15,12 @@ namespace StaplePuck.API.Graphs.Input
             Field<NonNullGraphType<IntGraphType>>("number");
 
             Field<IntGraphType>("id");
-            Field<StringGraphType>("playerSeasons");
+            
             Field<StringGraphType>("fantasyTeamPlayers");
             Field<StringGraphType>("statsOnDate");
             Field<IntGraphType>("SportId");
             Field<StringGraphType>("sport");
+            Field<StringGraphType>("playerSeasons");
         }
     }
 }
