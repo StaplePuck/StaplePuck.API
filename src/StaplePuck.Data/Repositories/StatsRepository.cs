@@ -9,6 +9,7 @@ using StaplePuck.Core.Fantasy;
 using StaplePuck.Core.Stats;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Security.Cryptography.X509Certificates;
 
 namespace StaplePuck.Data.Repositories
 {
@@ -63,8 +64,9 @@ namespace StaplePuck.Data.Repositories
                 var team = await _db.Teams.FirstOrDefaultAsync(x => x.Name == item.Name);
                 if (team == null)
                 {
-                    await _db.Teams.AddAsync(item);
-                    team = item;
+                    var temp = await _db.Teams.AddAsync(item);
+                    team = temp.Entity;
+                    await _db.SaveChangesAsync();
                 }
                 else
                 {
@@ -76,6 +78,12 @@ namespace StaplePuck.Data.Repositories
                 if (teamSeason == null)
                 {
                     await _db.TeamSeasons.AddAsync(new TeamSeason { SeasonId = dbSeason.Id, TeamId = team.Id });
+                }
+
+                var teamStateForSeason = await _db.TeamStateForSeason.FirstOrDefaultAsync(x => x.TeamId == team.Id && x.SeasonId == dbSeason.Id);
+                if (teamStateForSeason == null)
+                {
+                    await _db.TeamStateForSeason.AddAsync(new TeamStateForSeason { SeasonId = dbSeason.Id, TeamId = team.Id, GameState = Convert.ToInt32(GameState.Active) });
                 }
 
                 var players = season.PlayerSeasons.Where(x => x.Team.Name == item.Name).Select(x => x.Player);
