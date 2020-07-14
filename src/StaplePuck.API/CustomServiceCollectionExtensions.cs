@@ -81,9 +81,10 @@ namespace StaplePuck.API
                     options.AddPolicy(
                         CorsPolicyName.AllowAny,
                         x => x
+                            .WithOrigins("https://www.staplepuck.com", "https://staplepuck.com", "https://beta.staplepuck.com", "http://localhost:8080")
                             .AllowAnyMethod()
                             .AllowAnyHeader()
-                            .SetIsOriginAllowed(_ => true)
+                            //.SetIsOriginAllowed(isOriginAllowed: _ => true)
                             .AllowCredentials());
                 });
 
