@@ -20,7 +20,6 @@ using StaplePuck.Core.Data;
 using StaplePuck.Data.Repositories;
 using GraphQL.EntityFramework;
 using GraphQL;
-using GraphQL.Http;
 using GraphQL.Server;
 using GraphQL.Types;
 using GraphQL.Utilities;
@@ -88,7 +87,7 @@ namespace StaplePuck.API
             services.AddTransient(_ => DbContextBuilder.BuildDBContext(connectionString));
             //services.AddScoped(_ => context);
             services.AddSingleton<Func<StaplePuckContext>>(provider => provider.GetRequiredService<StaplePuckContext>);
-
+            services.AddHttpContextAccessor();
 
 
             EfGraphQLConventions.RegisterInContainer<StaplePuckContext>(
@@ -124,13 +123,11 @@ namespace StaplePuck.API
                 .AddCustomGraphQL(this.HostingEnvironment)
                 .AddCustomGraphQLAuthorization(Configuration);
 #if !DEBUG
-            ConfigureSSL(services, Configuration);
+            //ConfigureSSL(services, Configuration);
 #endif
 
-            var mvc = services.AddMvc(option => option.EnableEndpointRouting = false)
-                .SetCompatibilityVersion(CompatibilityVersion.Latest);
-            mvc.AddNewtonsoftJson();
-
+            //var mvc = services.AddMvc(option => option.EnableEndpointRouting = false)
+            //    .SetCompatibilityVersion(CompatibilityVersion.Latest);
             ConfigureAuth(services);
         }
 
@@ -145,6 +142,7 @@ namespace StaplePuck.API
             {
                 options.Authority = $"https://{Configuration["Auth0API:Domain"]}/";
                 options.Audience = Configuration["Auth0API:Audience"];
+                //options.Configuration = new Microsoft.IdentityModel.Protocols.OpenIdConnect.OpenIdConnectConfiguration();
             });
         }
 
@@ -195,16 +193,23 @@ namespace StaplePuck.API
             {
                 app.UseDeveloperExceptionPage();
             }
+            //db.EnsureSeedData();
 
-            db.EnsureSeedData();
+            //app.UseAuthorization();
+            //app.UseGraphQL<ISchema>("/graphql");
             app.UseCors(CorsPolicyName.AllowAny)
                .UseAuthentication()
+            //   .UseRouting()
                .UseGraphQLWebSockets<ISchema>()
                .UseGraphQL<ISchema>("/graphql")
-               .UseGraphiQLServer(new GraphiQLOptions())
-               .UseMvc();
+               .UseGraphiQLServer(new GraphiQLOptions { GraphiQLPath = "/graphql" });
+            //.UseMvc();
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapControllers();
+            //});
 #if !DEBUG
-            app.UseFluffySpoonLetsEncrypt();
+            //app.UseFluffySpoonLetsEncrypt();
 #endif
         }
     }

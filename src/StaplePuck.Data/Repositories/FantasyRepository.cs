@@ -277,16 +277,6 @@ namespace StaplePuck.Data.Repositories
             return errors;
         }
 
-        public async Task<bool> UserIsGM(int teamId, string userExternalId)
-        {
-            var team = await _db.FantasyTeams.Include(x => x.GM).FirstOrDefaultAsync(x => x.Id == teamId);
-            if (team == null)
-            {
-                return false;
-            }
-            return team.GM.ExternalId == userExternalId;
-        }
-
         public async Task<bool> EmailAlreadyExists(string email, string userExternalId)
         {
             var users = await _db.Users.ToArrayAsync();
