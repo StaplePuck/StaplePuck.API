@@ -10,17 +10,20 @@ using StaplePuck.Core.Stats;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Security.Cryptography.X509Certificates;
+using StaplePuck.Core.Models;
 
 namespace StaplePuck.Data.Repositories
 {
     public class StatsRepository : IStatsRepository
     {
         private readonly StaplePuckContext _db;
+        private readonly IMessageEmitter _messageEmitter;
         private readonly ILogger _logger;
 
-        public StatsRepository(StaplePuckContext db, ILogger<IStatsRepository> logger)
+        public StatsRepository(StaplePuckContext db, IMessageEmitter messageEmitter, ILogger<IStatsRepository> logger)
         {
             _db = db;
+            _messageEmitter = messageEmitter;
             _logger = logger;
         }
 
@@ -162,7 +165,9 @@ namespace StaplePuck.Data.Repositories
                 _logger.LogInformation($"Added gameDate {gameDate.Id}");
             }
 
-            var seasons = _db.Seasons.Where(x => x.ExternalId == seasonId);
+            var seasons = _db.Seasons
+                .Include(x => x.Leagues)
+                .Where(x => x.ExternalId == seasonId);
             foreach (var item in seasons)
             {
                 var existingSeason = existingGameDate.GameDateSeasons.FirstOrDefault(x => x.Season.Id == item.Id);
@@ -260,9 +265,12 @@ namespace StaplePuck.Data.Repositories
             _logger.LogInformation($"Updated game date {gameDate.Id}");
             if (updated)
             {
-                //foreach (var item in seasons)
+                foreach (var item in seasons)
                 {
-                    //this?.SeasonUpdated(this, new SeasonUpdatedArgs(item.SeasonId));
+                    foreach (var league in item.Leagues)
+                    {
+                        await _messageEmitter.StatsUpdated(new StatsUpdated { LeagueId = league.Id });
+                    }
                 }
             }
 
@@ -275,12 +283,24 @@ namespace StaplePuck.Data.Repositories
                 .Include(x => x.FantasyTeams)
                 .Include(x => x.PlayerCalculatedScores).ThenInclude(x => x.Scoring)
                 .FirstOrDefaultAsync(x => x.Id == league.Id);
-
+            var teamChanges = new List<FantansyTeamChanged>();
             if (league.FantasyTeams != null)
             {
                 foreach (var team in league.FantasyTeams)
                 {
                     var existingTeam = existingLeague.FantasyTeams.FirstOrDefault(x => x.Id == team.Id);
+                    if (existingTeam.Score != team.Score)
+                    {
+                        var teamChange = new FantansyTeamChanged
+                        {
+                            FantasyTeamId = existingTeam.Id,
+                            OldRank = existingTeam.Rank,
+                            OldScore = existingTeam.Score,
+                            CurrentRank = team.Rank,
+                            CurrentScore = team.Score
+                        };
+                        teamChanges.Add(teamChange);
+                    }
                     existingTeam.Rank = team.Rank;
                     existingTeam.Score = team.Score;
                     existingTeam.TodaysScore = team.TodaysScore;
@@ -288,12 +308,17 @@ namespace StaplePuck.Data.Repositories
                 }
             }
 
+            var playerScorechanges = new List<PlayerScoreUpdated>();
             if (league.PlayerCalculatedScores != null)
             {
                 foreach (var item in league.PlayerCalculatedScores)
                 {
                     var existingScore = existingLeague.PlayerCalculatedScores.FirstOrDefault(x => x.PlayerId == item.PlayerId);
 
+                    var playerScoreUpdated = new PlayerScoreUpdated
+                    {
+                        PlayerId = item.PlayerId
+                    };
                     if (existingScore == null)
                     {
                         existingScore = new Core.Scoring.PlayerCalculatedScore
@@ -304,19 +329,30 @@ namespace StaplePuck.Data.Repositories
                         _db.Add(existingScore);
                         await _db.SaveChangesAsync();
                     }
+                    else
+                    {
+                        playerScoreUpdated.OldScore = existingScore.Score;
+                    }
 
                     if (item.Score != 0)
                     {
                         existingScore.Score = item.Score;
+                        playerScoreUpdated.CurrentScore = item.Score;
                     }
                     existingScore.TodaysScore = item.TodaysScore;
                     if (item.Scoring != null)
                     {
+                        var scoringList = new List<PlayerScoreTypeUpdated>();
                         foreach (var scoreItem in item.Scoring)
                         {
                             var existingItem = existingScore.Scoring.FirstOrDefault(x => x.ScoringTypeId == scoreItem.ScoringTypeId);
+                            var scoreTypeUpdated = new PlayerScoreTypeUpdated
+                            {
+                                ScoreTypeId = scoreItem.ScoringTypeId
+                            };
                             if (existingItem == null)
                             {
+                                scoreTypeUpdated.OldScore = 0;
                                 existingItem = new Core.Scoring.CalculatedScoreItem
                                 {
                                     LeagueId = league.Id,
@@ -327,24 +363,49 @@ namespace StaplePuck.Data.Repositories
                                     TodaysTotal = scoreItem.TodaysTotal,
                                     Total = scoreItem.Total
                                 };
+                                // !!!! new score
                                 _db.Add(existingItem);
                                 await _db.SaveChangesAsync();
                             }
                             else
                             {
+                                scoreTypeUpdated.OldScore = existingScore.Score;
                                 existingItem.Total = scoreItem.Total;
                                 existingItem.TodaysTotal = scoreItem.TodaysTotal;
                                 existingItem.TodaysScore = scoreItem.TodaysScore;
                                 existingItem.Score = scoreItem.Score;
                                 _db.Update(existingItem);
                             }
+                            scoreTypeUpdated.CurrentScore = scoreItem.Score;
+                            if (scoreTypeUpdated.CurrentScore != scoreTypeUpdated.OldScore)
+                            {
+                                scoringList.Add(scoreTypeUpdated);
+                            }
                         }
+                        playerScoreUpdated.ScoringTypesUpdated = scoringList;
+                    }
+
+                    if (playerScoreUpdated.OldScore != playerScoreUpdated.CurrentScore)
+                    {
+                        playerScorechanges.Add(playerScoreUpdated);
                     }
                 }
             }
 
             await _db.SaveChangesAsync();
             _logger.LogInformation($"Updated league {league.Name}");
+            
+            if (teamChanges.Count > 0 || playerScorechanges.Count > 0)
+            {
+                var updated = new ScoreUpdated
+                {
+                    LeagueId = league.Id,
+                    FantansyTeamChanges = teamChanges,
+                    PlayersScoreUpdated = playerScorechanges
+                };
+                await _messageEmitter.ScoreUpdated(updated);
+            }
+
             return new ResultModel { Id = league.Id, Message = "Success", Success = true };
         }
 
@@ -396,23 +457,23 @@ namespace StaplePuck.Data.Repositories
                 return new ResultModel { Id = 0, Message = "No team states", Success = false };
             }
 
-            var seasons = _db.Seasons.Where(x => x.ExternalId == teamStates.First().Season.ExternalId);
+            var seasons = await _db.Seasons.Where(x => x.ExternalId == teamStates.First().Season.ExternalId).ToListAsync();
             foreach (var season in seasons)
             {
-                var teams = _db.Seasons
+                var teams = await _db.Seasons
                     .Include(x => x.TeamSeasons).ThenInclude(x => x.Team)
                     .Where(x => x.Id == season.Id)
-                    .SelectMany(x => x.TeamSeasons).Select(x => x.Team);
-                var existingTeamStates = _db.TeamStateForSeason.Where(x => x.SeasonId == season.Id).Include(x => x.Team);
+                    .SelectMany(x => x.TeamSeasons).Select(x => x.Team).ToListAsync();
+                var existingTeamStates = await _db.TeamStateForSeason.Where(x => x.SeasonId == season.Id).Include(x => x.Team).ToListAsync();
                 foreach (var item in teamStates)
                 {
-                    var team = await teams.FirstOrDefaultAsync(x => x.ExternalId == item.Team.ExternalId);
+                    var team = teams.FirstOrDefault(x => x.ExternalId == item.Team.ExternalId);
                     if (team == null)
                     {
                         Console.Out.WriteLine($"Team not part of season {item.Team.ExternalId}");
                         continue;
                     }
-                    var existingState = await existingTeamStates.FirstOrDefaultAsync(x => x.TeamId == team.Id);
+                    var existingState = existingTeamStates.FirstOrDefault(x => x.TeamId == team.Id);
                     if (existingState == null)
                     {
                         existingState = new TeamStateForSeason
