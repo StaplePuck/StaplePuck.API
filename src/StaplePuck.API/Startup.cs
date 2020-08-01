@@ -34,6 +34,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using FluffySpoon.AspNet.LetsEncrypt;
 using FluffySpoon.AspNet.LetsEncrypt.Certes;
 using Certes;
+using GraphQL.Server.Ui.Playground;
 
 namespace StaplePuck.API
 {
@@ -107,6 +108,8 @@ namespace StaplePuck.API
             });
             services.AddAuth0Client(Configuration)
                 .AddAuthorizationClient(Configuration);
+            services.Configure<Auth0Settings>(Configuration.GetSection("AWS"));
+            services.AddScoped<IMessageEmitter, MessageEmitter>();
             services.AddScoped<IStatsRepository, StatsRepository>();
             services.AddScoped<IFantasyRepository, FantasyRepository>();
             services.AddScoped<IDocumentExecuter, EfDocumentExecuter>();
@@ -201,8 +204,9 @@ namespace StaplePuck.API
                .UseAuthentication()
             //   .UseRouting()
                .UseGraphQLWebSockets<ISchema>()
-               .UseGraphQL<ISchema>("/graphql")
-               .UseGraphiQLServer(new GraphiQLOptions { GraphiQLPath = "/graphql" });
+               .UseGraphQL<ISchema>("/graphql");
+               //.UseGraphiQLServer(new GraphiQLOptions { GraphiQLPath = "/graphql" });
+            app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());
             //.UseMvc();
             //app.UseEndpoints(endpoints =>
             //{
