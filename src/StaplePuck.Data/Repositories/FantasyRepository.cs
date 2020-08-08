@@ -290,6 +290,9 @@ namespace StaplePuck.Data.Repositories
             {
                 u.Email = user.Email;
                 u.ReceiveEmails = user.ReceiveEmails;
+                u.ReceiveNegativeNotifications = user.ReceiveNegativeNotifications;
+                u.ReceiveNotifications = user.ReceiveNotifications;
+
                 if (!string.IsNullOrEmpty(user.Name))
                 {
                     u.Name = user.Name;
@@ -312,6 +315,33 @@ namespace StaplePuck.Data.Repositories
         {
             var users = await _db.Users.ToArrayAsync();
             return users.Any(x => username.Equals(x.Name, StringComparison.CurrentCultureIgnoreCase) && userExternalId != x.ExternalId);
+        }
+
+        public async Task<ResultModel> Add(NotificationToken notificationToken, string userExternalId)
+        {
+            var u = await _db.Users.Include(x => x.NotificationTokens).FirstOrDefaultAsync(x => x.ExternalId == userExternalId);
+            if (u == null)
+            {
+                return new ResultModel { Id = -1, Message = "Not found", Success = false };
+            }
+
+            if (u.NotificationTokens.Any(x => x.Token == notificationToken.Token))
+            {
+                return new ResultModel { Id = 0, Message = "Success", Success = true };
+            }
+            notificationToken.UserId = u.Id;
+            _db.NotificationTokens.Add(notificationToken);
+            await _db.SaveChangesAsync();
+
+            return new ResultModel { Id = notificationToken.Id, Message = "Success", Success = true };
+        }
+
+        public async Task<ResultModel> Remove(NotificationToken notificationToken)
+        {
+            var notifications = await _db.NotificationTokens.Where(x => x.Token == notificationToken.Token).ToListAsync();
+            _db.NotificationTokens.RemoveRange(notifications);
+            await _db.SaveChangesAsync();
+            return new ResultModel { Id = 0, Message = "Success", Success = true };
         }
     }
 }

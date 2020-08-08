@@ -33,7 +33,10 @@ namespace StaplePuck.Core.Client
 
             auth.OnNewToken += Auth_OnNewToken;
             var token = auth.GetAuthToken();
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            if (token != null)
+            {
+                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
         }
 
         private void Auth_OnNewToken(string token)

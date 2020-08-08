@@ -39,6 +39,10 @@ namespace StaplePuck.Core.Auth
         /// <returns>The auth token.</returns>
         public string GetAuthToken()
         {
+            if (string.IsNullOrEmpty(_settings.ClientId))
+            {
+                return null;
+            }
             lock (_authLock)
             {
                 if (_accessToken != null && DateTime.Now.AddMinutes(10) < _expireDate)

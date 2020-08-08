@@ -11,6 +11,8 @@ namespace StaplePuck.API.Graphs.Input
             Field<NonNullGraphType<StringGraphType>>("email");
 
             Field<BooleanGraphType>("receiveEmails");
+            Field<BooleanGraphType>("receiveNotifications");
+            Field<BooleanGraphType>("receiveNegativeNotifications");
         }
     }
 }

@@ -35,7 +35,10 @@ namespace StaplePuck.Core.Auth
             _auth0Client = auth0Client;
 
             var token = auth0Client.GetAuthToken();
-            _restClient.Authenticator = new JwtAuthenticator(token);
+            if (token != null)
+            {
+                _restClient.Authenticator = new JwtAuthenticator(token);
+            }
         }
 
         /// <summary>

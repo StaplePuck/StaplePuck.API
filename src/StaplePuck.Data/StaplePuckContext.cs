@@ -57,6 +57,7 @@ namespace StaplePuck.Data
 
         public DbSet<CalculatedScoreItem> CalculatedScoreItems { get; set; }
         public DbSet<PlayerCalculatedScore> PlayerCalculatedScores { get; set; }
+        public DbSet<NotificationToken> NotificationTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
