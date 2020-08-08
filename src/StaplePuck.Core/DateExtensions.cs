@@ -23,7 +23,7 @@ namespace StaplePuck.Core
         {
             var date = DateTime.UtcNow;
 
-            if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
+            if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday || true)
             {
                 if (date.Hour < 16)
                 {

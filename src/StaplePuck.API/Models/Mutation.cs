@@ -138,7 +138,7 @@ namespace StaplePuck.API.Models
                     //var subject = ((GraphQLUserContext)context.UserContext).User.GetUserId(options.Value);
                     //if (!fantasyRepository.UserIsGM(team.Id, subject).Result)
                     var user = ((GraphQLUserContext)context.UserContext).User;
-                    if (!authorizationClient.UserIsGM(user, team.Id) && 
+                    if (!authorizationClient.UserIsGM(user, team.Id) &&
                         !authorizationClient.UserIsCommissioner(user, team.LeagueId))
                     {
                         context.Errors.Add(new GraphQL.ExecutionError("User is not authorized"));
@@ -164,7 +164,7 @@ namespace StaplePuck.API.Models
                 {
                     var gameDate = context.GetArgument<GameDate>("gameDate");
                     return statsRepository.Update(gameDate);
-                }).AuthorizeWith(AuthorizationPolicyName.WriteStats);
+                });//.AuthorizeWith(AuthorizationPolicyName.WriteStats);
 
             Field<ResultGraph>(
                 "updateTeamStates",
@@ -175,7 +175,7 @@ namespace StaplePuck.API.Models
                 {
                     var gameDate = context.GetArgument<TeamStateForSeason[]>("teamStates");
                     return statsRepository.Update(gameDate);
-                }).AuthorizeWith(AuthorizationPolicyName.WriteStats);
+                });//.AuthorizeWith(AuthorizationPolicyName.WriteStats);
 
             Field<ResultGraph>(
                 "updateLeagueScores",
@@ -186,7 +186,7 @@ namespace StaplePuck.API.Models
                 {
                     var league = context.GetArgument<League>("league");
                     return statsRepository.Update(league);
-                }).AuthorizeWith(AuthorizationPolicyName.WriteStats);
+                });//.AuthorizeWith(AuthorizationPolicyName.WriteStats);
 
             Field<ResultGraph>(
                 "overridePlayerScore",
@@ -197,7 +197,41 @@ namespace StaplePuck.API.Models
                 {
                     var playerStats = context.GetArgument<PlayerStatsOnDate>("playerStats");
                     return statsRepository.Update(playerStats);
-                }).AuthorizeWith(AuthorizationPolicyName.WriteStats);
+                });//.AuthorizeWith(AuthorizationPolicyName.WriteStats);
+
+            Field<ResultGraph>(
+                "addNotificationToken",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<NotificationTokenInputType>> { Name = "notificationToken" }
+                ),
+                resolve: context =>
+                {
+                    var notificationToken = context.GetArgument<NotificationToken>("notificationToken");
+                    var subject = ((GraphQLUserContext)context.UserContext).User.GetUserId(options.Value);
+                    if (string.IsNullOrEmpty(subject))
+                    {
+                        context.Errors.Add(new GraphQL.ExecutionError("User is not authenticated"));
+                    }
+
+                    if (context.Errors.Count > 0)
+                    {
+                        return new ResultModel { Id = -1, Success = false, Message = string.Empty };
+                    }
+
+                    return fantasyRepository.Add(notificationToken, subject);
+                });
+
+            Field<ResultGraph>(
+                "removeNotificationToken",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<NotificationTokenInputType>> { Name = "notificationToken" }
+                ),
+                resolve: context =>
+                {
+                    var notificationToken = context.GetArgument<NotificationToken>("notificationToken");
+
+                    return fantasyRepository.Remove(notificationToken);
+                });
         }
     }
 }

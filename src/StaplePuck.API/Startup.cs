@@ -60,6 +60,7 @@ namespace StaplePuck.API
             GraphTypeTypeRegistry.Register<GameDateSeason, Graphs.GameDateSeasonGraph>();
             GraphTypeTypeRegistry.Register<League, Graphs.LeagueGraph>();
             GraphTypeTypeRegistry.Register<LeagueMail, Graphs.LeagueMailGraph>();
+            GraphTypeTypeRegistry.Register<NotificationToken, Graphs.NotificationTokenGraph>();
             GraphTypeTypeRegistry.Register<NumberPerPosition, Graphs.NumberPerPositionGraph>();
             GraphTypeTypeRegistry.Register<PlayerCalculatedScore, Graphs.PlayerCalculatedScoreGraph>();
             GraphTypeTypeRegistry.Register<Player, Graphs.PlayerGraph>();
@@ -108,7 +109,7 @@ namespace StaplePuck.API
             });
             services.AddAuth0Client(Configuration)
                 .AddAuthorizationClient(Configuration);
-            services.Configure<Auth0Settings>(Configuration.GetSection("AWS"));
+            services.Configure<SNSSettings>(Configuration.GetSection("AWS"));
             services.AddScoped<IMessageEmitter, MessageEmitter>();
             services.AddScoped<IStatsRepository, StatsRepository>();
             services.AddScoped<IFantasyRepository, FantasyRepository>();

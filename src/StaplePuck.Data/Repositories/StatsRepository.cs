@@ -289,7 +289,7 @@ namespace StaplePuck.Data.Repositories
                 foreach (var team in league.FantasyTeams)
                 {
                     var existingTeam = existingLeague.FantasyTeams.FirstOrDefault(x => x.Id == team.Id);
-                    if (existingTeam.Score != team.Score)
+                    if (existingTeam.Score != team.Score || existingTeam.Rank != team.Rank)
                     {
                         var teamChange = new FantansyTeamChanged
                         {
@@ -324,7 +324,8 @@ namespace StaplePuck.Data.Repositories
                         existingScore = new Core.Scoring.PlayerCalculatedScore
                         {
                             LeagueId = league.Id,
-                            PlayerId = item.PlayerId
+                            PlayerId = item.PlayerId,
+                            NumberOfSelectedByTeams = item.NumberOfSelectedByTeams
                         };
                         _db.Add(existingScore);
                         await _db.SaveChangesAsync();
@@ -332,6 +333,10 @@ namespace StaplePuck.Data.Repositories
                     else
                     {
                         playerScoreUpdated.OldScore = existingScore.Score;
+                        if (item.NumberOfSelectedByTeams > 0)
+                        {
+                            existingScore.NumberOfSelectedByTeams = item.NumberOfSelectedByTeams;
+                        }
                     }
 
                     if (item.Score != 0)
@@ -369,14 +374,14 @@ namespace StaplePuck.Data.Repositories
                             }
                             else
                             {
-                                scoreTypeUpdated.OldScore = existingScore.Score;
+                                scoreTypeUpdated.OldScore = existingItem.Total;
                                 existingItem.Total = scoreItem.Total;
                                 existingItem.TodaysTotal = scoreItem.TodaysTotal;
                                 existingItem.TodaysScore = scoreItem.TodaysScore;
                                 existingItem.Score = scoreItem.Score;
                                 _db.Update(existingItem);
                             }
-                            scoreTypeUpdated.CurrentScore = scoreItem.Score;
+                            scoreTypeUpdated.CurrentScore = scoreItem.Total;
                             if (scoreTypeUpdated.CurrentScore != scoreTypeUpdated.OldScore)
                             {
                                 scoringList.Add(scoreTypeUpdated);

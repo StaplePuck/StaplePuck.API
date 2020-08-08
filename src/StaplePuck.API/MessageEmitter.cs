@@ -23,7 +23,7 @@ namespace StaplePuck.API
         {
             var client = new AmazonSimpleNotificationServiceClient();
             var message = JsonConvert.SerializeObject(data);
-            _logger.LogInformation($"Sending message: {message}");
+            _logger.LogInformation($"Sending message: {message}. To topic: {_settings.StatsUpdatedTopicARN}");
             await client.PublishAsync(_settings.StatsUpdatedTopicARN, message);
         }
 
@@ -31,7 +31,7 @@ namespace StaplePuck.API
         {
             var client = new AmazonSimpleNotificationServiceClient();
             var message = JsonConvert.SerializeObject(scoreUpdated);
-            _logger.LogInformation($"Sending message: {message}");
+            _logger.LogInformation($"Sending message: {message}. To topic: {_settings.ScoreUpdatedTopicARN}");
             await client.PublishAsync(_settings.ScoreUpdatedTopicARN, message);
         }
     }

@@ -18,5 +18,7 @@ namespace StaplePuck.Core.Data
         Task<ResultModel> Update(FantasyTeam team, bool isValid);
         Task<List<string>> Validate(FantasyTeam team);
         Task<List<string>> ValidateNew(FantasyTeam team, string userExternalId);
+        Task<ResultModel> Add(NotificationToken notificationToken, string userExternalId);
+        Task<ResultModel> Remove(NotificationToken notificationToken);
     }
 }
