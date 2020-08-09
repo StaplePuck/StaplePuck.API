@@ -17,6 +17,7 @@ namespace StaplePuck.Core.Data
         Task<bool> EmailAlreadyExists(string email, string userExternalId);
         Task<ResultModel> Update(FantasyTeam team, bool isValid);
         Task<List<string>> Validate(FantasyTeam team);
+        Task<bool> ValidateUserIsAssignedGM(int teamId, string userExternalId);
         Task<List<string>> ValidateNew(FantasyTeam team, string userExternalId);
         Task<ResultModel> Add(NotificationToken notificationToken, string userExternalId);
         Task<ResultModel> Remove(NotificationToken notificationToken);

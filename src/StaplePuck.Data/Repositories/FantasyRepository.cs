@@ -142,6 +142,16 @@ namespace StaplePuck.Data.Repositories
             return new ResultModel { Id = team.Id, Message = "Success", Success = true };
         }
 
+        public async Task<bool> ValidateUserIsAssignedGM(int teamId, string userExternalId)
+        {
+            var team = await _db.FantasyTeams.Include(x => x.GM).SingleOrDefaultAsync(x => x.Id == teamId);
+            if (team == null)
+            {
+                return false;
+            }
+            return team.GM.ExternalId == userExternalId;
+        }
+
         public async Task<List<string>> ValidateNew(FantasyTeam team, string userExternalId)
         {
             var errors = new List<string>();

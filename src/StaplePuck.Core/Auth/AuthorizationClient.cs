@@ -48,6 +48,10 @@ namespace StaplePuck.Core.Auth
         /// <returns>The id of the created group.</returns>
         private Task<string> CreateGroupAsync(string groupName)
         {
+            if (_restClient.Authenticator == null)
+            {
+                return Task.FromResult(string.Empty);
+            }
             var request = new RestRequest("groups", Method.POST);
             request.AddParameter("name", groupName);
             request.AddParameter("description", $"Security group for {groupName}");
@@ -72,6 +76,10 @@ namespace StaplePuck.Core.Auth
         /// <returns>The task completion source.</returns>
         private Task AddUserToGroup(string groupId, string sub)
         {
+            if (_restClient.Authenticator == null)
+            {
+                return Task.FromResult(string.Empty);
+            }
             var request = new RestRequest($"groups/{groupId}/members", Method.PATCH);
             var list = new List<string>();
             list.Add(sub);
