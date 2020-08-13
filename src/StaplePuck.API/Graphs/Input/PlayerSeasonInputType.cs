@@ -19,6 +19,7 @@ namespace StaplePuck.API.Graphs.Input
             Field<StringGraphType>("teamSeason");
             Field<StringGraphType>("teamStateForSeason");
             Field<StringGraphType>("fantasyTeamPlayers");
+            Field<StringGraphType>("playerCalculatedScores");
         }
     }
 }

@@ -20,6 +20,7 @@ namespace StaplePuck.API.Graphs.Input
             Field<NonNullGraphType<IntGraphType>>("gameState");
             Field<NonNullGraphType<IntGraphType>>("score");
             Field<NonNullGraphType<IntGraphType>>("todaysScore");
+            Field<StringGraphType>("playerSeason");
         }
     }
 }
