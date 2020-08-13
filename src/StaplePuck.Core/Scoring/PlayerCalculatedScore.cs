@@ -14,6 +14,8 @@ namespace StaplePuck.Core.Scoring
         public int LeagueId { get; set; }
         public League League { get; set; }
 
+        public int SeasonId { get; set; }
+
         public List<CalculatedScoreItem> Scoring { get; set; }
         public int NumberOfSelectedByTeams { get; set; }
         public int GameState { get; set; }
@@ -22,6 +24,7 @@ namespace StaplePuck.Core.Scoring
         public int TodaysScore { get; set; }
 
         public List<FantasyTeamPlayers> FantasyTeamPlayers { get; set; }
+        public PlayerSeason PlayerSeason { get; set; }
 
         public PlayerCalculatedScore()
         {

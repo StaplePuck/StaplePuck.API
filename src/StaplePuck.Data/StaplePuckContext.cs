@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using StaplePuck.Core.Fantasy;
@@ -187,6 +188,11 @@ namespace StaplePuck.Data
                 .HasOne(x => x.League)
                 .WithMany(x => x.PlayerCalculatedScores)
                 .HasForeignKey(x => x.LeagueId);
+
+            modelBuilder.Entity<PlayerCalculatedScore>()
+                .HasOne(x => x.PlayerSeason)
+                .WithMany(x => x.PlayerCalculatedScores)
+                .HasForeignKey(x => new { x.PlayerId, x.SeasonId });
 
             // TeamStateForSeason
             modelBuilder.Entity<TeamStateForSeason>()

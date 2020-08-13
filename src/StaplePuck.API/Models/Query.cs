@@ -198,6 +198,38 @@ namespace StaplePuck.API.Models
                 {
                     Name = "id"
                 }));
+
+            Field<ListGraphType<PlayerCalculatedScoreGraph>>(
+                name: "playerCalculatedScoresForTeam",
+                resolve: context =>
+                {
+                    var leagueId = context.GetArgument<int>("leagueId");
+                    var teamId = context.GetArgument<int>("teamId");
+                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
+                    var pcs = dataContext.PlayerCalculatedScores
+                        .Include(x => x.PlayerSeason)
+                        .ThenInclude(x => x.PositionType)
+
+                        .Include(x => x.Player)
+                        
+                        .Include(x => x.Scoring)
+                        .ThenInclude(x => x.ScoringType)
+                        .Where(x => x.LeagueId == leagueId);
+                    if (pcs == null)
+                    {
+                        return null;
+                    }
+                    return pcs.Where(x => x.PlayerSeason.TeamId == teamId);
+                },
+                arguments: new QueryArguments(
+                new QueryArgument<IdGraphType>
+                {
+                    Name = "leagueId"
+                },
+                new QueryArgument<IdGraphType>
+                { 
+                    Name = "teamId"
+                }));
         }
     }
 }

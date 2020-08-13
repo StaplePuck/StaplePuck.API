@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StaplePuck.Core.Scoring;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -21,5 +22,6 @@ namespace StaplePuck.Core.Stats
         public TeamStateForSeason TeamStateForSeason { get; set; }
 
         public List<Fantasy.FantasyTeamPlayers> FantasyTeamPlayers { get; set; }
+        public List<PlayerCalculatedScore> PlayerCalculatedScores { get; set; }
     }
 }
