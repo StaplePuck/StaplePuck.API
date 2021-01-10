@@ -21,6 +21,7 @@ namespace StaplePuck.API.Graphs
                 name: "fantasyTeams",
                 resolve: context => context.Source.FantasyTeams);
             Field(x => x.IsLocked);
+            Field(x => x.IsActive);
             Field(x => x.Name);
             //Field(x => x.LeagueMails);
             AddNavigationListField(

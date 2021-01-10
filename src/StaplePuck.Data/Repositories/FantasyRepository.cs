@@ -59,6 +59,7 @@ namespace StaplePuck.Data.Repositories
                 leagueInfo.Description = league.Description;
                 _logger.LogInformation($"Updating league {league.Id}. Description: {league.Description}");
             }
+            leagueInfo.IsActive = league.IsActive;
             leagueInfo.IsLocked = league.IsLocked;
             if (league.Name != null)
             {

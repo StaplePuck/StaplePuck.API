@@ -21,7 +21,10 @@ namespace StaplePuck.API.Graphs
             AddNavigationField(
                 name: "playerSeason",
                 resolve: context => context.Source.PlayerSeason);
-            
+            AddNavigationField(
+                name: "league",
+                resolve: context => context.Source.League);
+
             Field(x => x.TodaysScore);
         }
     }

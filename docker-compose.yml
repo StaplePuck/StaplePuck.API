@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   staplepuck.api:
-    image: ${DOCKER_REGISTRY}staplepuckapi
+    image: 398055399259.dkr.ecr.us-east-1.amazonaws.com/staplepuckapi
     build:
       context: .
       dockerfile: src/StaplePuck.API/Dockerfile
