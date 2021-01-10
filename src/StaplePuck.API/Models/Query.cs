@@ -116,6 +116,14 @@ namespace StaplePuck.API.Models
                     return dataContext.Users;
                 });
 
+            AddQueryField(
+                name: "playerCalculatedScores",
+                resolve: context =>
+                {
+                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
+                    return dataContext.PlayerCalculatedScores;
+                });
+
             Field<ListGraphType<ScoringTypeHeaderGraph>>(
                 name: "scoringTypeHeaders",
                 resolve: context =>
@@ -228,7 +236,11 @@ namespace StaplePuck.API.Models
                     {
                         return null;
                     }
-                    return pcs.Where(x => x.PlayerSeason.TeamId == teamId);
+                    if (teamId > 0)
+                    {
+                        return pcs.Where(x => x.PlayerSeason.TeamId == teamId);
+                    }
+                    return pcs;
                 },
                 arguments: new QueryArguments(
                 new QueryArgument<IdGraphType>

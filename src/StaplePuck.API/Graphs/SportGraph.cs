@@ -13,6 +13,9 @@ namespace StaplePuck.API.Graphs
             AddNavigationListField(
                 name: "scoringTypes",
                 resolve: context => context.Source.ScoringTypes);
+            AddNavigationListField(
+                name: "positionTypes",
+                resolve: context => context.Source.PositionTypes);
         }
     }
 }
