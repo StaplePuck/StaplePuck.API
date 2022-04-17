@@ -1,7 +1,6 @@
 ﻿using GraphQL;
 using GraphQL.Authorization;
 using GraphQL.Server;
-using GraphQL.Server.Internal;
 using GraphQL.Server.Transports.AspNetCore;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Hosting;
@@ -33,14 +32,14 @@ namespace StaplePuck.API
                             .Value
                             .ComplexityConfiguration;
                         // Show stack traces in exceptions. Don't turn this on in production.
-                        options.ExposeExceptions = hostingEnvironment.IsDevelopment();
+                        //options.ExposeExceptions = hostingEnvironment.IsDevelopment();
                     })
                 // Adds all graph types in the current assembly with a singleton lifetime.
                 .AddGraphTypes(ServiceLifetime.Scoped)
                 // Adds ConnectionType<T>, EdgeType<T> and PageInfoType.
                 .AddRelayGraphTypes()
                 // Add a user context from the HttpContext and make it available in field resolvers.
-                .AddUserContextBuilderScoped<GraphQLUserContextBuilder>()
+                //.AddUserContextBuilderScoped<GraphQLUserContextBuilder>()
                 // Add GraphQL data loader to reduce the number of calls to our repository.
                 .AddDataLoader()
                 .Services;
@@ -81,7 +80,7 @@ namespace StaplePuck.API
                     options.AddPolicy(
                         CorsPolicyName.AllowAny,
                         x => x
-                            .WithOrigins("https://www.staplepuck.com", "https://staplepuck.com", "https://beta.staplepuck.com", "http://localhost:8080")
+                            .WithOrigins("https://www.staplepuck.com", "https://staplepuck.com", "https://beta.staplepuck.com", "http://localhost:8080", "http://localhost:5000", "https://localhost:5001")
                             .AllowAnyMethod()
                             .AllowAnyHeader()
                             //.SetIsOriginAllowed(isOriginAllowed: _ => true)

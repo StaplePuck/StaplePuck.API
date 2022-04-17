@@ -53,48 +53,9 @@ namespace StaplePuck.API
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            GraphTypeTypeRegistry.Register<CalculatedScoreItem, Graphs.CalculatedScoreItemGraph>();
-            GraphTypeTypeRegistry.Register<FantasyTeam, Graphs.FantasyTeamGraph>();
-            GraphTypeTypeRegistry.Register<FantasyTeamPlayers, Graphs.FantasyTeamPlayersGraph>();
-            GraphTypeTypeRegistry.Register<GameDate, Graphs.GameDateGraph>();
-            GraphTypeTypeRegistry.Register<GameDateSeason, Graphs.GameDateSeasonGraph>();
-            GraphTypeTypeRegistry.Register<League, Graphs.LeagueGraph>();
-            GraphTypeTypeRegistry.Register<LeagueMail, Graphs.LeagueMailGraph>();
-            GraphTypeTypeRegistry.Register<NotificationToken, Graphs.NotificationTokenGraph>();
-            GraphTypeTypeRegistry.Register<NumberPerPosition, Graphs.NumberPerPositionGraph>();
-            GraphTypeTypeRegistry.Register<PlayerCalculatedScore, Graphs.PlayerCalculatedScoreGraph>();
-            GraphTypeTypeRegistry.Register<Player, Graphs.PlayerGraph>();
-            GraphTypeTypeRegistry.Register<PlayerCalculatedScore, Graphs.PlayerCalculatedScoreGraph>();
-            GraphTypeTypeRegistry.Register<PlayerScore, Graphs.PlayerScoreGraph>();
-            GraphTypeTypeRegistry.Register<PlayerSeason, Graphs.PlayerSeasonGraph>();
-            GraphTypeTypeRegistry.Register<PlayerStatsOnDate, Graphs.PlayerStatsOnDateGraph>();
-            GraphTypeTypeRegistry.Register<PositionType, Graphs.PositionTypeGraph>();
-            GraphTypeTypeRegistry.Register<ResultModel, Graphs.ResultGraph>();
-            GraphTypeTypeRegistry.Register<ScoringPositions, Graphs.ScoringPositionsGraph>();
-            GraphTypeTypeRegistry.Register<ScoringRulePoints, Graphs.ScoringRulePointsGraph>();
-            GraphTypeTypeRegistry.Register<ScoringType, Graphs.ScoringTypeGraph>();
-            GraphTypeTypeRegistry.Register<Season, Graphs.SeasonGraph>();
-            GraphTypeTypeRegistry.Register<Sport, Graphs.SportGraph>();
-            GraphTypeTypeRegistry.Register<Team, Graphs.TeamGraph>();
-            GraphTypeTypeRegistry.Register<TeamSeason, Graphs.TeamSeasonGraph>();
-            GraphTypeTypeRegistry.Register<TeamStateForSeason, Graphs.TeamStateForSeasonGraph>();
-            GraphTypeTypeRegistry.Register<User, Graphs.UserGraph>();
-
-
-            var connectionString = Configuration["ConnectionStrings:Default"];
-            services.AddDbContext<StaplePuckContext>(options => options.UseNpgsql(connectionString));
-            var optionsBuilder = new DbContextOptionsBuilder();
-            optionsBuilder.UseNpgsql(connectionString);
-            var context = new StaplePuckContext(optionsBuilder.Options);
-            services.AddTransient(_ => DbContextBuilder.BuildDBContext(connectionString));
-            //services.AddScoped(_ => context);
-            services.AddSingleton<Func<StaplePuckContext>>(provider => provider.GetRequiredService<StaplePuckContext>);
-            services.AddHttpContextAccessor();
-
-
             EfGraphQLConventions.RegisterInContainer<StaplePuckContext>(
                 services,
-                model: StaplePuckContext.GetModel());
+                model: StaplePuckContext.StaticModel);
             EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
 
             foreach (var type in GetGraphQlTypes())
@@ -102,36 +63,62 @@ namespace StaplePuck.API
                 services.AddSingleton(type);
             }
 
+            //services.Configure<DatabaseSettings>(Configuration.GetSection("Database"));
+
+            var connectionString = Configuration["ConnectionStrings:Default"];
+            //services.AddDbContext<StaplePuckContext>(options => options.UseNpgsql(connectionString));
+            //var optionsBuilder = new DbContextOptionsBuilder();
+            //optionsBuilder.UseNpgsql(connectionString);
+            //var context = new StaplePuckContext(optionsBuilder.Options);
+            var contextBuilder = new DbContextBuilder(connectionString);
+            services.AddSingleton<IHostedService>(contextBuilder);
+            //services.AddTransient(_ => DbContextBuilder.BuildDBContext(connectionString));
+            services.AddSingleton<Func<StaplePuckContext>>(_ => contextBuilder.BuildDbContext);
+            services.AddScoped(_ => contextBuilder.BuildDbContext());
+            //services.AddScoped(_ => context);
+            //services.AddSingleton<Func<StaplePuckContext>>(provider => provider.GetRequiredService<StaplePuckContext>);
+
             services.Configure<Auth0APISettings>(Configuration.GetSection("Auth0API"));
-            services.Configure<KestrelServerOptions>(options =>
-            {
-                options.AllowSynchronousIO = true;
-            });
+
             services.AddAuth0Client(Configuration)
                 .AddAuthorizationClient(Configuration);
             services.Configure<SNSSettings>(Configuration.GetSection("AWS"));
             services.AddScoped<IMessageEmitter, MessageEmitter>();
+
             services.AddScoped<IStatsRepository, StatsRepository>();
             services.AddScoped<IFantasyRepository, FantasyRepository>();
             services.AddScoped<IDocumentExecuter, EfDocumentExecuter>();
             services.AddScoped<ISchema, Models.Schema>();
             services.AddScoped<Models.Mutation>();
-            services.AddScoped<IDependencyResolver>(
-                provider => new FuncDependencyResolver(provider.GetRequiredService));
+            //services.AddScoped<IDependencyResolver>(
+            //    provider => new FuncDependencyResolver(provider.GetRequiredService));
 
+            services.AddHttpContextAccessor();
+            //services.Configure<KestrelServerOptions>(options =>
+            //{
+            //    options.AllowSynchronousIO = true;
+            //});
 
-            //var mvc = services.AddMvc(option => option.EnableEndpointRouting = false);
-            //mvc.SetCompatibilityVersion(CompatibilityVersion.Latest);
             services.AddCustomCors()
-                //.AddAuthorization()
-                .AddCustomGraphQL(this.HostingEnvironment)
-                .AddCustomGraphQLAuthorization(Configuration);
+    //.AddAuthorization()
+    //.AddCustomGraphQL(this.HostingEnvironment)
+    .AddCustomGraphQLAuthorization(Configuration);
+
+            services.AddGraphQL(options =>
+            {
+                options.EnableMetrics = true;
+            })
+            .AddErrorInfoProvider(opt => opt.ExposeExceptionStackTrace = true)
+            .AddSystemTextJson()
+            .AddUserContextBuilder(context => new GraphQLUserContext { User = context.User });
+
 #if !DEBUG
             //ConfigureSSL(services, Configuration);
 #endif
 
-            //var mvc = services.AddMvc(option => option.EnableEndpointRouting = false)
-            //    .SetCompatibilityVersion(CompatibilityVersion.Latest);
+            //var mvc = services.AddMvc(option => option.EnableEndpointRouting = false);
+            //mvc.SetCompatibilityVersion(CompatibilityVersion.Latest);
+            //mvc.AddNewtonsoftJson();
             ConfigureAuth(services);
         }
 
@@ -191,7 +178,7 @@ namespace StaplePuck.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, StaplePuckContext db)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -200,14 +187,14 @@ namespace StaplePuck.API
             //db.EnsureSeedData();
 
             //app.UseAuthorization();
-            //app.UseGraphQL<ISchema>("/graphql");
+            app.UseGraphQL<ISchema>();
             app.UseCors(CorsPolicyName.AllowAny)
-               .UseAuthentication()
+               .UseAuthentication();
             //   .UseRouting()
-               .UseGraphQLWebSockets<ISchema>()
-               .UseGraphQL<ISchema>("/graphql");
+               //.UseGraphQLWebSockets<ISchema>()
+               //.UseGraphQL<ISchema>("/graphql");
                //.UseGraphiQLServer(new GraphiQLOptions { GraphiQLPath = "/graphql" });
-            app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());
+            app.UseGraphQLPlayground();
             //.UseMvc();
             //app.UseEndpoints(endpoints =>
             //{

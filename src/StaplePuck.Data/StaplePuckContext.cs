@@ -11,6 +11,8 @@ namespace StaplePuck.Data
 {
     public sealed class StaplePuckContext : DbContext
     {
+        public static IModel StaticModel { get; } = BuildStaticModel();
+
         public StaplePuckContext(DbContextOptions options) : base(options)
         {
             //var result = Database.EnsureCreated();
@@ -23,7 +25,7 @@ namespace StaplePuck.Data
             }
         }
 
-        public static IModel GetModel()
+        static IModel BuildStaticModel()
         {
             var builder = new DbContextOptionsBuilder();
             builder.UseNpgsql("Fake");

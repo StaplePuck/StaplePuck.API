@@ -325,7 +325,8 @@ namespace StaplePuck.Data.Repositories
                         {
                             LeagueId = league.Id,
                             PlayerId = item.PlayerId,
-                            NumberOfSelectedByTeams = item.NumberOfSelectedByTeams
+                            NumberOfSelectedByTeams = item.NumberOfSelectedByTeams,
+                            SeasonId = existingLeague.SeasonId
                         };
                         _db.Add(existingScore);
                         await _db.SaveChangesAsync();

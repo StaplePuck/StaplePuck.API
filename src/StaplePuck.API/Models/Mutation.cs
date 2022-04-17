@@ -14,6 +14,7 @@ using StaplePuck.API.Graphs;
 using StaplePuck.API.Graphs.Input;
 using StaplePuck.API.Constants;
 using Microsoft.Extensions.Logging;
+using GraphQL;
 
 namespace StaplePuck.API.Models
 {
