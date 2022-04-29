@@ -12,6 +12,7 @@ namespace StaplePuck.API.Graphs
             Field(x => x.Name, nullable: true);
             Field(x => x.IsPaid);
             Field(x => x.IsValid);
+            Field(x => x.LeagueId);
             AddNavigationListField(
                 name: "fantasyTeamPlayers",
                 resolve: context => context.Source.FantasyTeamPlayers);

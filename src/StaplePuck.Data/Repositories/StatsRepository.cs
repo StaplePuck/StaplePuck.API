@@ -333,7 +333,7 @@ namespace StaplePuck.Data.Repositories
                     else
                     {
                         playerScoreUpdated.OldScore = existingScore.Score;
-                        if (item.NumberOfSelectedByTeams > 0)
+                        if (item.NumberOfSelectedByTeams >= 0)
                         {
                             existingScore.NumberOfSelectedByTeams = item.NumberOfSelectedByTeams;
                         }
@@ -388,6 +388,19 @@ namespace StaplePuck.Data.Repositories
                             }
                         }
                         playerScoreUpdated.ScoringTypesUpdated = scoringList;
+
+                        foreach (var existing in existingScore.Scoring)
+                        {
+                            if (!item.Scoring.Any(x => x.ScoringTypeId == existing.ScoringTypeId))
+                            {
+                                // zero out the score
+                                existing.Total = 0;
+                                existing.TodaysScore = 0;
+                                existing.TodaysTotal = 0;
+                                existing.Score = 0;
+                                _db.Update(existing);
+                            }
+                        }
                     }
 
                     if (playerScoreUpdated.OldScore != playerScoreUpdated.CurrentScore)

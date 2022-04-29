@@ -116,6 +116,14 @@ namespace StaplePuck.API.Models
                     return dataContext.Users;
                 });
 
+            AddQueryField(
+                name: "playerCalculatedScores",
+                resolve: context =>
+                {
+                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
+                    return dataContext.PlayerCalculatedScores;
+                });
+
             Field<ListGraphType<ScoringTypeHeaderGraph>>(
                 name: "scoringTypeHeaders",
                 resolve: context =>
@@ -197,6 +205,76 @@ namespace StaplePuck.API.Models
                 new QueryArgument<IntGraphType>
                 {
                     Name = "id"
+                }));
+
+            Field<ListGraphType<PlayerCalculatedScoreGraph>>(
+                name: "playerCalculatedScoresForTeam",
+                resolve: context =>
+                {
+                    
+                    var leagueId = context.GetArgument<int>("leagueId");
+                    var teamId = context.GetArgument<int>("teamId");
+                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
+                    var pcs = dataContext.PlayerCalculatedScores
+                        .Include(x => x.PlayerSeason)
+                        .ThenInclude(x => x.PositionType)
+
+                        .Include(x => x.PlayerSeason)
+                        .ThenInclude(x => x.Team)
+
+                        .Include(x => x.PlayerSeason)
+                        .ThenInclude(x => x.TeamStateForSeason)
+
+                        .Include(x => x.Player)
+                        
+                        .Include(x => x.League)
+
+                        .Include(x => x.Scoring)
+                        .ThenInclude(x => x.ScoringType)
+                        .Where(x => x.LeagueId == leagueId);
+                    if (pcs == null)
+                    {
+                        return null;
+                    }
+                    if (teamId > 0)
+                    {
+                        return pcs.Where(x => x.PlayerSeason.TeamId == teamId);
+                    }
+                    return pcs;
+                },
+                arguments: new QueryArguments(
+                new QueryArgument<IdGraphType>
+                {
+                    Name = "leagueId"
+                },
+                new QueryArgument<IdGraphType>
+                { 
+                    Name = "teamId"
+                }));
+
+            AddQueryField(
+                name: "myFantasyTeams",
+                resolve: context =>
+                {
+                    var leagueId = context.GetArgument<int>("leagueId");
+                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
+                    var user = ((GraphQLUserContext)context.UserContext).User;
+                    if (user.Claims.Count() == 0)
+                    {
+                        return dataContext.FantasyTeams.Where(x => false);
+                    }
+                    var subject = user.GetUserId(options.Value);
+
+                    if (leagueId > 0)
+                    {
+                        return dataContext.FantasyTeams.Where(x => x.GM.ExternalId == subject && x.LeagueId == leagueId);
+                    }
+                    return dataContext.FantasyTeams.Where(x => x.GM.ExternalId == subject);
+                },
+                arguments: new QueryArguments(
+                new QueryArgument<IdGraphType>
+                {
+                    Name = "leagueId"
                 }));
 
             Field<UserGraph>(

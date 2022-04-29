@@ -16,6 +16,7 @@ namespace StaplePuck.API.Graphs.Input
             Field<StringGraphType>("name");
             Field<StringGraphType>("announcement");
             Field<StringGraphType>("description");
+            Field<BooleanGraphType>("isActive");
             Field<BooleanGraphType>("isLocked");
             Field<StringGraphType>("paymentInfo");
             Field<BooleanGraphType>("allowMultipleTeams");

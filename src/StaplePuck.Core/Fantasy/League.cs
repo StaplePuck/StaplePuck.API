@@ -26,6 +26,7 @@ namespace StaplePuck.Core.Fantasy
         public bool IsLocked { get; set; }
         public string PaymentInfo { get; set; }
         public bool AllowMultipleTeams { get; set; }
+        public bool IsActive { get; set; }
 
         public List<NumberPerPosition> NumberPerPositions { get; set; }
 
