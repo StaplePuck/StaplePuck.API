@@ -31,7 +31,7 @@ namespace StaplePuck.API.Models
             //    });
             
             AddSingleField(
-                name: "currentUser",
+                name: "currentUser2",
                 resolve: context =>
                 {
                     var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
@@ -198,6 +198,21 @@ namespace StaplePuck.API.Models
                 {
                     Name = "id"
                 }));
+
+            Field<UserGraph>(
+                name: "currentUser",
+                resolve: context =>
+                {
+                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
+                    var user = ((GraphQLUserContext)context.UserContext).User;
+                    if (user.Claims.Count() == 0)
+                    {
+                        throw new Exception("Not authenticated");
+                    }
+                    var subject = user.GetUserId(options.Value);
+                    var users = dataContext.Users.Where(x => x.ExternalId == subject).Include(x => x.NotificationTokens);
+                    return users.FirstOrDefault();
+                }).RequiresAuthorization();
         }
     }
 }
