@@ -11,6 +11,7 @@ namespace StaplePuck.API.Graphs.Input
 
             Field<IntGraphType>("id");
             Field<StringGraphType>("scoringTypes");
+            Field<StringGraphType>("positionTypes");
         }
     }
 }
