@@ -251,12 +251,26 @@ namespace StaplePuck.Data.Repositories
                         .Any(newScores => newScores.ScoringType.Name == l1.ScoringType.Name));
                     foreach (var zero in zeroOut)
                     {
-                        if (!zero.AdminOverride)
+                        if (!zero.AdminOverride && zero.Total != 0)
                         {
                             zero.Total = 0;
                             _db.Update(zero);
                             updated = true;
                         }
+                    }
+                }
+            }
+
+            var playerZeroOut = existingGameDate.PlayersStatsOnDate.Where(x => !gameDate.PlayersStatsOnDate.Any(y => x.Player.ExternalId == y.Player.ExternalId));
+            foreach (var playerZero in playerZeroOut)
+            {
+                foreach (var zero in playerZero.PlayerScores)
+                {
+                    if (!zero.AdminOverride && zero.Total != 0)
+                    {
+                        zero.Total = 0;
+                        _db.Update(zero);
+                        updated = true;
                     }
                 }
             }
@@ -324,6 +338,7 @@ namespace StaplePuck.Data.Repositories
                         existingScore = new Core.Scoring.PlayerCalculatedScore
                         {
                             LeagueId = league.Id,
+                            SeasonId = existingLeague.SeasonId,
                             PlayerId = item.PlayerId,
                             NumberOfSelectedByTeams = item.NumberOfSelectedByTeams,
                             SeasonId = existingLeague.SeasonId

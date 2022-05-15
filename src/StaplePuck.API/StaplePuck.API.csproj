@@ -16,11 +16,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="6.0.1" />
-    <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.3.0" />
-    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.0.1" />
-    <PackageReference Include="AWSSDK.Lambda" Version="3.7.0.16" />
-    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.1.2" />
+    <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="7.1.0" />
+    <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.7.0" />
+    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.2" />
+    <PackageReference Include="AWSSDK.Lambda" Version="3.7.12.7" />
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.3.51" />
     <PackageReference Include="FluffySpoon.AspNet.LetsEncrypt" Version="1.163.0" />
     <PackageReference Include="GraphQL" Version="4.5.0" />
     <PackageReference Include="GraphQL.Authorization" Version="4.0.0" />
