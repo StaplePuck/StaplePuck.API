@@ -338,7 +338,6 @@ namespace StaplePuck.Data.Repositories
                         existingScore = new Core.Scoring.PlayerCalculatedScore
                         {
                             LeagueId = league.Id,
-                            SeasonId = existingLeague.SeasonId,
                             PlayerId = item.PlayerId,
                             NumberOfSelectedByTeams = item.NumberOfSelectedByTeams,
                             SeasonId = existingLeague.SeasonId

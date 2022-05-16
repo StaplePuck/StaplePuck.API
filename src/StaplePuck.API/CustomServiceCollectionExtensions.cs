@@ -18,32 +18,32 @@ namespace StaplePuck.API
 {
     public static class CustomServiceCollectionExtensions
     {
-        public static IServiceCollection AddCustomGraphQL(this IServiceCollection services, IWebHostEnvironment hostingEnvironment) =>
-            services
-                // Add a way for GraphQL.NET to resolve types.
-                //.AddScoped<IDependencyResolver, GraphQLDependencyResolver>()
-                .AddGraphQL(
-                    options =>
-                    {
-                        // Set some limits for security, read from configuration.
-                        options.ComplexityConfiguration = services
-                            .BuildServiceProvider()
-                            .GetRequiredService<IOptions<GraphQLOptions>>()
-                            .Value
-                            .ComplexityConfiguration;
-                        // Show stack traces in exceptions. Don't turn this on in production.
-                        //options.ExposeExceptions = hostingEnvironment.IsDevelopment();
-                    })
-                // Adds all graph types in the current assembly with a singleton lifetime.
-                .AddGraphTypes(ServiceLifetime.Scoped)
-                // Adds ConnectionType<T>, EdgeType<T> and PageInfoType.
-                .AddRelayGraphTypes()
-                // Add a user context from the HttpContext and make it available in field resolvers.
-                //.AddUserContextBuilderScoped<GraphQLUserContextBuilder>()
-                // Add GraphQL data loader to reduce the number of calls to our repository.
-                .AddDataLoader()
-                .Services;
-                //.AddTransient(typeof(IGraphQLExecuter<>), typeof(InstrumentingGraphQLExecutor<>));
+        //public static IServiceCollection AddCustomGraphQL(this IServiceCollection services, IWebHostEnvironment hostingEnvironment) =>
+        //    services
+        //        // Add a way for GraphQL.NET to resolve types.
+        //        //.AddScoped<IDependencyResolver, GraphQLDependencyResolver>()
+        //        .AddGraphQL(
+        //            options =>
+        //            {
+        //                // Set some limits for security, read from configuration.
+        //                options.ComplexityConfiguration = services
+        //                    .BuildServiceProvider()
+        //                    .GetRequiredService<IOptions<GraphQLOptions>>()
+        //                    .Value
+        //                    .ComplexityConfiguration;
+        //                // Show stack traces in exceptions. Don't turn this on in production.
+        //                //options.ExposeExceptions = hostingEnvironment.IsDevelopment();
+        //            })
+        //        // Adds all graph types in the current assembly with a singleton lifetime.
+        //        .AddGraphTypes(ServiceLifetime.Scoped)
+        //        // Adds ConnectionType<T>, EdgeType<T> and PageInfoType.
+        //        .AddRelayGraphTypes()
+        //        // Add a user context from the HttpContext and make it available in field resolvers.
+        //        //.AddUserContextBuilderScoped<GraphQLUserContextBuilder>()
+        //        // Add GraphQL data loader to reduce the number of calls to our repository.
+        //        .AddDataLoader()
+        //        .Services;
+        //        //.AddTransient(typeof(IGraphQLExecuter<>), typeof(InstrumentingGraphQLExecutor<>));
 
         
         /// <summary>
@@ -87,10 +87,10 @@ namespace StaplePuck.API
                             .AllowCredentials());
                 });
 
-        public static IGraphQLBuilder AddUserContextBuilderScoped<TUserContextBuilder>(this IGraphQLBuilder builder) where TUserContextBuilder : class, IUserContextBuilder
-        {
-            ServiceCollectionServiceExtensions.AddScoped<IUserContextBuilder, TUserContextBuilder>(builder.Services);
-            return builder;
-        }
+        //public static IGraphQLBuilder AddUserContextBuilderScoped<TUserContextBuilder>(this IGraphQLBuilder builder) where TUserContextBuilder : class, IUserContextBuilder
+        //{
+        //    ServiceCollectionServiceExtensions.AddScoped<IUserContextBuilder, TUserContextBuilder>(builder.Services);
+        //    return builder;
+        //}
     }
 }
