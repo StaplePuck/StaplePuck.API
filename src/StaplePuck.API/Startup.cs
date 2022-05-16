@@ -104,13 +104,13 @@ namespace StaplePuck.API
     //.AddCustomGraphQL(this.HostingEnvironment)
     .AddCustomGraphQLAuthorization(Configuration);
 
-            services.AddGraphQL(options =>
-            {
-                options.EnableMetrics = true;
-            })
-            .AddErrorInfoProvider(opt => opt.ExposeExceptionStackTrace = true)
-            .AddSystemTextJson()
-            .AddUserContextBuilder(context => new GraphQLUserContext { User = context.User });
+            //services.AddGraphQL(options =>
+            //{
+            //    options.EnableMetrics = true;
+            //})
+            //.AddErrorInfoProvider(opt => opt.ExposeExceptionStackTrace = true)
+            //.AddSystemTextJson()
+            //.AddUserContextBuilder(context => new GraphQLUserContext { User = context.User });
 
 #if !DEBUG
             //ConfigureSSL(services, Configuration);

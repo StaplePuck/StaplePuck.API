@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using RestSharp;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace StaplePuck.Core.Auth
@@ -51,11 +52,11 @@ namespace StaplePuck.Core.Auth
                     return null;
                 }
                 var client = new RestClient(_settings.TokenUrl);
-                var request = new RestRequest(Method.POST);
+                var request = new RestRequest(_settings.TokenUrl, Method.Post);
                 request.AddHeader("content-type", "application/json");
                 var json = JsonConvert.SerializeObject(new Auth0Request(_settings));
                 request.AddParameter("application/json", json, ParameterType.RequestBody);
-                IRestResponse response = client.Execute(request);
+                var response = client.ExecuteAsync(request).Result;
 
                 var authResponse = JsonConvert.DeserializeObject<Auth0Response>(response.Content);
                 _accessToken = authResponse.access_token;

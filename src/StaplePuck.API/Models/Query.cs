@@ -41,7 +41,7 @@ namespace StaplePuck.API.Models
                     }
                     var subject = user.GetUserId(options.Value);
                     return dataContext.Users.Where(x => x.ExternalId == subject);
-                }).RequiresAuthorization();
+                }).Authorize();
 
             AddQueryField(
                 name: "fantasyTeams",
@@ -273,16 +273,16 @@ namespace StaplePuck.API.Models
                 name: "currentUser",
                 resolve: context =>
                 {
-                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
+                    var dbContext = ResolveDbContext(context);
                     var user = ((GraphQLUserContext)context.UserContext).User;
                     if (user.Claims.Count() == 0)
                     {
                         throw new Exception("Not authenticated");
                     }
                     var subject = user.GetUserId(options.Value);
-                    var users = dataContext.Users.Where(x => x.ExternalId == subject).Include(x => x.NotificationTokens);
+                    var users = dbContext.Users.Where(x => x.ExternalId == subject).Include(x => x.NotificationTokens);
                     return users.FirstOrDefault();
-                }).RequiresAuthorization();
+                }).Authorize();
         }
     }
 }

@@ -129,8 +129,8 @@ namespace StaplePuck.Data.Repositories
                         }
                     }
                 }
-
-                _logger.LogInformation($"Finished updating team {item.FullName} for season {dbSeason.FullName}");
+                // todo update
+                //_logger.LogInformation($"Finished updating team {item.FullName} for season {dbSeason.FullName}");
                 await _db.SaveChangesAsync();
             }
 
