@@ -31,10 +31,9 @@ using GraphQL.Validation;
 using StaplePuck.API.Constants;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using FluffySpoon.AspNet.LetsEncrypt;
-using FluffySpoon.AspNet.LetsEncrypt.Certes;
-using Certes;
 using GraphQL.Server.Ui.Playground;
+using GraphQL.MicrosoftDI;
+using GraphQL.Server.Transports.AspNetCore.SystemTextJson;
 
 namespace StaplePuck.API
 {
@@ -90,6 +89,7 @@ namespace StaplePuck.API
             services.AddScoped<IDocumentExecuter, EfDocumentExecuter>();
             services.AddScoped<ISchema, Models.Schema>();
             services.AddScoped<Models.Mutation>();
+
             //services.AddScoped<IDependencyResolver>(
             //    provider => new FuncDependencyResolver(provider.GetRequiredService));
 
@@ -104,6 +104,13 @@ namespace StaplePuck.API
     //.AddCustomGraphQL(this.HostingEnvironment)
     .AddCustomGraphQLAuthorization(Configuration);
 
+            services.AddGraphQL(b => b
+                //.AddHttpMiddleware<ISchema>()
+                .AddUserContextBuilder(httpContext => new GraphQLUserContext { User = httpContext.User })
+                .AddSystemTextJson()
+                .AddErrorInfoProvider(opt => opt.ExposeExceptionStackTrace = true)
+                .AddSchema<Schema>()
+                .AddGraphTypes(typeof(Schema).Assembly));
             //services.AddGraphQL(options =>
             //{
             //    options.EnableMetrics = true;
@@ -112,9 +119,6 @@ namespace StaplePuck.API
             //.AddSystemTextJson()
             //.AddUserContextBuilder(context => new GraphQLUserContext { User = context.User });
 
-#if !DEBUG
-            //ConfigureSSL(services, Configuration);
-#endif
 
             //var mvc = services.AddMvc(option => option.EnableEndpointRouting = false);
             //mvc.SetCompatibilityVersion(CompatibilityVersion.Latest);
@@ -137,37 +141,6 @@ namespace StaplePuck.API
             });
         }
 
-        private void ConfigureSSL(IServiceCollection services, IConfiguration configuration)
-        {
-            var settings = new LetsEncryptSettings();
-            configuration.GetSection("LetsEncrypt").Bind(settings);
-            if (settings != null && !string.IsNullOrEmpty(settings.Email))
-            {
-                var isDebug = false;
-#if DEBUG
-                isDebug = true;
-#endif
-                services.AddFluffySpoonLetsEncrypt(new LetsEncryptOptions
-                {
-                    Email = settings.Email,
-                    UseStaging = isDebug,
-                    Domains = settings.Domains.Split(","),
-                    TimeUntilExpiryBeforeRenewal = TimeSpan.FromDays(30),
-                    TimeAfterIssueDateBeforeRenewal = TimeSpan.FromDays(7),
-                    CertificateSigningRequest = new CsrInfo()
-                    {
-                        CountryName = settings.CountryName,
-                        Locality = settings.Locality,
-                        Organization = settings.Organization,
-                        OrganizationUnit = settings.OrganizationUnit,
-                        State = settings.State
-                    }
-                });
-                services.AddFluffySpoonLetsEncryptFileCertificatePersistence("LetsEncrypt/Certificate");
-                services.AddFluffySpoonLetsEncryptFileChallengePersistence("LetsEncrypt/Challenge");
-            }
-        }
-
         static IEnumerable<Type> GetGraphQlTypes()
         {
             return typeof(Startup).Assembly
@@ -187,7 +160,7 @@ namespace StaplePuck.API
             //db.EnsureSeedData();
 
             //app.UseAuthorization();
-            app.UseGraphQL<ISchema>();
+            //app.UseGraphQL<ISchema>();
             app.UseCors(CorsPolicyName.AllowAny)
                .UseAuthentication();
             //   .UseRouting()
@@ -200,9 +173,6 @@ namespace StaplePuck.API
             //{
             //    endpoints.MapControllers();
             //});
-#if !DEBUG
-            //app.UseFluffySpoonLetsEncrypt();
-#endif
         }
     }
 }
