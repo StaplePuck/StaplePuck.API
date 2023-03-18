@@ -9,10 +9,10 @@ namespace StaplePuck.Core.Stats
         public int Id { get; set; }
 
         public int PlayerStatsOnDateId { get; set; }
-        public PlayerStatsOnDate PlayerStatsOnDate { get; set; }
+        public PlayerStatsOnDate PlayerStatsOnDate { get; set; } = new PlayerStatsOnDate();
 
         public int ScoringTypeId { get; set; }
-        public ScoringType ScoringType { get; set; }
+        public ScoringType ScoringType { get; set; } = new ScoringType();
 
         public int Total { get; set; }
 

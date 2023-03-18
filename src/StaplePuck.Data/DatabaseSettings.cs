@@ -6,6 +6,6 @@ namespace StaplePuck.Data
 {
     public class DatabaseSettings
     {
-        public string ConnectionString { get; set; }
+        public string ConnectionString { get; set; } = string.Empty;
     }
 }

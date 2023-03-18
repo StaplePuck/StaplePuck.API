@@ -10,6 +10,6 @@ namespace StaplePuck.Core.Client
         /// <summary>
         /// Gets the HTTP endpoint for the StaplePuck API.
         /// </summary>
-        public string Endpoint { get; set; }
+        public string Endpoint { get; set; } = string.Empty;
     }
 }

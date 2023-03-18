@@ -54,7 +54,7 @@ namespace StaplePuck.Core.Client
         /// <param name="value">The value to update.</param>
         /// <param name="typeName">The name of the type for the variable.</param>
         /// <returns>The resulting message.</returns>
-        public async Task<ResultModel> UpdateAsync<T>(string mutationName, T value, string variableName = null, string typeName = null)
+        public async Task<ResultModel> UpdateAsync<T>(string mutationName, T value, string? variableName = null, string? typeName = null)
         {
             var name = typeof(T).Name;
             var inputName = string.Concat(name, "Input");
@@ -63,14 +63,14 @@ namespace StaplePuck.Core.Client
                 name = typeName.Trim('[', ']');
                 inputName = typeName;
             }
-            var lowerName = (Char.ToLowerInvariant(name[0]) + name.Substring(1));
+            var lowerName = (char.ToLowerInvariant(name[0]) + name.Substring(1));
 
             if (string.IsNullOrEmpty(variableName))
             {
                 variableName = lowerName;
             }
             
-            var variables = new ExpandoObject() as IDictionary<string, object>;
+            var variables = new ExpandoObject() as IDictionary<string, object?>;
             variables.Add(lowerName, value);
             var request = new GraphQLRequest
             {
@@ -92,7 +92,7 @@ namespace StaplePuck.Core.Client
             return response.Data;
         }
 
-        public async Task<T[]> GetAsync<T>(string query, IDictionary<string, object> variables = null)
+        public async Task<T[]> GetAsync<T>(string query, IDictionary<string, object>? variables = null)
         {
             var name = typeof(T).Name;
 

@@ -18,8 +18,8 @@ namespace StaplePuck.Core.Client
         /// <param name="variableName">The name of the variable.</param>
         /// <param name="typeName">The name of the type for the variable.</param>
         /// <returns>The resulting message.</returns>
-        Task<ResultModel> UpdateAsync<T>(string mutationName, T value, string variableName = null, string typeName = null);
+        Task<ResultModel> UpdateAsync<T>(string mutationName, T value, string? variableName = null, string? typeName = null);
 
-        Task<T[]> GetAsync<T>(string query, IDictionary<string, object> variables = null);
+        Task<T[]> GetAsync<T>(string query, IDictionary<string, object>? variables = null);
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace StaplePuck.Data
 {
@@ -20,7 +21,7 @@ namespace StaplePuck.Data
         }
 
         private readonly string _connectionString;
-        private static StaplePuckContext _context;
+        private static StaplePuckContext? _context;
 
         public DbContextBuilder(string connectionString)
         {
@@ -31,6 +32,7 @@ namespace StaplePuck.Data
         {
             var optionsBuilder = new DbContextOptionsBuilder();
             optionsBuilder.UseNpgsql(_connectionString);
+            optionsBuilder.ConfigureWarnings(warnings => warnings.Ignore(CoreEventId.NavigationBaseIncludeIgnored));
             return new StaplePuckContext(optionsBuilder.Options);
         }
 
@@ -41,6 +43,7 @@ namespace StaplePuck.Data
             //constructInstance: builder => new SampleDbContext(builder.Options));
             var optionsBuilder = new DbContextOptionsBuilder();
             optionsBuilder.UseNpgsql(_connectionString);
+            optionsBuilder.ConfigureWarnings(warnings => warnings.Ignore(CoreEventId.NavigationBaseIncludeIgnored));
             _context = new StaplePuckContext(optionsBuilder.Options);
             
             //database = await sqlInstance.Build("GraphQLEntityFrameworkSample");

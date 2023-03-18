@@ -1,0 +1,100 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Transform" : "AWS::Serverless-2016-10-31",
+  "Description" : "The serverless application for the StaplePuck API",
+  "Parameters" : {
+    "Auth0__Audience": {
+        "Type": "String"
+    },
+    "Auth0__ClientId": {
+        "Type": "String"
+    },
+    "Auth0__ClientSecret": {
+        "Type": "String"
+    },
+    "Auth0__TokenUrl": {
+        "Type": "String"
+    },
+    "Auth0API__Audience": {
+        "Type": "String"
+    },
+    "Auth0API__ClientId": {
+        "Type": "String"
+    },
+    "Auth0API__ClientSecret": {
+        "Type": "String"
+    },
+    "Auth0API__Domain": {
+        "Type": "String"
+    },
+    "Authorization__BaseUrl": {
+        "Type": "String"
+    },
+    "Authorization__SiteName": {
+        "Type": "String"
+    },
+    "ConnectionStrings__Default": {
+        "Type": "String"
+    },
+    "AWS__StatsUpdatedTopicARN": {
+        "Type": "String"
+    },
+    "AWS__ScoreUpdatedTopicARN": {
+        "Type": "String"
+    }
+  },
+  "Resources" : {
+    "DefaultFunction" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "StaplePuck.API4::LambdaEntryPoint::FunctionHandlerAsync",
+        "Runtime": "dotnet6",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": null,
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Environment": {
+            "Variables": {
+                "Auth0__Audience": { "Ref" : "Auth0__Audience" },
+                "Auth0__ClientId": { "Ref" : "Auth0__ClientId" },
+                "Auth0__ClientSecret": { "Ref" : "Auth0__ClientSecret" },
+                "Auth0__TokenUrl": { "Ref" : "Auth0__TokenUrl" },
+                "Auth0API__Audience": { "Ref" : "Auth0API__Audience" },
+                "Auth0API__ClientId": { "Ref" : "Auth0API__ClientId" },
+                "Auth0API__ClientSecret": { "Ref" : "Auth0API__ClientSecret" },
+                "Auth0API__Domain": { "Ref" : "Auth0API__Domain" },
+                "Authorization__BaseUrl": { "Ref" : "Authorization__BaseUrl" },
+                "Authorization__SiteName": { "Ref" : "Authorization__SiteName" },
+                "ConnectionStrings__Default": { "Ref" : "ConnectionStrings__Default" },
+                "AWS__StatsUpdatedTopicARN": { "Ref" : "AWS__StatsUpdatedTopicARN" },
+                "AWS__ScoreUpdatedTopicARN": { "Ref" : "AWS__ScoreUpdatedTopicARN" }
+            }
+        },
+        "Events": {
+          "ProxyResource": {
+            "Type": "Api",
+            "Properties": {
+              "Path": "/{proxy+}",
+              "Method": "ANY"
+            }
+          },
+          "RootResource": {
+            "Type": "Api",
+            "Properties": {
+              "Path": "/",
+              "Method": "ANY"
+            }
+          }
+        }
+      }
+    }
+  },
+  "Outputs" : {
+    "ApiURL" : {
+        "Description" : "API endpoint URL for Prod environment",
+        "Value" : { "Fn::Sub" : "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/" }
+    }
+  }
+}

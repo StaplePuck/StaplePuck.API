@@ -207,6 +207,9 @@ namespace StaplePuck.Data.Migrations
                     b.Property<int>("PointsPerScore")
                         .HasColumnType("integer");
 
+                    b.Property<float>("ScoringWeight")
+                        .HasColumnType("real");
+
                     b.HasKey("PositionTypeId", "ScoringTypeId", "LeagueId");
 
                     b.HasIndex("LeagueId");
@@ -878,7 +881,7 @@ namespace StaplePuck.Data.Migrations
             modelBuilder.Entity("StaplePuck.Core.Stats.PositionType", b =>
                 {
                     b.HasOne("StaplePuck.Core.Stats.Sport", "Sport")
-                        .WithMany()
+                        .WithMany("PositionTypes")
                         .HasForeignKey("SportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

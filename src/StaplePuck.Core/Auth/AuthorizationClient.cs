@@ -57,15 +57,22 @@ namespace StaplePuck.Core.Auth
             request.AddParameter("description", $"Security group for {groupName}");
 
             var response = await _restClient.PostAsync(request).ConfigureAwait(false);
+            if (response == null)
+            {
+                return string.Empty;
+            }
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
                 var token = _auth0Client.GetAuthToken();
+                if (token == null)
+                {
+                    return string.Empty;
+                }
                 _restClient.Authenticator = new JwtAuthenticator(token);
                 response = await _restClient.PostAsync(request).ConfigureAwait(false);
-                //if (response.IsSuccessful)
             }
-            var result = Newtonsoft.Json.JsonConvert.DeserializeObject<GroupResponse>(response.Content);
-            return result._id;
+            var result = Newtonsoft.Json.JsonConvert.DeserializeObject<GroupResponse>(response?.Content ?? "{}");
+            return result?._id ?? string.Empty;
         }
 
         /// <summary>
@@ -89,9 +96,12 @@ namespace StaplePuck.Core.Auth
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
                 var token = _auth0Client.GetAuthToken();
-                _restClient.Authenticator = new JwtAuthenticator(token);
-                response = await _restClient.ExecuteAsync(request).ConfigureAwait(false);
-                // todo log error message if not success
+                if (token != null)
+                {
+                    _restClient.Authenticator = new JwtAuthenticator(token);
+                    response = await _restClient.ExecuteAsync(request).ConfigureAwait(false);
+                    // todo log error message if not success
+                }
             }
         }
 
@@ -148,8 +158,8 @@ namespace StaplePuck.Core.Auth
 
         private class GroupResponse
         {
-            public string name { get; set; }
-            public string _id { get; set; }
+            public string name { get; set; } = string.Empty;
+            public string _id { get; set; } = string.Empty;
         }
     }
 }
