@@ -39,7 +39,7 @@ jobs:
       
       - name: Deploy to Lambda
         working-directory: ./src/StaplePuck.API4
-        run: dotnet lambda deploy-serverless -sn staplepuckapi-prod -tp Auth0__Audience=$Auth0__Audience,Auth0__ClientId=${{ secrets.Auth0__ClientId }},Auth0__ClientSecret=${{ secrets.Auth0__ClientSecret }},Auth0__TokenUrl=$Auth0__TokenUrl,Auth0API__Audience=$Auth0API__Audience,Auth0API__ClientId=${{ secrets.Auth0API__ClientId }},Auth0API__ClientSecret=${{ secrets.Auth0API__ClientSecret }},Auth0API__Domain=$Auth0API__Domain,Authorization__BaseUrl=$Authorization__BaseUrl,Authorization__SiteName=$Authorization__SiteName,ConnectionStrings__Default=${{ secrets.ConnectionStrings__Default }},AWS__StatsUpdatedTopicARN=$AWS__StatsUpdatedTopicARN,AWS__ScoreUpdatedTopicARN=$AWS__ScoreUpdatedTopicARN
+        run: dotnet lambda deploy-serverless -sn staplepuckapi-prod -tp Auth0__Audience=${{ vars.Auth0__Audience }},Auth0__ClientId=${{ secrets.Auth0__ClientId }},Auth0__ClientSecret=${{ secrets.Auth0__ClientSecret }},Auth0__TokenUrl=${{ vars.Auth0__TokenUrl }},Auth0API__Audience=${{ vars.Auth0API__Audience }},Auth0API__ClientId=${{ secrets.Auth0API__ClientId }},Auth0API__ClientSecret=${{ secrets.Auth0API__ClientSecret }},Auth0API__Domain=${{ vars.Auth0API__Domain }},Authorization__BaseUrl=${{ vars.Authorization__BaseUrl }},Authorization__SiteName=${{ vars.Authorization__SiteName }},ConnectionStrings__Default=${{ secrets.ConnectionStrings__Default }},AWS__StatsUpdatedTopicARN=${{ vars.AWS__StatsUpdatedTopicARN }},AWS__ScoreUpdatedTopicARN=${{ vars.AWS__ScoreUpdatedTopicARN }}
       # - name: Pack
       #   run: dotnet pack src/Orleans.SyncWork/Orleans.SyncWork.csproj -c Release --no-restore --no-build --include-symbols -p:SymbolPackageFormat=snupkg -o .
 
