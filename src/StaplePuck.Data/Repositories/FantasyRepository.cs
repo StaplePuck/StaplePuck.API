@@ -24,6 +24,8 @@ namespace StaplePuck.Data.Repositories
             _db = db;
             _authorizationClient = authorizationClient;
             _logger = logger;
+            _logger.LogInformation("info");
+            _logger.LogWarning("warn");
         }
 
         public async Task<ResultModel> Add(League league)
@@ -32,6 +34,10 @@ namespace StaplePuck.Data.Repositories
             await _db.SaveChangesAsync();
 
             var newLeague = await _db.Leagues.Include(l => l.Commissioner).FirstOrDefaultAsync(x => x.Id == league.Id);
+            if (newLeague == null)
+            {
+                return new ResultModel { Message = $"League {league.Id} not found", Success = false };
+            }
             var extId = newLeague.Commissioner.ExternalId;
             await _authorizationClient.AssignUserAsCommissioner(extId, league.Id);;
 
@@ -48,6 +54,10 @@ namespace StaplePuck.Data.Repositories
                 .Include(x => x.FantasyTeams)
                 .FirstOrDefaultAsync(x => x.Id == league.Id);
 
+            if (leagueInfo == null)
+            {
+                return new ResultModel { Message = $"League {league.Id} not found", Success = false };
+            }
             leagueInfo.AllowMultipleTeams = league.AllowMultipleTeams;
             if (league.Announcement != null)
             {
@@ -100,6 +110,7 @@ namespace StaplePuck.Data.Repositories
                     var rules = new ScoringRulePoints
                     {
                         PointsPerScore = item.PointsPerScore,
+                        ScoringWeight = item.ScoringWeight,
                         LeagueId = league.Id,
                         PositionTypeId = item.PositionTypeId,
                         ScoringTypeId = item.ScoringTypeId
@@ -115,7 +126,10 @@ namespace StaplePuck.Data.Repositories
                 foreach (var item in league.FantasyTeams)
                 {
                     var currentTeam = leagueInfo.FantasyTeams.FirstOrDefault(x => x.Id == item.Id);
-                    currentTeam.IsPaid = item.IsPaid;
+                    if (currentTeam != null)
+                    {
+                        currentTeam.IsPaid = item.IsPaid;
+                    }
                 }
             }
 
@@ -163,6 +177,11 @@ namespace StaplePuck.Data.Repositories
             }
 
             var leagueInfo = await _db.Leagues.Include(x => x.FantasyTeams).ThenInclude(x => x.GM).SingleOrDefaultAsync(x => x.Id == team.LeagueId);
+            if (leagueInfo == null)
+            {
+                errors.Add($"League {team.LeagueId}");
+                return errors;
+            }
             if (leagueInfo.IsLocked)
             {
                 errors.Add("League is currently locked");
@@ -180,7 +199,7 @@ namespace StaplePuck.Data.Repositories
             var currentTeam = await _db.FantasyTeams.Include(x => x.League).FirstOrDefaultAsync(x => x.Id == team.Id);
             if (currentTeam?.League == null || currentTeam.League.IsLocked)
             {
-                _logger.LogWarning($"League is locked and someone is trying to update fantasy team: {currentTeam.Name} for league: {currentTeam.League.Name}");
+                _logger.LogWarning($"League is locked and someone is trying to update fantasy team: {currentTeam?.Name} for league: {currentTeam?.League.Name}");
                 return new ResultModel { Id = team.Id, Message = "League is locked", Success = false };
             }
 
@@ -214,6 +233,11 @@ namespace StaplePuck.Data.Repositories
             var errors = new List<string>();
 
             var currentTeam = await _db.FantasyTeams.Include(x => x.League).ThenInclude(x => x.NumberPerPositions).ThenInclude(x => x.PositionType).FirstOrDefaultAsync(x => x.Id == team.Id);
+            if (currentTeam == null)
+            {
+                errors.Add($"Uanble to find team {team.Id}");
+                return errors;
+            }
             var players = _db.PlayerSeasons.Where(x => x.SeasonId == currentTeam.League.SeasonId).Include(x => x.Player);
 
             if (currentTeam.League.IsLocked)
@@ -262,7 +286,7 @@ namespace StaplePuck.Data.Repositories
             foreach (var item in duplicateItems)
             {
                 var info = await players.FirstOrDefaultAsync(x => x.PlayerId == item);
-                errors.Add($"{info.Player.FullName} is selected more than once");
+                errors.Add($"{info?.Player.FullName} is selected more than once");
             }
 
             // Compare against existing teams

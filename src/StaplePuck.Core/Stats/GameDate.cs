@@ -6,14 +6,8 @@ namespace StaplePuck.Core.Stats
 {
     public class GameDate
     {
-        public string Id { get; set; }
-        public List<GameDateSeason> GameDateSeasons { get; set; }
-        public List<PlayerStatsOnDate> PlayersStatsOnDate { get; set; }
-
-        public GameDate()
-        {
-            this.GameDateSeasons = new List<GameDateSeason>();
-            this.PlayersStatsOnDate = new List<PlayerStatsOnDate>();
-        }
+        public string Id { get; set; } = string.Empty;
+        public List<GameDateSeason> GameDateSeasons { get; set; } = new List<GameDateSeason>();
+        public List<PlayerStatsOnDate> PlayersStatsOnDate { get; set; } = new List<PlayerStatsOnDate>();
     }
 }

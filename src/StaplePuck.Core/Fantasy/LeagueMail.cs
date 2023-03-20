@@ -10,11 +10,11 @@ namespace StaplePuck.Core.Fantasy
         public int Id { get; set; }
 
         public int LeagueId { get; set; }
-        public League League { get; set; }
+        public League? League { get; set; }
 
-        public string GameDateId { get; set; }
-        public GameDate GameDate { get; set; }
+        public string GameDateId { get; set; } = string.Empty;
+        public GameDate? GameDate { get; set; }
 
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
     }
 }

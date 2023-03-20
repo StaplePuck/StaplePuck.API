@@ -11,11 +11,15 @@ namespace StaplePuck.Data
 {
     public sealed class StaplePuckContext : DbContext
     {
+        public static IModel StaticModel { get; } = BuildStaticModel();
+
         public StaplePuckContext(DbContextOptions options) : base(options)
         {
             //var result = Database.EnsureCreated();
-            
+
+#pragma warning disable EF1001 // Internal EF Core API usage.
             var dbOptions = options.FindExtension<Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure.Internal.NpgsqlOptionsExtension>();
+#pragma warning restore EF1001 // Internal EF Core API usage.
             if (dbOptions != null && dbOptions.ConnectionString != "Fake")
             {
                 //if (options.Extensions.FirstOrDefault()?.)
@@ -23,7 +27,7 @@ namespace StaplePuck.Data
             }
         }
 
-        public static IModel GetModel()
+        static IModel BuildStaticModel()
         {
             var builder = new DbContextOptionsBuilder();
             builder.UseNpgsql("Fake");

@@ -6,10 +6,10 @@ namespace StaplePuck.Core.Auth
 {
     public class Auth0APISettings
     {
-        public string ClientSecret { get; set; }
-        public string ClientId { get; set; }
-        public string Audience { get; set; }
-        public string Domain { get; set; }
+        public string ClientSecret { get; set; } = string.Empty;
+        public string ClientId { get; set; } = string.Empty;
+        public string Audience { get; set; } = string.Empty;
+        public string Domain { get; set; } = string.Empty;
 
 
         public string Authority

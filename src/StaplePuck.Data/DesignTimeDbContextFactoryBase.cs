@@ -13,7 +13,7 @@ namespace StaplePuck.Data
         {
             return Create(
                 Directory.GetCurrentDirectory(),
-                Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
+                Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? string.Empty);
         }
         protected abstract TContext CreateNewInstance(
             DbContextOptions<TContext> options);
@@ -22,7 +22,7 @@ namespace StaplePuck.Data
         {
             var environmentName =
                 Environment.GetEnvironmentVariable(
-                    "ASPNETCORE_ENVIRONMENT");
+                    "ASPNETCORE_ENVIRONMENT") ?? string.Empty;
 
             var basePath = AppContext.BaseDirectory;
 
