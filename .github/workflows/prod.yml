@@ -47,9 +47,8 @@ jobs:
       #  run: dotnet lambda deploy-serverless -sn staplepuckapi-prod -tp 'Auth0Audience="${{ vars.Auth0__Audience }}";Auth0ClientId="${{ secrets.Auth0__ClientId }}";Auth0ClientSecret="${{ secrets.Auth0__ClientSecret }}";Auth0TokenUrl="${{ vars.Auth0__TokenUrl }}";Auth0APIAudience="${{ vars.Auth0API__Audience }}";Auth0APIClientId="${{ secrets.Auth0API__ClientId }}";Auth0APIClientSecret="${{ secrets.Auth0API__ClientSecret }}";Auth0APIDomain="${{ vars.Auth0API__Domain }}";AuthorizationBaseUrl="${{ vars.Authorization__BaseUrl }}";AuthorizationSiteName="${{ vars.Authorization__SiteName }}";ConnectionStringsDefault="${{ secrets.ConnectionStrings__Default }}";AWSStatsUpdatedTopicARN="${{ vars.AWS__StatsUpdatedTopicARN }}";AWSScoreUpdatedTopicARN="${{ vars.AWS__ScoreUpdatedTopicARN }}"'
       
       - name: Push generated package to MyGet registry
-        working-directory: ./src/StaplePuck.Core
         run: |
-            dotnet nuget push .\bin\release\*.nupkg -s https://www.myget.org/F/staplepuck/api/v2/package --skip-duplicate -k ${{ secrets.NUGET_API_KEY }}
+            dotnet nuget push **\*.nupkg -s https://www.myget.org/F/staplepuck/api/v2/package --skip-duplicate -k ${{ secrets.NUGET_API_KEY }}
      # - name: Pack
       #   run: dotnet pack src/Orleans.SyncWork/Orleans.SyncWork.csproj -c Release --no-restore --no-build --include-symbols -p:SymbolPackageFormat=snupkg -o .
 
