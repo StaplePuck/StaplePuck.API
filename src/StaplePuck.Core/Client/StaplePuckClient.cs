@@ -2,7 +2,6 @@
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.SystemTextJson;
 using Microsoft.Extensions.Options;
-using StaplePuck.Core.Data;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -13,6 +12,7 @@ using RestSharp;
 using Newtonsoft.Json;
 using StaplePuck.Core.Auth;
 using GraphQL;
+using StaplePuck.Core.Models;
 
 namespace StaplePuck.Core.Client
 {

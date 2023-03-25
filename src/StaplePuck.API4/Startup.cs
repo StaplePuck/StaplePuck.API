@@ -1,8 +1,8 @@
 ﻿using GraphiQl;
 using GraphQL;
+using GraphQL.Execution;
 using GraphQL.Types;
 using StaplePuck.Core.Auth;
-using StaplePuck.Core.Data;
 using StaplePuck.Data;
 using StaplePuck.Data.Repositories;
 
@@ -36,7 +36,7 @@ public class Startup
         var dbContextBuilder = new DbContextBuilder(connectionString);
         services.AddSingleton<IHostedService>(dbContextBuilder);
         services.AddSingleton<Func<StaplePuckContext>>(_ => dbContextBuilder.BuildDbContext);
-        services.AddSingleton(_ => dbContextBuilder.BuildDbContext());
+        services.AddScoped(_ => dbContextBuilder.BuildDbContext());
         services.AddSingleton<IDocumentExecuter, EfDocumentExecuter>();
         services.AddSingleton<ISchema, Schema>();
 

@@ -9,10 +9,10 @@ namespace StaplePuck.Core.Stats
         public int Id { get; set; }
 
         public int PlayerId { get; set; }
-        public Player Player { get; set; } = new Player();
+        public Player? Player { get; set; }
 
         public string GameDateId { get; set; } = string.Empty;
-        public GameDate GameDate { get; set; } = new GameDate();
+        public GameDate? GameDate { get; set; }
 
         public List<PlayerScore> PlayerScores { get; set; } = new List<PlayerScore>();
     }

@@ -8,18 +8,18 @@ namespace StaplePuck.Core.Stats
     public class PlayerSeason
     {
         public int PlayerId { get; set; }
-        public Player Player { get; set; } = new Player();
+        public Player? Player { get; set; }
 
         public int SeasonId { get; set; }
-        public Season Season { get; set; } = new Season();
+        public Season? Season { get; set; }
 
         public int TeamId { get; set; }
-        public Team Team { get; set; } = new Team();
+        public Team? Team { get; set; }
         public int PositionTypeId { get; set; }
-        public PositionType PositionType { get; set; } = new PositionType();
-        public TeamSeason TeamSeason { get; set; } = new TeamSeason();
+        public PositionType? PositionType { get; set; }
+        public TeamSeason? TeamSeason { get; set; }
 
-        public TeamStateForSeason TeamStateForSeason { get; set; } = new TeamStateForSeason();
+        public TeamStateForSeason? TeamStateForSeason { get; set; }
 
         public List<Fantasy.FantasyTeamPlayers> FantasyTeamPlayers { get; set; } = new List<Fantasy.FantasyTeamPlayers>();
         public List<PlayerCalculatedScore> PlayerCalculatedScores { get; set; } = new List<PlayerCalculatedScore>();

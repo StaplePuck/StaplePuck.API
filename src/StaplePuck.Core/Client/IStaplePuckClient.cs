@@ -1,4 +1,4 @@
-﻿using StaplePuck.Core.Data;
+﻿using StaplePuck.Core.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

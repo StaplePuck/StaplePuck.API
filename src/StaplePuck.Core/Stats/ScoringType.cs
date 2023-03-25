@@ -11,6 +11,6 @@ namespace StaplePuck.Core.Stats
         public string ShortName { get; set; } = string.Empty;
         public List<ScoringPositions> ScoringPositions { get; set; } = new List<ScoringPositions>();
         public int SportId { get; set; }
-        public Sport Sport { get; set; } = new Sport();
+        public Sport? Sport { get; set; }
     }
 }

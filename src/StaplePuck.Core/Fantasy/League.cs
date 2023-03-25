@@ -12,10 +12,10 @@ namespace StaplePuck.Core.Fantasy
         public string Name { get; set; } = string.Empty;
 
         public int SeasonId { get; set; }
-        public Season Season { get; set; } = new Season();
+        public Season? Season { get; set; }
 
         public int CommissionerId { get; set; }
-        public User Commissioner { get; set; } = new User();
+        public User? Commissioner { get; set; }
 
         public List<FantasyTeam> FantasyTeams { get; set; } = new List<FantasyTeam>();
         public List<ScoringRulePoints> ScoringRules { get; set; } = new List<ScoringRulePoints>();

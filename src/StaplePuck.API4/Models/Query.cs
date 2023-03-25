@@ -90,9 +90,13 @@ public class Query :
             {
                 var id = context.GetArgument<int>("id");
                 var dbContext = ResolveDbContext(context);
-                var team = dbContext.FantasyTeams.Include(x => x.League).ThenInclude(x => x.ScoringRules).ThenInclude(x => x.ScoringType).First(x => x.Id == id);
+                var team = dbContext.FantasyTeams.Include(x => x.League).ThenInclude(x => x!.ScoringRules).ThenInclude(x => x.ScoringType).First(x => x.Id == id);
+                if (team.League == null)
+                {
+                    throw new Exception();
+                }
                 var scoring = team.League.ScoringRules.Where(x => x.ScoringWeight != 0).Select(x => x.ScoringType);
-                return scoring.Distinct().OrderBy(x => x.Id);
+                return scoring.Distinct().OrderBy(x => x!.Id);
             });
 
         Field<LeagueGraph>("leagueScores")
@@ -147,13 +151,13 @@ public class Query :
                 var dbContext = ResolveDbContext(context);
                 var pcs = dbContext.PlayerCalculatedScores
                     .Include(x => x.PlayerSeason)
-                    .ThenInclude(x => x.PositionType)
+                    .ThenInclude(x => x!.PositionType)
 
                     .Include(x => x.PlayerSeason)
-                    .ThenInclude(x => x.Team)
+                    .ThenInclude(x => x!.Team)
 
                     .Include(x => x.PlayerSeason)
-                    .ThenInclude(x => x.TeamStateForSeason)
+                    .ThenInclude(x => x!.TeamStateForSeason)
 
                     .Include(x => x.Player)
 
@@ -168,13 +172,12 @@ public class Query :
                 }
                 if (teamId > 0)
                 {
-                    return pcs.Where(x => x.PlayerSeason.TeamId == teamId);
+                    return pcs.Where(x => x.PlayerSeason != null && x.PlayerSeason.TeamId == teamId);
                 }
                 return pcs;
             });
 
-        AddQueryField(
-            name: "myFantasyTeams",
+        AddQueryField("myFantasyTeams",
             resolve: context =>
             {
                 var leagueId = context.GetArgument<int>("leagueId");
@@ -188,16 +191,11 @@ public class Query :
 
                 if (leagueId > 0)
                 {
-                    return dbContext.FantasyTeams.Where(x => x.GM.ExternalId == subject && x.LeagueId == leagueId);
+                    return dbContext.FantasyTeams.Where(x => x.GM != null && x.GM.ExternalId == subject && x.LeagueId == leagueId);
                 }
-                return dbContext.FantasyTeams.Where(x => x.GM.ExternalId == subject);
+                return dbContext.FantasyTeams.Where(x => x.GM != null && x.GM.ExternalId == subject).Include(x => x.League);
             }
-            //arguments: new QueryArguments(
-            //new QueryArgument<IdGraphType>
-            //{
-            //    Name = "leagueId"
-            //}));
-            );
+            ).Argument<IdGraphType>("leagueId");
 
         Field<UserGraph>("currentUser")
             .Resolve(context =>

@@ -1,4 +1,4 @@
-﻿using StaplePuck.Core.Data;
+﻿using StaplePuck.Core.Models;
 using StaplePuck.Data;
 
 public class ResultGraph : EfObjectGraphType<StaplePuckContext, ResultModel>
