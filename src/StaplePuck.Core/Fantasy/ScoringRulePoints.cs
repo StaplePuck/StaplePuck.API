@@ -8,13 +8,13 @@ namespace StaplePuck.Core.Fantasy
     public class ScoringRulePoints
     {
         public int PositionTypeId { get; set; }
-        public PositionType PositionType { get; set; } = new PositionType();
+        public PositionType? PositionType { get; set; }
         public int PointsPerScore { get; set; }
         public double ScoringWeight { get; set; }
 
         public int ScoringTypeId { get; set; }
-        public ScoringType ScoringType { get; set; } = new ScoringType();
+        public ScoringType? ScoringType { get; set; }
         public int LeagueId { get; set; }
-        public League League { get; set; } = new League();
+        public League? League { get; set; }
     }
 }

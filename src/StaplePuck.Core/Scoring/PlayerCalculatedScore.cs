@@ -24,6 +24,6 @@ namespace StaplePuck.Core.Scoring
         public int TodaysScore { get; set; }
 
         public List<FantasyTeamPlayers> FantasyTeamPlayers { get; set; } = new List<FantasyTeamPlayers>();
-        public PlayerSeason PlayerSeason { get; set; } = new PlayerSeason();
+        public PlayerSeason? PlayerSeason { get; set; }
     }
 }

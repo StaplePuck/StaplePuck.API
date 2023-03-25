@@ -1,9 +1,12 @@
-﻿using GraphQL.Types;
+﻿using GraphQL.MicrosoftDI;
+using GraphQL.Types;
 using Microsoft.Extensions.Options;
 using StaplePuck.Core.Auth;
-using StaplePuck.Core.Data;
+using StaplePuck.Data.Repositories;
 using StaplePuck.Core.Fantasy;
+using StaplePuck.Core.Models;
 using StaplePuck.Core.Stats;
+using StaplePuck.Data;
 
 public class Mutation : ObjectGraphType
 {
@@ -13,7 +16,10 @@ public class Mutation : ObjectGraphType
 
         Field<ResultGraph>("updateUser")
             .Argument<NonNullGraphType<UserInputType>>("user")
-            .Resolve(context =>
+            .Resolve()
+            .WithScope()
+            .WithService<StaplePuckContext>()
+            .ResolveAsync(async (context, db) =>
                 {
                     var user = context.GetArgument<User>("user");
                     user.Name = user.Name.Trim();
@@ -26,11 +32,11 @@ public class Mutation : ObjectGraphType
                     }
                     else
                     {
-                        if (user.Name != null && fantasyRepository.UsernameAlreadyExists(user.Name, subject).Result)
+                        if (!string.IsNullOrEmpty(user.Name) && fantasyRepository.UsernameAlreadyExists(db, user.Name, subject).Result)
                         {
                             context.Errors.Add(new GraphQL.ExecutionError($"Username '{user.Name}' already exists."));
                         }
-                        if (user.Email != null && fantasyRepository.EmailAlreadyExists(user.Email, subject).Result)
+                        if (!string.IsNullOrEmpty(user.Email) && fantasyRepository.EmailAlreadyExists(db,user.Email, subject).Result)
                         {
                             context.Errors.Add(new GraphQL.ExecutionError($"Email '{user.Email} already exists."));
                         }
@@ -42,28 +48,37 @@ public class Mutation : ObjectGraphType
                     }
                     user.ExternalId = subject;
 
-                    return fantasyRepository.Update(user);
+                    return await fantasyRepository.Update(db, user);
                 });
 
         Field<ResultGraph>("createSeason")
             .Argument<NonNullGraphType<SeasonInputType>>("season")
-            .Resolve(context =>
+            .Resolve()
+            .WithScope()
+            .WithService<StaplePuckContext>()
+            .ResolveAsync(async (context, db) =>
             {
                 var season = context.GetArgument<Season>("season");
-                return statsRepository.Add(season);
+                return await statsRepository.Add(db, season);
             }).AuthorizeWithPolicy(AuthorizationPolicyName.WriteStats);
 
         Field<ResultGraph>("createLeague")
             .Argument<NonNullGraphType<LeagueCreateInputType>>("league")
-            .Resolve(context =>
+            .Resolve()
+            .WithScope()
+            .WithService<StaplePuckContext>()
+            .ResolveAsync(async (context, db) =>
             {
                 var league = context.GetArgument<League>("league");
-                return fantasyRepository.Add(league);
+                return await fantasyRepository.Add(db, league);
             }).AuthorizeWithPolicy(AuthorizationPolicyName.Admin);
 
         Field<ResultGraph>("updateLeague")
             .Argument<NonNullGraphType<LeagueUpdateInputType>>("league")
-            .Resolve(context =>
+            .Resolve()
+            .WithScope()
+            .WithService<StaplePuckContext>()
+            .ResolveAsync(async (context, db) =>
             {
                 var league = context.GetArgument<League>("league");
 
@@ -73,12 +88,15 @@ public class Mutation : ObjectGraphType
                     return new ResultModel { Id = -1, Success = false, Message = string.Empty };
                 }
 
-                return fantasyRepository.Update(league);
+                return await fantasyRepository.Update(db, league);
             });
 
         Field<ResultGraph>("createFantasyTeam")
             .Argument<NonNullGraphType<FantasyTeamCreateInputType>>("fantasyTeam")
-            .Resolve(context =>
+            .Resolve()
+            .WithScope()
+            .WithService<StaplePuckContext>()
+            .ResolveAsync(async (context, db) =>
             {
                 var team = context.GetArgument<FantasyTeam>("fantasyTeam");
                 var subject = ((GraphQLUserContext)context.UserContext).User.GetUserId(options.Value);
@@ -89,7 +107,7 @@ public class Mutation : ObjectGraphType
                 }
                 else
                 {
-                    context.Errors.AddRange(fantasyRepository.ValidateNew(team, subject).Result.Select(x => new GraphQL.ExecutionError(x)));
+                    context.Errors.AddRange(fantasyRepository.ValidateNew(db, team, subject).Result.Select(x => new GraphQL.ExecutionError(x)));
                 }
 
                 if (string.IsNullOrEmpty(subject) || context.Errors.Count > 0)
@@ -97,12 +115,15 @@ public class Mutation : ObjectGraphType
                     return new ResultModel { Id = -1, Success = false, Message = string.Empty };
                 }
 
-                return fantasyRepository.Add(team, subject);
+                return await fantasyRepository.Add(db, team, subject);
             }).Authorize();
 
         Field<ResultGraph>("updateFantasyTeam")
             .Argument<NonNullGraphType<FantasyTeamUpdateType>>("fantasyTeam")
-            .Resolve(context =>
+            .Resolve()
+            .WithScope()
+            .WithService<StaplePuckContext>()
+            .ResolveAsync(async (context, db) =>
             {
                 var team = context.GetArgument<FantasyTeam>("fantasyTeam");
 
@@ -116,57 +137,72 @@ public class Mutation : ObjectGraphType
                 var user = ((GraphQLUserContext)context.UserContext).User;
                 if (!authorizationClient.UserIsGM(user, team.Id) &&
                     !authorizationClient.UserIsCommissioner(user, team.LeagueId) &&
-                    !fantasyRepository.ValidateUserIsAssignedGM(team.Id, subject).Result)
+                    !fantasyRepository.ValidateUserIsAssignedGM(db, team.Id, subject).Result)
                 {
                     context.Errors.Add(new GraphQL.ExecutionError("User is not authorized"));
                     return new ResultModel { Id = -1, Success = false, Message = string.Empty };
                 }
 
-                var validations = fantasyRepository.Validate(team).Result;
+                var validations = fantasyRepository.Validate(db, team).Result;
                 var isValid = true;
                 if (validations.Count > 0)
                 {
                     isValid = false;
                     context.Errors.AddRange(validations.Select(x => new GraphQL.ExecutionError(x)));
                 }
-                return fantasyRepository.Update(team, isValid);
+                return await fantasyRepository.Update(db, team, isValid);
             }).Authorize();
 
         Field<ResultGraph>("updateGameDateStats")
             .Argument<NonNullGraphType<GameDateInputType>>("gameDate")
-            .Resolve(context =>
+            .Resolve()
+            .WithScope()
+            .WithService<StaplePuckContext>()
+            .ResolveAsync(async (context, db) =>
             {
                 var gameDate = context.GetArgument<GameDate>("gameDate");
-                return statsRepository.Update(gameDate);
+                return await statsRepository.Update(db, gameDate);
             });//.AuthorizeWith(AuthorizationPolicyName.WriteStats);
 
         Field<ResultGraph>("updateTeamStates")
             .Argument<ListGraphType<TeamStateForSeasonInputType>>("teamStates")
-            .Resolve(context =>
+            .Resolve()
+            .WithScope()
+            .WithService<StaplePuckContext>()
+            .ResolveAsync(async (context, db) =>
             {
                 var gameDate = context.GetArgument<TeamStateForSeason[]>("teamStates");
-                return statsRepository.Update(gameDate);
+                return await statsRepository.Update(db, gameDate);
             });//.AuthorizeWith(AuthorizationPolicyName.WriteStats);
 
         Field<ResultGraph>("updateLeagueScores")
             .Argument<NonNullGraphType<LeagueScoreInputType>>("league")
-            .Resolve(context =>
+            .Resolve()
+            .WithScope()
+            .WithService<StaplePuckContext>()
+            .ResolveAsync(async (context, db) =>
             {
                 var league = context.GetArgument<League>("league");
-                return statsRepository.Update(league);
+                return await statsRepository.Update(db, league);
             });//.AuthorizeWith(AuthorizationPolicyName.WriteStats);
 
         Field<ResultGraph>("overridePlayerScore")
             .Argument<NonNullGraphType<PlayerStatsOnDateUpdateInputType>>("playerStats")
-            .Resolve(context => 
-            { 
-                var playerStats = context.GetArgument<PlayerStatsOnDate>("playerStats"); 
-                return statsRepository.Update(playerStats); 
+            .Resolve()
+            .WithScope()
+            .WithService<StaplePuckContext>()
+            .ResolveAsync(async (context, db) =>
+            {
+                var playerStats = context.GetArgument<PlayerStatsOnDate>("playerStats");
+                return await statsRepository.Update(db, playerStats);
             });//.AuthorizeWith(AuthorizationPolicyName.WriteStats);
 
         Field<ResultGraph>("addNotificationToken")
             .Argument<NonNullGraphType<NotificationTokenInputType>>("notificationToken")
-            .Resolve(context =>
+            .Resolve()
+            .WithScope()
+            .WithService<StaplePuckContext>()
+            .ResolveAsync(async (context, db) =>
             {
                 var notificationToken = context.GetArgument<NotificationToken>("notificationToken");
                 var subject = ((GraphQLUserContext)context.UserContext).User.GetUserId(options.Value);
@@ -180,16 +216,19 @@ public class Mutation : ObjectGraphType
                     return new ResultModel { Id = -1, Success = false, Message = string.Empty };
                 }
 
-                return fantasyRepository.Add(notificationToken, subject);
+                return await fantasyRepository.Add(db, notificationToken, subject);
             });
 
         Field<ResultGraph>("removeNotificationToken")
             .Argument<NonNullGraphType<NotificationTokenInputType>>("notificationToken")
-            .Resolve(context =>
+            .Resolve()
+            .WithScope()
+            .WithService<StaplePuckContext>()
+            .ResolveAsync(async (context, db) =>
             {
                 var notificationToken = context.GetArgument<NotificationToken>("notificationToken");
 
-                return fantasyRepository.Remove(notificationToken);
+                return await fantasyRepository.Remove(db, notificationToken);
             });
     }
 }

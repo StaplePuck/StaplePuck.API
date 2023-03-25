@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace StaplePuck.Core.Data
+namespace StaplePuck.Core.Models
 {
     public class ResultModel
     {
