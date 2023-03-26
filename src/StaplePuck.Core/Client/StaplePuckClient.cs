@@ -7,9 +7,11 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using RestSharp;
-using Newtonsoft.Json;
 using StaplePuck.Core.Auth;
 using GraphQL;
 using StaplePuck.Core.Models;
@@ -84,15 +86,66 @@ namespace StaplePuck.Core.Client
                 Variables = variables
             };
 
-            var response = await _client.SendMutationAsync<ResultModel>(request);
-            if (response.Errors != null && response.Errors.Length > 0)
+            var response = await _client.SendMutationAsync<dynamic>(request);
+            try
             {
-                return new ResultModel { Success = false, Message = string.Join(", ", response.Errors.Select(x => x.Message)) };
+                var stringResult = response?.Data?.ToString();
+                if (stringResult == null)
+                {
+                    throw new Exception("Unable to get data response");
+                }
+                stringResult = stringResult.Replace($"\"{mutationName}\":", string.Empty);
+                stringResult = stringResult.Remove(0, 1);
+                stringResult = stringResult.Remove(stringResult.Length - 1, 1);
+
+                var result = JsonSerializer.Deserialize<ResultModel>(stringResult);
+                if (result.Errors != null && result.Errors.Length > 0)
+                {
+                    return new ResultModel { Success = false, Message = string.Join(", ", response?.Errors.Select(x => x.Message)) };
+                }
+                return result;
             }
+            catch (Exception e)
+            {
+                return new ResultModel { Success = false, Message = e.Message };
+            }
+        }
+
+        /// <summary>
+        /// Queries for a collection of objects.
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize.</typeparam>
+        /// <param name="query">The graphql query.</param>
+        /// <param name="variables">The collection of paramaters.</param>
+        /// <returns>The query response.</returns>
+        public async Task<T[]> GetAsyncCollection<T>(string query, IDictionary<string, object>? variables = null)
+        {
+            var name = typeof(T).Name;
+
+            //var variables = new ExpandoObject() as IDictionary<string, object>;
+            //variables.Add(name, value);
+            var request = new GraphQLRequest
+            {
+                Query = query
+                //Variables = variables
+            };
+            if (variables != null)
+            {
+                request.Variables = variables;
+            }
+            
+            var response = await _client.SendQueryAsync<T[]>(request);
             return response.Data;
         }
 
-        public async Task<T[]> GetAsync<T>(string query, IDictionary<string, object>? variables = null)
+        /// <summary>
+        /// Queries for graphs.
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize.</typeparam>
+        /// <param name="query">The graphql query.</param>
+        /// <param name="variables">The collection of paramaters.</param>
+        /// <returns>The query response.</returns>
+        public async Task<T> GetAsync<T>(string query, IDictionary<string, object>? variables = null)
         {
             var name = typeof(T).Name;
 
@@ -108,7 +161,7 @@ namespace StaplePuck.Core.Client
                 request.Variables = variables;
             }
 
-            var response = await _client.SendQueryAsync<T[]>(request);
+            var response = await _client.SendQueryAsync<T>(request);
             return response.Data;
         }
     }
