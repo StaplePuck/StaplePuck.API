@@ -89,7 +89,16 @@ namespace StaplePuck.Core.Client
             var response = await _client.SendMutationAsync<dynamic>(request);
             try
             {
-                var stringResult = response?.Data?.ToString();
+                if (response == null)
+                {
+                    return new ResultModel { Success = false, Message = "Failed to get response from mutation" };
+                }
+                if (response.Errors != null && response.Errors.Length > 0)
+                {
+                    return new ResultModel { Success = false, Message = string.Join(", ", response?.Errors.Select(x => x.Message)) };
+                }
+
+                var stringResult = response.Data.ToString();
                 if (stringResult == null)
                 {
                     throw new Exception("Unable to get data response");
@@ -99,10 +108,6 @@ namespace StaplePuck.Core.Client
                 stringResult = stringResult.Remove(stringResult.Length - 1, 1);
 
                 var result = JsonSerializer.Deserialize<ResultModel>(stringResult);
-                if (result.Errors != null && result.Errors.Length > 0)
-                {
-                    return new ResultModel { Success = false, Message = string.Join(", ", response?.Errors.Select(x => x.Message)) };
-                }
                 return result;
             }
             catch (Exception e)
