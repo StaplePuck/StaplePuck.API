@@ -20,6 +20,22 @@ namespace StaplePuck.Core.Client
         /// <returns>The resulting message.</returns>
         Task<ResultModel> UpdateAsync<T>(string mutationName, T value, string? variableName = null, string? typeName = null);
 
-        Task<T[]> GetAsync<T>(string query, IDictionary<string, object>? variables = null);
+        /// <summary>
+        /// Queries for graphs.
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize.</typeparam>
+        /// <param name="query">The graphql query.</param>
+        /// <param name="variables">The collection of paramaters.</param>
+        /// <returns>The query response.</returns>
+        Task<T> GetAsync<T>(string query, IDictionary<string, object>? variables = null);
+
+        /// <summary>
+        /// Queries for graphs.
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize.</typeparam>
+        /// <param name="query">The graphql query.</param>
+        /// <param name="variables">The collection of paramaters.</param>
+        /// <returns>The query response.</returns>
+        Task<T[]> GetAsyncCollection<T>(string query, IDictionary<string, object>? variables = null);
     }
 }
