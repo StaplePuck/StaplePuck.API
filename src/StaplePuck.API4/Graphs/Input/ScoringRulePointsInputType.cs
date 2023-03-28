@@ -7,9 +7,6 @@ public class ScoringRulePointsInputType : InputObjectGraphType
         Name = "ScoringRulePointsInput";
         Field<NonNullGraphType<IntGraphType>>("positionTypeId");
         Field<NonNullGraphType<IntGraphType>>("scoringTypeId");
-        //Field<NonNullGraphType<IntGraphType>>("LeagueId");
-
-        Field<NonNullGraphType<IntGraphType>>("pointsPerScore");
         Field<NonNullGraphType<FloatGraphType>>("scoringWeight");
     }
 }

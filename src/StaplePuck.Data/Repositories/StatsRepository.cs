@@ -181,7 +181,7 @@ namespace StaplePuck.Data.Repositories
 
             var seasons = context.Seasons
                 .Include(x => x.Leagues)
-                .Where(x => x.ExternalId == seasonId);
+                .Where(x => x.ExternalId == seasonId && x.IsPlayoffs == seasonData.IsPlayoffs);
             foreach (var item in seasons)
             {
 
@@ -528,7 +528,7 @@ namespace StaplePuck.Data.Repositories
             {
                 return new ResultModel { Id = 0, Message = "No team states", Success = false };
             }
-            var seasons = await context.Seasons.Where(x => teamStates.First().Season != null && x.ExternalId == firstSeson.ExternalId).ToListAsync();
+            var seasons = await context.Seasons.Where(x => teamStates.First().Season != null && x.ExternalId == firstSeson.ExternalId && x.IsPlayoffs == firstSeson.IsPlayoffs).ToListAsync();
             foreach (var season in seasons)
             {
                 var teams = await context.Seasons
