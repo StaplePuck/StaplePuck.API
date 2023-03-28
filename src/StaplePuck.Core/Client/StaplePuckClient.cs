@@ -86,9 +86,9 @@ namespace StaplePuck.Core.Client
                 Variables = variables
             };
 
-            var response = await _client.SendMutationAsync<dynamic>(request);
             try
             {
+                var response = await _client.SendMutationAsync<dynamic>(request);
                 if (response == null)
                 {
                     return new ResultModel { Success = false, Message = "Failed to get response from mutation" };
