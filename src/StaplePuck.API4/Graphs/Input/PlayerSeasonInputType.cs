@@ -8,15 +8,5 @@ public class PlayerSeasonInputType : InputObjectGraphType
         Field<NonNullGraphType<PlayerInputType>>("player");
         Field<NonNullGraphType<TeamInputType>>("team");
         Field<NonNullGraphType<PositionTypeInputType>>("positionType");
-
-        Field<IntGraphType>("playerId");
-        Field<IntGraphType>("seasonId");
-        Field<StringGraphType>("season");
-        Field<IntGraphType>("teamId");
-        Field<IntGraphType>("positionTypeId");
-        Field<StringGraphType>("teamSeason");
-        Field<StringGraphType>("teamStateForSeason");
-        Field<StringGraphType>("fantasyTeamPlayers");
-        Field<StringGraphType>("playerCalculatedScores");
     }
 }

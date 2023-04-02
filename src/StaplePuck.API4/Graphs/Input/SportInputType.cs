@@ -6,9 +6,5 @@ public class SportInputType : InputObjectGraphType
     {
         Name = "SportInput";
         Field<NonNullGraphType<StringGraphType>>("name");
-
-        Field<IntGraphType>("id");
-        Field<StringGraphType>("scoringTypes");
-        Field<StringGraphType>("positionTypes");
     }
 }

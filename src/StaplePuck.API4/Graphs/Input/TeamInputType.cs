@@ -10,8 +10,5 @@ public class TeamInputType : InputObjectGraphType
         Field<NonNullGraphType<StringGraphType>>("shortName");
         Field<NonNullGraphType<IntGraphType>>("externalId");
         Field<NonNullGraphType<StringGraphType>>("locationName");
-
-        Field<IntGraphType>("id");
-        Field<StringGraphType>("teamStateOnDates");
     }
 }
