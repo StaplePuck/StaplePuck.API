@@ -377,6 +377,7 @@ namespace StaplePuck.Data.Repositories
                         };
                         context.Add(existingScore);
                         await context.SaveChangesAsync();
+                        _logger.LogInformation($"New calculated score for league {league.Id}, for player {item.PlayerId}");
                     }
                     else
                     {
@@ -419,6 +420,7 @@ namespace StaplePuck.Data.Repositories
                                 // !!!! new score
                                 context.Add(existingItem);
                                 await context.SaveChangesAsync();
+                                _logger.LogInformation($"New score for league {league.Id}, for player {item.PlayerId}, score type: {scoreItem.ScoringTypeId}, total: {scoreItem.Total}");
                             }
                             else
                             {
@@ -541,7 +543,7 @@ namespace StaplePuck.Data.Repositories
                     var team = teams.First(x => x != null && x.ExternalId == item.Team?.ExternalId);
                     if (team == null)
                     {
-                        Console.Out.WriteLine($"Team not part of season {item.Team?.ExternalId}");
+                        _logger.LogInformation($"Team not part of season {item.Team?.ExternalId}");
                         continue;
                     }
                     var existingState = existingTeamStates.FirstOrDefault(x => x.TeamId == team.Id);
