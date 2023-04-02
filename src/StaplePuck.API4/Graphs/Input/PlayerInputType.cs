@@ -11,13 +11,5 @@ public class PlayerInputType : InputObjectGraphType
         Field<NonNullGraphType<StringGraphType>>("firstName");
         Field<NonNullGraphType<StringGraphType>>("lastName");
         Field<NonNullGraphType<IntGraphType>>("number");
-
-        Field<IntGraphType>("id");
-
-        Field<StringGraphType>("fantasyTeamPlayers");
-        Field<StringGraphType>("statsOnDate");
-        Field<IntGraphType>("SportId");
-        Field<StringGraphType>("sport");
-        Field<StringGraphType>("playerSeasons");
     }
 }

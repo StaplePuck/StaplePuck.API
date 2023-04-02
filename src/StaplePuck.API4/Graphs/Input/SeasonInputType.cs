@@ -11,11 +11,5 @@ public class SeasonInputType : InputObjectGraphType
         Field<IntGraphType>("startRound");
         Field<SportInputType>("sport");
         Field<ListGraphType<PlayerSeasonInputType>>("playerSeasons");
-
-        Field<IntGraphType>("id");
-        Field<StringGraphType>("leagues");
-        Field<IntGraphType>("sportId");
-        Field<StringGraphType>("gameDates");
-        Field<StringGraphType>("teamSeasons");
     }
 }
