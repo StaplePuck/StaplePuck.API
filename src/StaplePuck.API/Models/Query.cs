@@ -14,7 +14,7 @@ using StaplePuck.Core.Fantasy;
 using StaplePuck.Core.Stats;
 using StaplePuck.Data;
 using Microsoft.EntityFrameworkCore;
-
+using GraphQL;
 
 namespace StaplePuck.API.Models
 {
@@ -29,12 +29,11 @@ namespace StaplePuck.API.Models
             //        var dataContext = (StaplePuckContext)context.UserContext;
             //        return dataContext.FantasyTeams;
             //    });
-            
             AddSingleField(
                 name: "currentUser2",
                 resolve: context =>
                 {
-                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
+                    var dataContext = context.DbContext;
                     var user = ((GraphQLUserContext)context.UserContext).User;
                     if (user.Claims.Count() == 0)
                     {
@@ -42,13 +41,13 @@ namespace StaplePuck.API.Models
                     }
                     var subject = user.GetUserId(options.Value);
                     return dataContext.Users.Where(x => x.ExternalId == subject);
-                }).RequiresAuthorization();
+                }).Authorize();
 
             AddQueryField(
                 name: "fantasyTeams",
                 resolve: context =>
                 {
-                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
+                    var dataContext = context.DbContext;
                     return dataContext.FantasyTeams;
                 });
 
@@ -56,7 +55,7 @@ namespace StaplePuck.API.Models
                 name: "leagues",
                 resolve: context =>
                 {
-                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
+                    var dataContext = context.DbContext;
                     return dataContext.Leagues;
                 });
 
@@ -64,7 +63,7 @@ namespace StaplePuck.API.Models
                 name: "players",
                 resolve: context =>
                 {
-                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
+                    var dataContext = context.DbContext;
                     return dataContext.Players;
                 });
 
@@ -72,56 +71,49 @@ namespace StaplePuck.API.Models
                 name: "playerSeasons",
                 resolve: context =>
                 {
-                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
-                    return dataContext.PlayerSeasons;
+                    return context.DbContext.PlayerSeasons;
                 });
 
             AddQueryField(
                 name: "scoringTypes",
                 resolve: context =>
                 {
-                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
-                    return dataContext.ScoringTypes;
+                    return context.DbContext.ScoringTypes;
                 });
 
             AddQueryField(
                 name: "seasons",
                 resolve: context =>
                 {
-                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
-                    return dataContext.Seasons;
+                    return context.DbContext.Seasons;
                 });
 
             AddQueryField(
                 name: "sports",
                 resolve: context =>
                 {
-                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
-                    return dataContext.Sports;
+                    return context.DbContext.Sports;
                 });
 
             AddQueryField(
                 name: "teams",
                 resolve: context =>
                 {
-                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
-                    return dataContext.Teams;
+                    return context.DbContext.Teams;
                 });
 
             AddQueryField(
                 name: "users",
                 resolve: context =>
                 {
-                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
-                    return dataContext.Users;
+                    return context.DbContext.Users;
                 });
 
             AddQueryField(
                 name: "playerCalculatedScores",
                 resolve: context =>
                 {
-                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
-                    return dataContext.PlayerCalculatedScores;
+                    return context.DbContext.PlayerCalculatedScores;
                 });
 
             Field<ListGraphType<ScoringTypeHeaderGraph>>(
@@ -129,8 +121,8 @@ namespace StaplePuck.API.Models
                 resolve: context =>
                 {
                     var id = context.GetArgument<int>("id");
-                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
-                    var league = dataContext.Leagues.Include(x => x.ScoringRules).ThenInclude(x => x.ScoringType).FirstOrDefault(x => x.Id == id);
+                    var dbContext = ResolveDbContext(context);
+                    var league = dbContext.Leagues.Include(x => x.ScoringRules).ThenInclude(x => x.ScoringType).FirstOrDefault(x => x.Id == id);
                     var scoring = league.ScoringRules.Where(x => x.PointsPerScore != 0).Select(x => x.ScoringType);
                     return scoring.Distinct();
                 },
@@ -145,8 +137,8 @@ namespace StaplePuck.API.Models
                 resolve: context =>
                 {
                     var id = context.GetArgument<int>("id");
-                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
-                    var team = dataContext.FantasyTeams.Include(x => x.League).ThenInclude(x => x.ScoringRules).ThenInclude(x => x.ScoringType).FirstOrDefault(x => x.Id == id);
+                    var dbContext = ResolveDbContext(context);
+                    var team = dbContext.FantasyTeams.Include(x => x.League).ThenInclude(x => x.ScoringRules).ThenInclude(x => x.ScoringType).FirstOrDefault(x => x.Id == id);
                     var scoring = team.League.ScoringRules.Where(x => x.PointsPerScore != 0).Select(x => x.ScoringType);
                     return scoring.Distinct().OrderBy(x => x.Id);
                 },
@@ -161,8 +153,8 @@ namespace StaplePuck.API.Models
                 resolve: context =>
                 {
                     var id = context.GetArgument<int>("id");
-                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
-                    var league = dataContext.Leagues.Include(x => x.FantasyTeams).ThenInclude(x => x.GM).FirstOrDefault(x => x.Id == id);
+                    var dbContext = ResolveDbContext(context);
+                    var league = dbContext.Leagues.Include(x => x.FantasyTeams).ThenInclude(x => x.GM).FirstOrDefault(x => x.Id == id);
                     if (league != null)
                     {
                         if (league.IsLocked)
@@ -188,8 +180,8 @@ namespace StaplePuck.API.Models
                 resolve: context =>
                 {
                     var id = context.GetArgument<int>("id");
-                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
-                    var league = dataContext.Leagues.Include(x => x.FantasyTeams).ThenInclude(x => x.GM).FirstOrDefault(x => x.Id == id);
+                    var dbContext = ResolveDbContext(context);
+                    var league = dbContext.Leagues.Include(x => x.FantasyTeams).ThenInclude(x => x.GM).FirstOrDefault(x => x.Id == id);
                     if (league == null || !league.IsLocked)
                     {
                         return null;
@@ -214,8 +206,8 @@ namespace StaplePuck.API.Models
                     
                     var leagueId = context.GetArgument<int>("leagueId");
                     var teamId = context.GetArgument<int>("teamId");
-                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
-                    var pcs = dataContext.PlayerCalculatedScores
+                    var dbContext = ResolveDbContext(context);
+                    var pcs = dbContext.PlayerCalculatedScores
                         .Include(x => x.PlayerSeason)
                         .ThenInclude(x => x.PositionType)
 
@@ -257,19 +249,19 @@ namespace StaplePuck.API.Models
                 resolve: context =>
                 {
                     var leagueId = context.GetArgument<int>("leagueId");
-                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
+                    var dbContext = ResolveDbContext(context);
                     var user = ((GraphQLUserContext)context.UserContext).User;
                     if (user.Claims.Count() == 0)
                     {
-                        return dataContext.FantasyTeams.Where(x => false);
+                        return dbContext.FantasyTeams.Where(x => false);
                     }
                     var subject = user.GetUserId(options.Value);
 
                     if (leagueId > 0)
                     {
-                        return dataContext.FantasyTeams.Where(x => x.GM.ExternalId == subject && x.LeagueId == leagueId);
+                        return dbContext.FantasyTeams.Where(x => x.GM.ExternalId == subject && x.LeagueId == leagueId);
                     }
-                    return dataContext.FantasyTeams.Where(x => x.GM.ExternalId == subject);
+                    return dbContext.FantasyTeams.Where(x => x.GM.ExternalId == subject);
                 },
                 arguments: new QueryArguments(
                 new QueryArgument<IdGraphType>
@@ -281,16 +273,16 @@ namespace StaplePuck.API.Models
                 name: "currentUser",
                 resolve: context =>
                 {
-                    var dataContext = ((GraphQLUserContext)context.UserContext).DataContext;
+                    var dbContext = ResolveDbContext(context);
                     var user = ((GraphQLUserContext)context.UserContext).User;
                     if (user.Claims.Count() == 0)
                     {
                         throw new Exception("Not authenticated");
                     }
                     var subject = user.GetUserId(options.Value);
-                    var users = dataContext.Users.Where(x => x.ExternalId == subject).Include(x => x.NotificationTokens);
+                    var users = dbContext.Users.Where(x => x.ExternalId == subject).Include(x => x.NotificationTokens);
                     return users.FirstOrDefault();
-                }).RequiresAuthorization();
+                }).Authorize();
         }
     }
 }

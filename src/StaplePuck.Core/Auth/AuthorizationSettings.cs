@@ -6,7 +6,7 @@ namespace StaplePuck.Core.Auth
 {
     public class AuthorizationSettings
     {
-        public string BaseUrl { get; set; }
-        public string SiteName { get; set; }
+        public string BaseUrl { get; set; } = string.Empty;
+        public string SiteName { get; set; } = string.Empty;
     }
 }

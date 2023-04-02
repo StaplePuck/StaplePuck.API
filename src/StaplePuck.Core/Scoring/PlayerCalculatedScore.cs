@@ -10,25 +10,20 @@ namespace StaplePuck.Core.Scoring
     public class PlayerCalculatedScore
     {
         public int PlayerId { get; set; }
-        public Player Player { get; set; }
+        public Player? Player { get; set; }
         public int LeagueId { get; set; }
-        public League League { get; set; }
+        public League? League { get; set; }
 
         public int SeasonId { get; set; }
 
-        public List<CalculatedScoreItem> Scoring { get; set; }
+        public List<CalculatedScoreItem> Scoring { get; set; } = new List<CalculatedScoreItem>();
         public int NumberOfSelectedByTeams { get; set; }
         public int GameState { get; set; }
 
         public int Score { get; set; }
         public int TodaysScore { get; set; }
 
-        public List<FantasyTeamPlayers> FantasyTeamPlayers { get; set; }
-        public PlayerSeason PlayerSeason { get; set; }
-
-        public PlayerCalculatedScore()
-        {
-            Scoring = new List<CalculatedScoreItem>();
-        }
+        public List<FantasyTeamPlayers> FantasyTeamPlayers { get; set; } = new List<FantasyTeamPlayers>();
+        public PlayerSeason? PlayerSeason { get; set; }
     }
 }

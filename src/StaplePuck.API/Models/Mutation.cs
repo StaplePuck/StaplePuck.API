@@ -14,6 +14,7 @@ using StaplePuck.API.Graphs;
 using StaplePuck.API.Graphs.Input;
 using StaplePuck.API.Constants;
 using Microsoft.Extensions.Logging;
+using GraphQL;
 
 namespace StaplePuck.API.Models
 {
@@ -69,7 +70,7 @@ namespace StaplePuck.API.Models
                 {
                     var season = context.GetArgument<Season>("season");
                     return statsRepository.Add(season);
-                }).AuthorizeWith(AuthorizationPolicyName.WriteStats);
+                }).AuthorizeWithPolicy(AuthorizationPolicyName.WriteStats);
 
             Field<ResultGraph>(
                 "createLeague",
@@ -80,7 +81,7 @@ namespace StaplePuck.API.Models
                 {
                     var league = context.GetArgument<League>("league");
                     return fantasyRepository.Add(league);
-                }).AuthorizeWith(AuthorizationPolicyName.Admin);
+                }).AuthorizeWithPolicy(AuthorizationPolicyName.Admin);
 
             Field<ResultGraph>(
                 "updateLeague",
@@ -125,7 +126,8 @@ namespace StaplePuck.API.Models
                     }
 
                     return fantasyRepository.Add(team, subject);
-                }).RequiresAuthorization();
+                }).Authorize();
+
             Field<ResultGraph>(
                 "updateFantasyTeam",
                 arguments: new QueryArguments(
@@ -154,7 +156,7 @@ namespace StaplePuck.API.Models
                         context.Errors.AddRange(validations.Select(x => new GraphQL.ExecutionError(x)));
                     }
                     return fantasyRepository.Update(team, isValid);
-                }).RequiresAuthorization();
+                }).Authorize();
 
             Field<ResultGraph>(
                 "updateGameDateStats",

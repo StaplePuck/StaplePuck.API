@@ -16,12 +16,12 @@ namespace StaplePuck.API.Graphs
             Field(x => x.Email);
             AddNavigationListField(
                 name: "fantasyTeams",
-                resolve: context => context.Source.FantasyTeams);
+                resolve: context => context.DbContext.FantasyTeams);
             Field(x => x.Name);
             Field(x => x.ExternalId);
             AddNavigationListField(
                 name: "notificationTokens",
-                resolve: context => context.Source.NotificationTokens);
+                resolve: context => context.DbContext.NotificationTokens);
         }
     }
 }

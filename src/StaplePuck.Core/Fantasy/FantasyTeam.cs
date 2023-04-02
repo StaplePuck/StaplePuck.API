@@ -10,16 +10,16 @@ namespace StaplePuck.Core.Fantasy
         public int Id { get; set; }
 
         public int UserId { get; set; }
-        public User GM { get; set; }
-        public string Name { get; set; }
+        public User? GM { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         public int LeagueId { get; set; }
-        public League League { get; set; }
+        public League? League { get; set; }
 
         public bool IsPaid { get; set; }
         public bool IsValid { get; set; }
 
-        public List<FantasyTeamPlayers> FantasyTeamPlayers { get; set; }
+        public List<FantasyTeamPlayers> FantasyTeamPlayers { get; set; } = new List<FantasyTeamPlayers>();
 
         public int Rank { get; set; }
         public int Score { get; set; }

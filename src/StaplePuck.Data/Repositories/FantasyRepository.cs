@@ -1,53 +1,59 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using StaplePuck.Core.Auth;
+using StaplePuck.Core.Fantasy;
+using StaplePuck.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using StaplePuck.Core;
-using StaplePuck.Core.Auth;
-using StaplePuck.Core.Data;
-using StaplePuck.Core.Fantasy;
-using StaplePuck.Core.Stats;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace StaplePuck.Data.Repositories
 {
     public class FantasyRepository : IFantasyRepository
     {
-        private readonly StaplePuckContext _db;
         private readonly IAuthorizationClient _authorizationClient;
         private readonly ILogger _logger;
 
-        public FantasyRepository(StaplePuckContext db, IAuthorizationClient authorizationClient, ILogger<IFantasyRepository> logger)
+        public FantasyRepository(IAuthorizationClient authorizationClient, ILogger<IFantasyRepository> logger)
         {
-            _db = db;
             _authorizationClient = authorizationClient;
             _logger = logger;
         }
 
-        public async Task<ResultModel> Add(League league)
+        public async Task<ResultModel> Add(StaplePuckContext context, League league)
         {
-            await _db.Leagues.AddAsync(league);
-            await _db.SaveChangesAsync();
+            await context.Leagues.AddAsync(league);
+            await context.SaveChangesAsync();
 
-            var newLeague = await _db.Leagues.Include(l => l.Commissioner).FirstOrDefaultAsync(x => x.Id == league.Id);
-            var extId = newLeague.Commissioner.ExternalId;
-            await _authorizationClient.AssignUserAsCommissioner(extId, league.Id);;
+            var newLeague = await context.Leagues.Include(l => l.Commissioner).FirstOrDefaultAsync(x => x.Id == league.Id);
+            if (newLeague == null)
+            {
+                return new ResultModel { Message = $"League {league.Id} not found", Success = false };
+            }
+            var extId = newLeague.Commissioner?.ExternalId;
+            if (!string.IsNullOrEmpty(extId))
+            {
+                await _authorizationClient.AssignUserAsCommissioner(extId, league.Id); ;
+            }
 
             _logger.LogInformation($"Added league. Name: {league.Name} Id: new{newLeague.Id}. Commosioner ID: {extId}");
 
             return new ResultModel { Id = league.Id, Message = "Success", Success = true };
         }
 
-        public async Task<ResultModel> Update(League league)
+        public async Task<ResultModel> Update(StaplePuckContext context, League league)
         {
-            var leagueInfo = await _db.Leagues
+            var leagueInfo = await context.Leagues
                 .Include(x => x.NumberPerPositions)
                 .Include(x => x.ScoringRules)
                 .Include(x => x.FantasyTeams)
                 .FirstOrDefaultAsync(x => x.Id == league.Id);
 
+            if (leagueInfo == null)
+            {
+                return new ResultModel { Message = $"League {league.Id} not found", Success = false };
+            }
             leagueInfo.AllowMultipleTeams = league.AllowMultipleTeams;
             if (league.Announcement != null)
             {
@@ -100,6 +106,7 @@ namespace StaplePuck.Data.Repositories
                     var rules = new ScoringRulePoints
                     {
                         PointsPerScore = item.PointsPerScore,
+                        ScoringWeight = item.ScoringWeight,
                         LeagueId = league.Id,
                         PositionTypeId = item.PositionTypeId,
                         ScoringTypeId = item.ScoringTypeId
@@ -115,27 +122,30 @@ namespace StaplePuck.Data.Repositories
                 foreach (var item in league.FantasyTeams)
                 {
                     var currentTeam = leagueInfo.FantasyTeams.FirstOrDefault(x => x.Id == item.Id);
-                    currentTeam.IsPaid = item.IsPaid;
+                    if (currentTeam != null)
+                    {
+                        currentTeam.IsPaid = item.IsPaid;
+                    }
                 }
             }
 
-            _db.Leagues.Update(leagueInfo);
-            await _db.SaveChangesAsync();
+            context.Leagues.Update(leagueInfo);
+            await context.SaveChangesAsync();
 
             _logger.LogInformation($"Update league {league.Id}");
             return new ResultModel { Id = league.Id, Message = "Success", Success = true };
         }
 
-        public async Task<ResultModel> Add(FantasyTeam team, string userExternalId)
+        public async Task<ResultModel> Add(StaplePuckContext context, FantasyTeam team, string userExternalId)
         {
-            var user = _db.Users.FirstOrDefault(x => x.ExternalId == userExternalId);
+            var user = context.Users.FirstOrDefault(x => x.ExternalId == userExternalId);
             if (user == null)
             {
                 throw new Exception();
             }
             team.UserId = user.Id;
-            await _db.FantasyTeams.AddAsync(team);
-            await _db.SaveChangesAsync();
+            await context.FantasyTeams.AddAsync(team);
+            await context.SaveChangesAsync();
 
             await _authorizationClient.AssignUserAsGM(userExternalId, team.Id);
 
@@ -143,31 +153,36 @@ namespace StaplePuck.Data.Repositories
             return new ResultModel { Id = team.Id, Message = "Success", Success = true };
         }
 
-        public async Task<bool> ValidateUserIsAssignedGM(int teamId, string userExternalId)
+        public async Task<bool> ValidateUserIsAssignedGM(StaplePuckContext context, int teamId, string userExternalId)
         {
-            var team = await _db.FantasyTeams.Include(x => x.GM).SingleOrDefaultAsync(x => x.Id == teamId);
-            if (team == null)
+            var team = await context.FantasyTeams.Include(x => x.GM).SingleOrDefaultAsync(x => x.Id == teamId);
+            if (team?.GM == null)
             {
                 return false;
             }
             return team.GM.ExternalId == userExternalId;
         }
 
-        public async Task<List<string>> ValidateNew(FantasyTeam team, string userExternalId)
+        public async Task<List<string>> ValidateNew(StaplePuckContext context, FantasyTeam team, string userExternalId)
         {
             var errors = new List<string>();
 
-            if ((await _db.FantasyTeams.ToListAsync()).Any(x => x.LeagueId == team.LeagueId && x.Name.Equals(team.Name.Trim(), StringComparison.CurrentCultureIgnoreCase)))
+            if ((await context.FantasyTeams.ToListAsync()).Any(x => x.LeagueId == team.LeagueId && x.Name.Equals(team.Name.Trim(), StringComparison.CurrentCultureIgnoreCase)))
             {
                 errors.Add("Team name already exists");
             }
 
-            var leagueInfo = await _db.Leagues.Include(x => x.FantasyTeams).ThenInclude(x => x.GM).SingleOrDefaultAsync(x => x.Id == team.LeagueId);
+            var leagueInfo = await context.Leagues.Include(x => x.FantasyTeams).ThenInclude(x => x.GM).SingleOrDefaultAsync(x => x.Id == team.LeagueId);
+            if (leagueInfo == null)
+            {
+                errors.Add($"League {team.LeagueId}");
+                return errors;
+            }
             if (leagueInfo.IsLocked)
             {
                 errors.Add("League is currently locked");
             }
-            if (!leagueInfo.AllowMultipleTeams && (leagueInfo.FantasyTeams.Count(x => x.GM.ExternalId == userExternalId) > 0))
+            if (!leagueInfo.AllowMultipleTeams && (leagueInfo.FantasyTeams.Count(x => x.GM?.ExternalId == userExternalId) > 0))
             {
                 errors.Add("This league only allows one team per user");
             }
@@ -175,19 +190,19 @@ namespace StaplePuck.Data.Repositories
             return errors;
         }
 
-        public async Task<ResultModel> Update(FantasyTeam team, bool isValid)
+        public async Task<ResultModel> Update(StaplePuckContext context, FantasyTeam team, bool isValid)
         {
-            var currentTeam = await _db.FantasyTeams.Include(x => x.League).FirstOrDefaultAsync(x => x.Id == team.Id);
+            var currentTeam = await context.FantasyTeams.Include(x => x.League).FirstOrDefaultAsync(x => x.Id == team.Id);
             if (currentTeam?.League == null || currentTeam.League.IsLocked)
             {
-                _logger.LogWarning($"League is locked and someone is trying to update fantasy team: {currentTeam.Name} for league: {currentTeam.League.Name}");
+                _logger.LogWarning($"League is locked and someone is trying to update fantasy team: {currentTeam?.Name} for league: {currentTeam?.League?.Name}");
                 return new ResultModel { Id = team.Id, Message = "League is locked", Success = false };
             }
 
             // remove existing assigned players
-            var currentPlayers = await _db.FantasyTeamPlayers.Where(x => x.FantasyTeamId == team.Id).ToListAsync();
-            _db.FantasyTeamPlayers.RemoveRange(currentPlayers);
-            await _db.SaveChangesAsync();
+            var currentPlayers = await context.FantasyTeamPlayers.Where(x => x.FantasyTeamId == team.Id).ToListAsync();
+            context.FantasyTeamPlayers.RemoveRange(currentPlayers);
+            await context.SaveChangesAsync();
 
             // add the new ones in
             foreach (var player in team.FantasyTeamPlayers)
@@ -199,24 +214,30 @@ namespace StaplePuck.Data.Repositories
                     LeagueId = currentTeam.LeagueId,
                     SeasonId = currentTeam.League.SeasonId
                 };
-                _db.FantasyTeamPlayers.Add(playerInfo);
+                context.FantasyTeamPlayers.Add(playerInfo);
             }
             currentTeam.IsValid = isValid;
-             _db.FantasyTeams.Update(currentTeam);
+             context.FantasyTeams.Update(currentTeam);
 
-            await _db.SaveChangesAsync();
+            await context.SaveChangesAsync();
             _logger.LogInformation($"Updated fantasy team {team.Name} for league {currentTeam.League.Name}");
             return new ResultModel { Id = team.Id, Message = "Success", Success = true };
         }
 
-        public async Task<List<string>> Validate(FantasyTeam team)
+        public async Task<List<string>> Validate(StaplePuckContext context, FantasyTeam team)
         {
             var errors = new List<string>();
 
-            var currentTeam = await _db.FantasyTeams.Include(x => x.League).ThenInclude(x => x.NumberPerPositions).ThenInclude(x => x.PositionType).FirstOrDefaultAsync(x => x.Id == team.Id);
-            var players = _db.PlayerSeasons.Where(x => x.SeasonId == currentTeam.League.SeasonId).Include(x => x.Player);
+            var currentTeam = await context.FantasyTeams.Include(x => x.League).ThenInclude(x => x!.NumberPerPositions)
+                .ThenInclude(x => x.PositionType).FirstOrDefaultAsync(x => x.Id == team.Id);
+            if (currentTeam == null)
+            {
+                errors.Add($"Uanble to find team {team.Id}");
+                return errors;
+            }
+            var players = context.PlayerSeasons.Where(x => currentTeam.League != null && x.SeasonId == currentTeam.League.SeasonId).Include(x => x.Player);
 
-            if (currentTeam.League.IsLocked)
+            if (currentTeam?.League == null || currentTeam.League.IsLocked)
             {
                 errors.Add("League is currenlty locked");
                 return errors;
@@ -253,7 +274,7 @@ namespace StaplePuck.Data.Repositories
             {
                 if (playerPerPositionDict[item.PositionTypeId] != item.Count)
                 {
-                    errors.Add($"{playerPerPositionDict[item.PositionTypeId]} {item.PositionType.Name} selected and expecting {item.Count}");
+                    errors.Add($"{playerPerPositionDict[item.PositionTypeId]} {item.PositionType?.Name} selected and expecting {item.Count}");
                 }
             }
 
@@ -262,11 +283,11 @@ namespace StaplePuck.Data.Repositories
             foreach (var item in duplicateItems)
             {
                 var info = await players.FirstOrDefaultAsync(x => x.PlayerId == item);
-                errors.Add($"{info.Player.FullName} is selected more than once");
+                errors.Add($"{info?.Player?.FullName} is selected more than once");
             }
 
             // Compare against existing teams
-            var otherTeams = _db.FantasyTeams.Where(x => x.LeagueId == team.LeagueId && x.Id != team.Id).Include(x => x.FantasyTeamPlayers);
+            var otherTeams = context.FantasyTeams.Where(x => x.LeagueId == team.LeagueId && x.Id != team.Id).Include(x => x.FantasyTeamPlayers);
             foreach (var item in otherTeams)
             {
                 var completeMatch = true;
@@ -288,15 +309,15 @@ namespace StaplePuck.Data.Repositories
             return errors;
         }
 
-        public async Task<bool> EmailAlreadyExists(string email, string userExternalId)
+        public async Task<bool> EmailAlreadyExists(StaplePuckContext context, string email, string userExternalId)
         {
-            var users = await _db.Users.ToArrayAsync();
+            var users = await context.Users.ToArrayAsync();
             return users.Any(x => email.Equals(x.Email, StringComparison.CurrentCultureIgnoreCase) && userExternalId != x.ExternalId);
         }
 
-        public async Task<ResultModel> Update(User user)
+        public async Task<ResultModel> Update(StaplePuckContext context, User user)
         {
-            var u = await _db.Users.FirstOrDefaultAsync(x => x.ExternalId == user.ExternalId);
+            var u = await context.Users.FirstOrDefaultAsync(x => x.ExternalId == user.ExternalId);
             if (u != null)
             {
                 u.Email = user.Email;
@@ -308,29 +329,29 @@ namespace StaplePuck.Data.Repositories
                 {
                     u.Name = user.Name;
                 }
-                _db.Users.Update(u);
+                context.Users.Update(u);
                 _logger.LogInformation($"Updated user {u.Name}");
             }
             else
             {
-                await _db.Users.AddAsync(user);
+                await context.Users.AddAsync(user);
                 u = user;
                 _logger.LogInformation($"Added user {u.Name}");
             }
-            await _db.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
             return new ResultModel { Id = u.Id, Message = "Success", Success = true };
         }
 
-        public async Task<bool> UsernameAlreadyExists(string username, string userExternalId)
+        public async Task<bool> UsernameAlreadyExists(StaplePuckContext context, string username, string userExternalId)
         {
-            var users = await _db.Users.ToArrayAsync();
+            var users = await context.Users.ToArrayAsync();
             return users.Any(x => username.Equals(x.Name, StringComparison.CurrentCultureIgnoreCase) && userExternalId != x.ExternalId);
         }
 
-        public async Task<ResultModel> Add(NotificationToken notificationToken, string userExternalId)
+        public async Task<ResultModel> Add(StaplePuckContext context, NotificationToken notificationToken, string userExternalId)
         {
-            var u = await _db.Users.Include(x => x.NotificationTokens).FirstOrDefaultAsync(x => x.ExternalId == userExternalId);
+            var u = await context.Users.Include(x => x.NotificationTokens).FirstOrDefaultAsync(x => x.ExternalId == userExternalId);
             if (u == null)
             {
                 return new ResultModel { Id = -1, Message = "Not found", Success = false };
@@ -341,17 +362,17 @@ namespace StaplePuck.Data.Repositories
                 return new ResultModel { Id = 0, Message = "Success", Success = true };
             }
             notificationToken.UserId = u.Id;
-            _db.NotificationTokens.Add(notificationToken);
-            await _db.SaveChangesAsync();
+            context.NotificationTokens.Add(notificationToken);
+            await context.SaveChangesAsync();
 
             return new ResultModel { Id = notificationToken.Id, Message = "Success", Success = true };
         }
 
-        public async Task<ResultModel> Remove(NotificationToken notificationToken)
+        public async Task<ResultModel> Remove(StaplePuckContext context, NotificationToken notificationToken)
         {
-            var notifications = await _db.NotificationTokens.Where(x => x.Token == notificationToken.Token).ToListAsync();
-            _db.NotificationTokens.RemoveRange(notifications);
-            await _db.SaveChangesAsync();
+            var notifications = await context.NotificationTokens.Where(x => x.Token == notificationToken.Token).ToListAsync();
+            context.NotificationTokens.RemoveRange(notifications);
+            await context.SaveChangesAsync();
             return new ResultModel { Id = 0, Message = "Success", Success = true };
         }
     }
