@@ -19,10 +19,17 @@ public class MessageEmitter : IMessageEmitter
     {
         if (_settings?.StatsUpdatedTopicARN != null)
         {
-            var client = new AmazonSimpleNotificationServiceClient();
-            var message = JsonConvert.SerializeObject(data);
-            _logger.LogInformation($"Sending message: {message}. To topic: {_settings.StatsUpdatedTopicARN}");
-            await client.PublishAsync(_settings.StatsUpdatedTopicARN, message);
+            try
+            { 
+                var client = new AmazonSimpleNotificationServiceClient();
+                var message = JsonConvert.SerializeObject(data);
+                _logger.LogInformation($"Sending message: {message}. To topic: {_settings.StatsUpdatedTopicARN}");
+                await client.PublishAsync(_settings.StatsUpdatedTopicARN, message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Failed to publish stats update");
+            }
         }
     }
 
@@ -30,10 +37,17 @@ public class MessageEmitter : IMessageEmitter
     {
         if (_settings?.ScoreUpdatedTopicARN != null)
         {
-            var client = new AmazonSimpleNotificationServiceClient();
-            var message = JsonConvert.SerializeObject(scoreUpdated);
-            _logger.LogInformation($"Sending message: {message}. To topic: {_settings.ScoreUpdatedTopicARN}");
-            await client.PublishAsync(_settings.ScoreUpdatedTopicARN, message);
+            try
+            {
+                var client = new AmazonSimpleNotificationServiceClient();
+                var message = JsonConvert.SerializeObject(scoreUpdated);
+                _logger.LogInformation($"Sending message: {message}. To topic: {_settings.ScoreUpdatedTopicARN}");
+                await client.PublishAsync(_settings.ScoreUpdatedTopicARN, message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Failed to publish score update");
+            }
         }
     }
 }
