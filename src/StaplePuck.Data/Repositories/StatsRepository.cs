@@ -461,7 +461,7 @@ namespace StaplePuck.Data.Repositories
             }
 
             await context.SaveChangesAsync();
-            _logger.LogInformation($"Updated league {league.Name}");
+            _logger.LogInformation($"Updated league {league.Id}");
             
             if (teamChanges.Count > 0 || playerScorechanges.Count > 0)
             {
