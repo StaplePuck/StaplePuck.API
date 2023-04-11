@@ -46,9 +46,9 @@ jobs:
       - name: Build
         run: dotnet build -c Release --no-restore
       
-      - name: Deploy to Lambda
+      - name: Deploy to AWS
         working-directory: ./src/StaplePuck.API4
-        run: dotnet lambda deploy-serverless -sn staplepuckapi-prod -tp 'Auth0Audience="${{ vars.Auth0__Audience }}";Auth0ClientId="${{ secrets.Auth0__ClientId }}";Auth0ClientSecret="${{ secrets.Auth0__ClientSecret }}";Auth0TokenUrl="${{ vars.Auth0__TokenUrl }}";Auth0APIAudience="${{ vars.Auth0API__Audience }}";Auth0APIClientId="${{ secrets.Auth0API__ClientId }}";Auth0APIClientSecret="${{ secrets.Auth0API__ClientSecret }}";Auth0APIDomain="${{ vars.Auth0API__Domain }}";AuthorizationBaseUrl="${{ vars.Authorization__BaseUrl }}";AuthorizationSiteName="${{ vars.Authorization__SiteName }}";ConnectionStringsDefault="${{ secrets.ConnectionStrings__Default }}";AWSStatsUpdatedTopicARN="${{ vars.AWS__StatsUpdatedTopicARN }}";AWSScoreUpdatedTopicARN="${{ vars.AWS__ScoreUpdatedTopicARN }}"'
+        run: dotnet lambda deploy-serverless -sn prod-staplepuck-api -tp 'Auth0Audience="${{ vars.Auth0__Audience }}";Auth0ClientId="${{ secrets.Auth0__ClientId }}";Auth0ClientSecret="${{ secrets.Auth0__ClientSecret }}";Auth0TokenUrl="${{ vars.Auth0__TokenUrl }}";Auth0APIAudience="${{ vars.Auth0API__Audience }}";Auth0APIClientId="${{ secrets.Auth0API__ClientId }}";Auth0APIClientSecret="${{ secrets.Auth0API__ClientSecret }}";Auth0APIDomain="${{ vars.Auth0API__Domain }}";AuthorizationBaseUrl="${{ vars.Authorization__BaseUrl }}";AuthorizationSiteName="${{ vars.Authorization__SiteName }}";ConnectionStringsDefault="${{ secrets.ConnectionStrings__Default }}";AWSStatsUpdatedTopicARN="${{ vars.AWS__StatsUpdatedTopicARN }}";AWSScoreUpdatedTopicARN="${{ vars.AWS__ScoreUpdatedTopicARN }}"'
       
       - name: Push generated package to MyGet registry
         run: |
