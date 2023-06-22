@@ -4,7 +4,7 @@ using System.Text;
 
 namespace StaplePuck.Core.Models
 {
-    public class FantansyTeamChanged
+    public class FantasyTeamChanged
     {
         public int FantasyTeamId { get; set; }
         public int OldScore { get; set; }

@@ -8,6 +8,6 @@ namespace StaplePuck.Core.Models
     {
         public int LeagueId { get; set; }
         public IEnumerable<PlayerScoreUpdated> PlayersScoreUpdated { get; set; } = new List<PlayerScoreUpdated>();
-        public IEnumerable<FantansyTeamChanged> FantansyTeamChanges { get; set; } = new List<FantansyTeamChanged>();
+        public IEnumerable<FantasyTeamChanged> FantasyTeamChanges { get; set; } = new List<FantasyTeamChanged>();
     }
 }
