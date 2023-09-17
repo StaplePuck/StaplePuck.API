@@ -8,5 +8,7 @@ public class FantasyTeamUpdateType : InputObjectGraphType
         Field<NonNullGraphType<IntGraphType>>("id");
 
         Field<ListGraphType<FantasyTeamPlayersInputType>>("fantasyTeamPlayers");
+
+        Field<StringGraphType>("name");
     }
 }

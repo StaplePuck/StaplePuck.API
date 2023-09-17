@@ -217,7 +217,12 @@ namespace StaplePuck.Data.Repositories
                 context.FantasyTeamPlayers.Add(playerInfo);
             }
             currentTeam.IsValid = isValid;
-             context.FantasyTeams.Update(currentTeam);
+            if (!string.IsNullOrEmpty(team.Name) && team.Name != currentTeam.Name && !(await TeamNameAlreadyExistsw(context, currentTeam.LeagueId, team.Id, team.Name)))
+            {
+                // do not update if team rename is invalid
+                currentTeam.Name = team.Name;
+            }
+            context.FantasyTeams.Update(currentTeam);
 
             await context.SaveChangesAsync();
             _logger.LogInformation($"Updated fantasy team {team.Name} for league {currentTeam.League.Name}");
@@ -234,6 +239,11 @@ namespace StaplePuck.Data.Repositories
             {
                 errors.Add($"Uanble to find team {team.Id}");
                 return errors;
+            }
+
+            if (await TeamNameAlreadyExistsw(context, currentTeam.LeagueId, team.Id, team.Name))
+            {
+                errors.Add("Team name already exists");
             }
             var players = context.PlayerSeasons.Where(x => currentTeam.League != null && x.SeasonId == currentTeam.League.SeasonId).Include(x => x.Player);
 
@@ -307,6 +317,12 @@ namespace StaplePuck.Data.Repositories
             }
 
             return errors;
+        }
+
+        private async Task<bool> TeamNameAlreadyExistsw(StaplePuckContext context, int leagueId, int teamId, string teamName)
+        {
+            var fantasyTeams = await context.FantasyTeams.Where(x => x.LeagueId == leagueId).ToArrayAsync();
+            return fantasyTeams.Any(x =>  x.Id != teamId && x.Name.Equals(teamName.Trim(), StringComparison.CurrentCultureIgnoreCase));
         }
 
         public async Task<bool> EmailAlreadyExists(StaplePuckContext context, string email, string userExternalId)

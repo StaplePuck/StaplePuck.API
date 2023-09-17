@@ -327,7 +327,7 @@ namespace StaplePuck.Data.Repositories
             {
                 return new ResultModel { Message = $"League not found {league.Id}", Success = false };
             }
-            var teamChanges = new List<FantansyTeamChanged>();
+            var teamChanges = new List<FantasyTeamChanged>();
             if (league.FantasyTeams != null)
             {
                 foreach (var team in league.FantasyTeams)
@@ -337,7 +337,7 @@ namespace StaplePuck.Data.Repositories
                     {
                         if (existingTeam.Score != team.Score || existingTeam.Rank != team.Rank)
                         {
-                            var teamChange = new FantansyTeamChanged
+                            var teamChange = new FantasyTeamChanged
                             {
                                 FantasyTeamId = existingTeam.Id,
                                 OldRank = existingTeam.Rank,
@@ -468,7 +468,7 @@ namespace StaplePuck.Data.Repositories
                 var updated = new ScoreUpdated
                 {
                     LeagueId = league.Id,
-                    FantansyTeamChanges = teamChanges,
+                    FantasyTeamChanges = teamChanges,
                     PlayersScoreUpdated = playerScorechanges
                 };
                 await _messageEmitter.ScoreUpdated(updated);
