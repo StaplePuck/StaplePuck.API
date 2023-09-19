@@ -540,7 +540,7 @@ namespace StaplePuck.Data.Repositories
                 var existingTeamStates = await context.TeamStateForSeason.Where(x => x.SeasonId == season.Id).Include(x => x.Team).ToListAsync();
                 foreach (var item in teamStates)
                 {
-                    var team = teams.First(x => x != null && x.ExternalId == item.Team?.ExternalId);
+                    var team = teams.FirstOrDefault(x => x != null && x.ExternalId == item.Team?.ExternalId);
                     if (team == null)
                     {
                         _logger.LogInformation($"Team not part of season {item.Team?.ExternalId}");
