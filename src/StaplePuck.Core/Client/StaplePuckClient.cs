@@ -1,20 +1,16 @@
-﻿using GraphQL.Client;
+﻿using GraphQL;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.SystemTextJson;
 using Microsoft.Extensions.Options;
+using StaplePuck.Core.Auth;
+using StaplePuck.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using RestSharp;
-using StaplePuck.Core.Auth;
-using GraphQL;
-using StaplePuck.Core.Models;
 
 namespace StaplePuck.Core.Client
 {
@@ -41,6 +37,7 @@ namespace StaplePuck.Core.Client
             {
                 _client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
+            _client.HttpClient.Timeout = TimeSpan.FromMinutes(10);
         }
 
         private void Auth_OnNewToken(string token)
