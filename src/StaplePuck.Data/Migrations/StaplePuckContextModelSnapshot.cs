@@ -353,6 +353,9 @@ namespace StaplePuck.Data.Migrations
                     b.Property<string>("ExternalId")
                         .HasColumnType("text");
 
+                    b.Property<string>("ExternalId2")
+                        .HasColumnType("text");
+
                     b.Property<string>("FirstName")
                         .HasColumnType("text");
 
@@ -567,6 +570,9 @@ namespace StaplePuck.Data.Migrations
 
                     b.Property<int>("ExternalId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("ExternalId2")
+                        .HasColumnType("text");
 
                     b.Property<string>("FullName")
                         .HasColumnType("text");

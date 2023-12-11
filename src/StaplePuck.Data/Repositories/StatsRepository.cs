@@ -75,6 +75,7 @@ namespace StaplePuck.Data.Repositories
                 else
                 {
                     team.ExternalId = item.ExternalId;
+                    team.ExternalId2 = item.ExternalId2;
                     context.Update(team);
                 }
 
@@ -113,6 +114,7 @@ namespace StaplePuck.Data.Repositories
                         player.FirstName = p.FirstName;
                         player.LastName = p.LastName;
                         player.ExternalId = p.ExternalId;
+                        player.ExternalId2 = p.ExternalId2;
                         context.Players.Update(player);
                     }
 
