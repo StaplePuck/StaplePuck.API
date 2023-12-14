@@ -44,7 +44,9 @@ namespace StaplePuck.Data.Repositories
                     FullName = season.FullName,
                     IsPlayoffs = season.IsPlayoffs,
                     SportId = sport.Id,
-                    StartRound = season.StartRound
+                    StartRound = season.StartRound,
+                    ExternalPlayerUrl = season.ExternalPlayerUrl,
+                    ExternalPlayerUrl2 = season.ExternalPlayerUrl2
                 };
                 await context.Seasons.AddAsync(dbSeason);
                 await context.SaveChangesAsync();

@@ -21,6 +21,18 @@ namespace StaplePuck.Data.Migrations
                 table: "Players",
                 type: "text",
                 nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "ExternalPlayerUrl",
+                table: "Seasons",
+                type: "text",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "ExternalPlayerUrl2",
+                table: "Seasons",
+                type: "text",
+                nullable: true);
         }
 
         /// <inheritdoc />
@@ -33,6 +45,14 @@ namespace StaplePuck.Data.Migrations
             migrationBuilder.DropColumn(
                 name: "ExternalId2",
                 table: "Players");
+
+            migrationBuilder.DropColumn(
+                name: "ExternalPlayerUrl",
+                table: "Seasons");
+
+            migrationBuilder.DropColumn(
+                name: "ExternalPlayerUrl2",
+                table: "Seasons");
         }
     }
 }

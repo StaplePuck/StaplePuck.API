@@ -526,6 +526,12 @@ namespace StaplePuck.Data.Migrations
                     b.Property<string>("ExternalId")
                         .HasColumnType("text");
 
+                    b.Property<string>("ExternalPlayerUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExternalPlayerUrl2")
+                        .HasColumnType("text");
+
                     b.Property<string>("FullName")
                         .HasColumnType("text");
 
