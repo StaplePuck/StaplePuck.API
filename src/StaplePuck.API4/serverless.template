@@ -54,7 +54,7 @@
         "MemorySize": 256,
         "Timeout": 30,
         "Role": null,
-        "Policies": [ "AWSLambda_FullAccess" ],
+        "Policies": [ "AWSLambda_FullAccess", "AmazonSNSFullAccess" ],
         "Environment": {
             "Variables": {
                 "Auth0__Audience": { "Ref" : "Auth0Audience" },
