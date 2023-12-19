@@ -44,7 +44,9 @@ namespace StaplePuck.Data.Repositories
                     FullName = season.FullName,
                     IsPlayoffs = season.IsPlayoffs,
                     SportId = sport.Id,
-                    StartRound = season.StartRound
+                    StartRound = season.StartRound,
+                    ExternalPlayerUrl = season.ExternalPlayerUrl,
+                    ExternalPlayerUrl2 = season.ExternalPlayerUrl2
                 };
                 await context.Seasons.AddAsync(dbSeason);
                 await context.SaveChangesAsync();
@@ -75,6 +77,10 @@ namespace StaplePuck.Data.Repositories
                 else
                 {
                     team.ExternalId = item.ExternalId;
+                    if (item.ExternalId2 != null)
+                    {
+                        team.ExternalId2 = item.ExternalId2;
+                    }
                     context.Update(team);
                 }
 
@@ -113,6 +119,7 @@ namespace StaplePuck.Data.Repositories
                         player.FirstName = p.FirstName;
                         player.LastName = p.LastName;
                         player.ExternalId = p.ExternalId;
+                        player.ExternalId2 = p.ExternalId2;
                         context.Players.Update(player);
                     }
 
@@ -185,7 +192,7 @@ namespace StaplePuck.Data.Repositories
             foreach (var item in seasons)
             {
 
-                var existingSeason = existingGameDate?.GameDateSeasons?.FirstOrDefault(x => x.Season?.Id == item.Id && x.Season?.IsPlayoffs == item.IsPlayoffs);
+                var existingSeason = existingGameDate!.GameDateSeasons?.FirstOrDefault(x => x.Season?.Id == item.Id && x.Season?.IsPlayoffs == item.IsPlayoffs);
                 if (existingSeason == null)
                 {
                     existingSeason = new GameDateSeason
