@@ -192,7 +192,7 @@ namespace StaplePuck.Data.Repositories
             foreach (var item in seasons)
             {
 
-                var existingSeason = existingGameDate?.GameDateSeasons?.FirstOrDefault(x => x.Season?.Id == item.Id && x.Season?.IsPlayoffs == item.IsPlayoffs);
+                var existingSeason = existingGameDate!.GameDateSeasons?.FirstOrDefault(x => x.Season?.Id == item.Id && x.Season?.IsPlayoffs == item.IsPlayoffs);
                 if (existingSeason == null)
                 {
                     existingSeason = new GameDateSeason
