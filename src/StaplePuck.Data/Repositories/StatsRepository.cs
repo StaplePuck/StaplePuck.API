@@ -77,7 +77,10 @@ namespace StaplePuck.Data.Repositories
                 else
                 {
                     team.ExternalId = item.ExternalId;
-                    team.ExternalId2 = item.ExternalId2;
+                    if (item.ExternalId2 != null)
+                    {
+                        team.ExternalId2 = item.ExternalId2;
+                    }
                     context.Update(team);
                 }
 
