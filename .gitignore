@@ -333,3 +333,5 @@ ASALocalRun/
 /src/StaplePuck.API/LetsEncrypt
 /.vsback
 /StaplePuck.env
+/src/StaplePuck.Data/appsettings.json
+/src/StaplePuck.Data/appsettings.json

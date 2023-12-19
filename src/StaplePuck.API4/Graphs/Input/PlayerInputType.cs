@@ -7,6 +7,7 @@ public class PlayerInputType : InputObjectGraphType
         Name = "PlayerInput";
         Field<NonNullGraphType<StringGraphType>>("fullName");
         Field<NonNullGraphType<StringGraphType>>("externalId");
+        Field<StringGraphType>("externalId2");
         Field<NonNullGraphType<StringGraphType>>("shortName");
         Field<NonNullGraphType<StringGraphType>>("firstName");
         Field<NonNullGraphType<StringGraphType>>("lastName");
