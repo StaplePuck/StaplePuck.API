@@ -119,7 +119,10 @@ namespace StaplePuck.Data.Repositories
                         player.FirstName = p.FirstName;
                         player.LastName = p.LastName;
                         player.ExternalId = p.ExternalId;
-                        player.ExternalId2 = p.ExternalId2;
+                        if (p.ExternalId2 != null)
+                        {
+                            player.ExternalId2 = p.ExternalId2;
+                        }
                         context.Players.Update(player);
                     }
 
