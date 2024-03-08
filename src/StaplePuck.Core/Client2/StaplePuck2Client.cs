@@ -16,19 +16,20 @@ namespace StaplePuck.Core.Client2
     {
         private readonly GraphQLHttpClient _client;
         private readonly ILogger _logger;
+        private readonly JsonSerializerOptions _serializerOptions;
 
         public StaplePuck2Client(IOptions<StaplePuck2Settings> options, ILogger<StaplePuck2Client> logger)
         {
             var settings = options.Value;
-            var jsonOptions = new JsonSerializerOptions();
-            jsonOptions.PropertyNamingPolicy = null;
-            _client = new GraphQLHttpClient(settings.Url, new SystemTextJsonSerializer(jsonOptions));
+            _serializerOptions = new JsonSerializerOptions();
+            _serializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            _client = new GraphQLHttpClient(settings.Url, new SystemTextJsonSerializer(_serializerOptions));
 
             _client.HttpClient.DefaultRequestHeaders.Add("x-api-key", settings.Token);
             _logger = logger;
         }
 
-        public async Task<T> ExecuteMutationAsync<T>(GraphQLRequest request, string mutationName, CancellationToken cancellationToken)
+        public async Task<T?> ExecuteMutationAsync<T>(GraphQLRequest request, string mutationName, CancellationToken cancellationToken) where T : class
         {
             try
             {
@@ -43,7 +44,7 @@ namespace StaplePuck.Core.Client2
                     throw new StaplePuck2Exception(string.Join(", ", result?.Errors.Select(x => x.Message)));
                 }
 
-                var stringResult = result.Data.ToString();
+                string stringResult = result.Data.ToString();
                 if (stringResult == null)
                 {
                     throw new Exception("Unable to get data response");
@@ -52,7 +53,7 @@ namespace StaplePuck.Core.Client2
                 stringResult = stringResult.Remove(0, 1);
                 stringResult = stringResult.Remove(stringResult.Length - 1, 1);
 
-                var data = JsonSerializer.Deserialize<T>(stringResult);
+                var data = JsonSerializer.Deserialize<T>(stringResult, _serializerOptions);
                 return data;
             }
             catch (Exception ex)
@@ -85,7 +86,7 @@ namespace StaplePuck.Core.Client2
                 stringResult = stringResult.Remove(0, 1);
                 stringResult = stringResult.Remove(stringResult.Length - 1, 1);
 
-                var data = JsonSerializer.Deserialize<T>(stringResult);
+                var data = JsonSerializer.Deserialize<T>(stringResult, _serializerOptions);
                 return data;
             }
             catch (Exception ex)

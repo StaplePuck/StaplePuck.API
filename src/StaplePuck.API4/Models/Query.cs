@@ -1,12 +1,15 @@
-﻿using GraphQL.Types;
+﻿using GraphQL.MicrosoftDI;
+using GraphQL.Types;
 using Microsoft.Extensions.Options;
 using StaplePuck.Core.Auth;
+using StaplePuck.Core.Models;
 using StaplePuck.Data;
+using StaplePuck.Data.Repositories;
 
 public class Query :
     QueryGraphType<StaplePuckContext>
 {
-    public Query(IEfGraphQLService<StaplePuckContext> efGraphQlService, IOptions<Auth0APISettings> options) :
+    public Query(IFantasyRepository fantasyRepository, IEfGraphQLService<StaplePuckContext> efGraphQlService, IOptions<Auth0APISettings> options) :
         base(efGraphQlService)
     {
         AddSingleField(name: "currentUser2",
@@ -138,6 +141,29 @@ public class Query :
                     fteam.TodaysScore = -1;
                 }
                 return league.FantasyTeams.Where(x => !x.IsPaid);
+            });
+
+        Field<ListGraphType<ResultGraph>>("fantasyTeamValidation")
+            .Argument<IntGraphType>("id")
+            .Resolve()
+            .WithScope()
+            .WithService<StaplePuckContext>()
+            .ResolveAsync(async (context, db) =>
+            {
+                var id = context.GetArgument<int>("id");
+                var dbContext = ResolveDbContext(context);
+                var fantasyTeam = dbContext.FantasyTeams.Include(x => x.FantasyTeamPlayers).FirstOrDefault(x => x.Id == id);
+                if (fantasyTeam == null)
+                {
+                    return null;
+                }
+                var validation = await fantasyRepository.Validate(dbContext, fantasyTeam);
+                var list = new List<ResultModel>();
+                foreach (var item in validation)
+                {
+                    list.Add(new ResultModel { Message = item, Success = false });
+                }
+                return list;
             });
 
         Field<ListGraphType<PlayerCalculatedScoreGraph>>("playerCalculatedScoresForTeam")
