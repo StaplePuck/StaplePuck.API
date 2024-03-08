@@ -199,22 +199,25 @@ namespace StaplePuck.Data.Repositories
                 return new ResultModel { Id = team.Id, Message = "League is locked", Success = false };
             }
 
-            // remove existing assigned players
-            var currentPlayers = await context.FantasyTeamPlayers.Where(x => x.FantasyTeamId == team.Id).ToListAsync();
-            context.FantasyTeamPlayers.RemoveRange(currentPlayers);
-            await context.SaveChangesAsync();
-
-            // add the new ones in
-            foreach (var player in team.FantasyTeamPlayers)
+            if (team.FantasyTeamPlayers.Count() > 0)
             {
-                var playerInfo = new FantasyTeamPlayers
+                // remove existing assigned players
+                var currentPlayers = await context.FantasyTeamPlayers.Where(x => x.FantasyTeamId == team.Id).ToListAsync();
+                context.FantasyTeamPlayers.RemoveRange(currentPlayers);
+                await context.SaveChangesAsync();
+
+                // add the new ones in
+                foreach (var player in team.FantasyTeamPlayers)
                 {
-                    FantasyTeamId = team.Id,
-                    PlayerId = player.PlayerId,
-                    LeagueId = currentTeam.LeagueId,
-                    SeasonId = currentTeam.League.SeasonId
-                };
-                context.FantasyTeamPlayers.Add(playerInfo);
+                    var playerInfo = new FantasyTeamPlayers
+                    {
+                        FantasyTeamId = team.Id,
+                        PlayerId = player.PlayerId,
+                        LeagueId = currentTeam.LeagueId,
+                        SeasonId = currentTeam.League.SeasonId
+                    };
+                    context.FantasyTeamPlayers.Add(playerInfo);
+                }
             }
             currentTeam.IsValid = isValid;
             if (!string.IsNullOrEmpty(team.Name) && team.Name != currentTeam.Name && !(await TeamNameAlreadyExistsw(context, currentTeam.LeagueId, team.Id, team.Name)))
@@ -254,6 +257,10 @@ namespace StaplePuck.Data.Repositories
             }
 
             int count = team.FantasyTeamPlayers.Count();
+            if (count == 0)
+            {
+                return errors;
+            }
             var teamsCount = players.Select(x => x.TeamId).Distinct().Count();
 
             // total count
