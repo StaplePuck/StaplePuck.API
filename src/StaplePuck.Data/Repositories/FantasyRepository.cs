@@ -303,23 +303,26 @@ namespace StaplePuck.Data.Repositories
                 errors.Add($"{info?.Player?.FullName} is selected more than once");
             }
 
-            // Compare against existing teams
-            var otherTeams = context.FantasyTeams.Where(x => x.LeagueId == team.LeagueId && x.Id != team.Id).Include(x => x.FantasyTeamPlayers);
-            foreach (var item in otherTeams)
+            if (!currentTeam.IsValid && errors.Count == 0)
             {
-                var completeMatch = true;
-                foreach (var player in team.FantasyTeamPlayers)
+                // Compare against existing teams
+                var otherTeams = context.FantasyTeams.Where(x => x.LeagueId == currentTeam.LeagueId && x.Id != team.Id).Include(x => x.FantasyTeamPlayers);
+                foreach (var item in otherTeams)
                 {
-                    if (!item.FantasyTeamPlayers.Any(x => x.PlayerId == player.PlayerId))
+                    var completeMatch = true;
+                    foreach (var player in team.FantasyTeamPlayers)
                     {
-                        completeMatch = false;
-                        break;
+                        if (!item.FantasyTeamPlayers.Any(x => x.PlayerId == player.PlayerId))
+                        {
+                            completeMatch = false;
+                            break;
+                        }
                     }
-                }
 
-                if (completeMatch)
-                {
-                    errors.Add("Someone already has a team with the exact same line up. You need to change a player or two");
+                    if (completeMatch)
+                    {
+                        errors.Add("Someone already has a team with the exact same line up. You need to change a player or two");
+                    }
                 }
             }
 
