@@ -59,30 +59,23 @@ namespace StaplePuck.Core.Auth
             request.AddParameter("name", groupName);
             request.AddParameter("description", $"Security group for {groupName}");
 
-            try
-            {
-                var response = await _restClient.ExecutePostAsync(request).ConfigureAwait(false);
-                if (response == null)
-                {
-                    return string.Empty;
-                }
-                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                {
-                    var token = _auth0Client.GetAuthToken();
-                    if (token == null)
-                    {
-                        return string.Empty;
-                    }
-                    _restClientOptions.Authenticator = new JwtAuthenticator(token);
-                    response = await _restClient.ExecutePostAsync(request).ConfigureAwait(false);
-                }
-                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<GroupResponse>(response?.Content ?? "{}");
-                return result?._id ?? string.Empty;
-            }
-            catch (Exception ex)
+            var response = await _restClient.ExecutePostAsync(request).ConfigureAwait(false);
+            if (response == null)
             {
                 return string.Empty;
             }
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                var token = _auth0Client.GetAuthToken();
+                if (token == null)
+                {
+                    return string.Empty;
+                }
+                _restClientOptions.Authenticator = new JwtAuthenticator(token);
+                response = await _restClient.ExecutePostAsync(request).ConfigureAwait(false);
+            }
+            var result = Newtonsoft.Json.JsonConvert.DeserializeObject<GroupResponse>(response?.Content ?? "{}");
+            return result?._id ?? string.Empty;
         }
 
         /// <summary>
