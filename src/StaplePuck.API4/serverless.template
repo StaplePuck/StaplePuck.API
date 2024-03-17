@@ -48,7 +48,7 @@
       "Type" : "AWS::Serverless::Function",
       "Properties": {
         "Handler": "StaplePuck.API4::LambdaEntryPoint::FunctionHandlerAsync",
-        "Runtime": "dotnet6",
+        "Runtime": "dotnet8",
         "CodeUri": "",
         "Description": "Default function",
         "MemorySize": 256,
