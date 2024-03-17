@@ -17,6 +17,7 @@ namespace StaplePuck.Core.Auth
     {
         private readonly AuthorizationSettings _settings;
         private readonly RestClient _restClient;
+        private readonly RestClientOptions _restClientOptions;
         private readonly string _issuer;
         private readonly string _authority;
         private readonly IAuth0Client _auth0Client;
@@ -31,13 +32,15 @@ namespace StaplePuck.Core.Auth
             _settings = options.Value;
             _issuer = auth0Options.Value.Domain;
             _authority = auth0Options.Value.Authority;
-            _restClient = new RestClient(_settings.BaseUrl);
+            _restClientOptions = new RestClientOptions(_settings.BaseUrl);
+            _restClientOptions.ThrowOnAnyError = false;
+            _restClient = new RestClient(_restClientOptions);
             _auth0Client = auth0Client;
 
             var token = auth0Client.GetAuthToken();
             if (token != null)
             {
-                _restClient.Authenticator = new JwtAuthenticator(token);
+                _restClientOptions.Authenticator = new JwtAuthenticator(token);
             }
         }
 
@@ -48,7 +51,7 @@ namespace StaplePuck.Core.Auth
         /// <returns>The id of the created group.</returns>
         private async Task<string> CreateGroupAsync(string groupName)
         {
-            if (_restClient.Authenticator == null)
+            if (_restClientOptions.Authenticator == null)
             {
                 return string.Empty;
             }
@@ -56,7 +59,7 @@ namespace StaplePuck.Core.Auth
             request.AddParameter("name", groupName);
             request.AddParameter("description", $"Security group for {groupName}");
 
-            var response = await _restClient.PostAsync(request).ConfigureAwait(false);
+            var response = await _restClient.ExecutePostAsync(request).ConfigureAwait(false);
             if (response == null)
             {
                 return string.Empty;
@@ -68,8 +71,8 @@ namespace StaplePuck.Core.Auth
                 {
                     return string.Empty;
                 }
-                _restClient.Authenticator = new JwtAuthenticator(token);
-                response = await _restClient.PostAsync(request).ConfigureAwait(false);
+                _restClientOptions.Authenticator = new JwtAuthenticator(token);
+                response = await _restClient.ExecutePostAsync(request).ConfigureAwait(false);
             }
             var result = Newtonsoft.Json.JsonConvert.DeserializeObject<GroupResponse>(response?.Content ?? "{}");
             return result?._id ?? string.Empty;
@@ -83,7 +86,7 @@ namespace StaplePuck.Core.Auth
         /// <returns>The task completion source.</returns>
         private async Task AddUserToGroup(string groupId, string sub)
         {
-            if (_restClient.Authenticator == null)
+            if (_restClientOptions.Authenticator == null)
             {
                 return;
             }
@@ -98,7 +101,7 @@ namespace StaplePuck.Core.Auth
                 var token = _auth0Client.GetAuthToken();
                 if (token != null)
                 {
-                    _restClient.Authenticator = new JwtAuthenticator(token);
+                    _restClientOptions.Authenticator = new JwtAuthenticator(token);
                     response = await _restClient.ExecuteAsync(request).ConfigureAwait(false);
                     // todo log error message if not success
                 }
