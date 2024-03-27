@@ -199,7 +199,7 @@ namespace StaplePuck.Data.Repositories
                 return new ResultModel { Id = team.Id, Message = "League is locked", Success = false };
             }
 
-            if (team.FantasyTeamPlayers.Count() > 0)
+            if (team.FantasyTeamPlayers != null)
             {
                 // remove existing assigned players
                 var currentPlayers = await context.FantasyTeamPlayers.Where(x => x.FantasyTeamId == team.Id).ToListAsync();
@@ -218,8 +218,9 @@ namespace StaplePuck.Data.Repositories
                     };
                     context.FantasyTeamPlayers.Add(playerInfo);
                 }
+                currentTeam.IsValid = isValid;
             }
-            currentTeam.IsValid = isValid;
+            
             if (!string.IsNullOrEmpty(team.Name) && team.Name != currentTeam.Name && !(await TeamNameAlreadyExistsw(context, currentTeam.LeagueId, team.Id, team.Name)))
             {
                 // do not update if team rename is invalid
@@ -256,11 +257,11 @@ namespace StaplePuck.Data.Repositories
                 return errors;
             }
 
-            int count = team.FantasyTeamPlayers.Count();
-            if (count == 0)
+            if (team.FantasyTeamPlayers == null)
             {
                 return errors;
             }
+            int count = team.FantasyTeamPlayers.Count();
             var teamsCount = players.Select(x => x.TeamId).Distinct().Count();
 
             // total count
@@ -312,7 +313,7 @@ namespace StaplePuck.Data.Repositories
                     var completeMatch = true;
                     foreach (var player in team.FantasyTeamPlayers)
                     {
-                        if (!item.FantasyTeamPlayers.Any(x => x.PlayerId == player.PlayerId))
+                        if (!item.FantasyTeamPlayers!.Any(x => x.PlayerId == player.PlayerId))
                         {
                             completeMatch = false;
                             break;
