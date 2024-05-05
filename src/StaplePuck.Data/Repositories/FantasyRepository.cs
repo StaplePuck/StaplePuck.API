@@ -147,7 +147,7 @@ namespace StaplePuck.Data.Repositories
             await context.FantasyTeams.AddAsync(team);
             await context.SaveChangesAsync();
 
-            await _authorizationClient.AssignUserAsGM(userExternalId, team.Id);
+            //await _authorizationClient.AssignUserAsGM(userExternalId, team.Id);
 
             _logger.LogInformation($"Added fantasy team. Name: {team.Name}. ID: {team.Id}. GM: {user.Name}");
             return new ResultModel { Id = team.Id, Message = "Success", Success = true };
@@ -229,7 +229,7 @@ namespace StaplePuck.Data.Repositories
             context.FantasyTeams.Update(currentTeam);
 
             await context.SaveChangesAsync();
-            _logger.LogInformation($"Updated fantasy team {team.Name} for league {currentTeam.League.Name}");
+            _logger.LogInformation($"Updated fantasy team {team.Name} for league {currentTeam.League.Name} with {currentTeam.FantasyTeamPlayers?.Count} players");
             return new ResultModel { Id = team.Id, Message = "Success", Success = true };
         }
 
