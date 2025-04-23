@@ -180,7 +180,7 @@ namespace StaplePuck.Data.Repositories
             }
             if (leagueInfo.IsLocked)
             {
-                //errors.Add("League is currently locked");
+                errors.Add("League is currently locked");
             }
             if (!leagueInfo.AllowMultipleTeams && (leagueInfo.FantasyTeams.Count(x => x.GM?.ExternalId == userExternalId) > 0))
             {
@@ -195,8 +195,8 @@ namespace StaplePuck.Data.Repositories
             var currentTeam = await context.FantasyTeams.Include(x => x.League).FirstOrDefaultAsync(x => x.Id == team.Id);
             if (currentTeam?.League == null || currentTeam.League.IsLocked)
             {
-                //_logger.LogWarning($"League is locked and someone is trying to update fantasy team: {currentTeam?.Name} for league: {currentTeam?.League?.Name}");
-                //return new ResultModel { Id = team.Id, Message = "League is locked", Success = false };
+                _logger.LogWarning($"League is locked and someone is trying to update fantasy team: {currentTeam?.Name} for league: {currentTeam?.League?.Name}");
+                return new ResultModel { Id = team.Id, Message = "League is locked", Success = false };
             }
 
             if (team.FantasyTeamPlayers != null)
@@ -253,8 +253,8 @@ namespace StaplePuck.Data.Repositories
 
             if (currentTeam?.League == null || currentTeam.League.IsLocked)
             {
-                //errors.Add("League is currenlty locked");
-                //return errors;
+                errors.Add("League is currenlty locked");
+                return errors;
             }
 
             if (team.FantasyTeamPlayers == null)
